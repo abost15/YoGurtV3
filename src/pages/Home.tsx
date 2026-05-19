@@ -142,7 +142,7 @@ function ContactOverlay({ open, onClose }: { open: boolean; onClose: () => void 
           </motion.div>
 
           <a
-            href="/admin"
+            href="/admin.html"
             aria-label="Admin-panel"
             onClick={e => e.stopPropagation()}
             style={{ position: 'absolute', bottom: 22, left: 22, width: 9, height: 9, borderRadius: '50%', background: '#9B9488', opacity: .5, display: 'block' }}
