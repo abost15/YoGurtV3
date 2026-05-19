@@ -1159,8 +1159,7 @@ function tryLogin(){
 document.getElementById('pw-btn').addEventListener('click',tryLogin);
 pwInput.addEventListener('keydown',e=>{ if(e.key==='Enter') tryLogin(); });
 
-// Auto-login if returned within 5 minutes
-if(withinGrace()){ doLogin(); }
+// Auto-login check runs at the END of the script (see bottom)
 
 // ── Sidebar nav ──
 document.querySelectorAll('.side-btn[data-panel]').forEach(btn=>{
@@ -2388,6 +2387,12 @@ document.getElementById('lo-confirm').addEventListener('click',()=>{
   clearSession();
   clearInterval(keepAliveTimer);
 });
+
+// ── Auto-login (grace period) ──
+// Runs last so all functions are guaranteed to be defined.
+try {
+  if(withinGrace()){ doLogin(); }
+} catch(e){ console.error('Grace period auto-login failed:', e); }
 </script>
 </body>
 </html>
