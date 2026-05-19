@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "yogurt-data": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "yogurt-votes": {
+      ".read": "auth != null",
+      ".write": true
+    },
+    "yogurt-suggestions": {
+      ".read": "auth != null",
+      ".write": true
+    }
+  }
+}
