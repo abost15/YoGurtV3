@@ -4,6 +4,7 @@ import { ref, onValue } from 'firebase/database'
 import { db } from '@/lib/firebase'
 import { DEFAULT_FLAVORS, DEFAULT_TIMES } from '@/lib/constants'
 import type { Flavor, TimeSlot } from '@/lib/types'
+import WishedFlavor from '@/components/WishedFlavor'
 
 // ── Easing ────────────────────────────────────────────────────────────────────
 const EXPO  = [0.16, 1, 0.3, 1]  as const
@@ -306,7 +307,7 @@ export default function Home() {
           style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 17, fontWeight: 700, letterSpacing: '.01em', cursor: 'pointer', transformOrigin: 'left center', background: 'none', border: 'none', padding: 0, color: '#1C1B19' }}
         >YoGurt</motion.button>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-          {[{ label: 'Smaker', target: 'smaker' }, { label: 'Tider', target: 'tider' }].map(({ label, target }) => (
+          {[{ label: 'Smaker', target: 'smaker' }, { label: 'Tider', target: 'tider' }, { label: 'Ønsket', target: 'onsket' }].map(({ label, target }) => (
             <motion.button
               key={target}
               onClick={() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' })}
@@ -430,6 +431,9 @@ export default function Home() {
           )
         })}
       </motion.div>
+
+      {/* Wished flavor: voting + suggestions (no results shown to users) */}
+      <WishedFlavor flavors={flavors} />
 
       {/* Footer */}
       <motion.footer
