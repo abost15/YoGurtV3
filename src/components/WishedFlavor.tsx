@@ -35,8 +35,8 @@ function formatFriday(iso: string): string {
 export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
   const weekId = nextFridayId()
 
-  const [resetVersion, setResetVersion] = useState(0)
-  const voteKey = `yogurt-voted-${weekId}-v${resetVersion}`
+  const [resetVersion, setResetVersion] = useState<number>(0)
+  const voteKey = `yogurt-voted-${weekId}-${resetVersion}`
 
   const [picked, setPicked] = useState<string[]>([])
   const [hasSubmitted, setHasSubmitted] = useState(false)
