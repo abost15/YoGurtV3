@@ -915,7 +915,17 @@
         <div class="card">
           <div class="card-head" style="display:flex;justify-content:space-between;align-items:center">
             <span>Stemmeresultater denne uken</span>
-            <span id="vote-week-label" style="font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace"></span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span id="vote-week-label" style="font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace"></span>
+              <button class="tb-btn ghost" style="font-size:.62rem;padding:5px 12px;color:var(--red);border-color:rgba(220,38,38,.3)" onclick="osShowReset()">↺ Tilbakestill stemmer</button>
+            </div>
+          </div>
+          <div id="os-reset-bar" style="display:none;padding:12px 18px;background:rgba(220,38,38,.05);border-bottom:1px solid rgba(220,38,38,.15);display:none;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:.75rem;color:var(--red);font-weight:600">Skriv inn passord for å nullstille:</span>
+            <input id="os-reset-pw" type="password" placeholder="Passord" style="padding:6px 10px;border-radius:6px;border:1.5px solid rgba(220,38,38,.3);background:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;width:140px" onkeydown="if(event.key==='Enter') osDoReset()"/>
+            <button class="tb-btn" style="font-size:.62rem;padding:5px 12px;background:var(--red);color:#fff;border-color:transparent" onclick="osDoReset()">Nullstill</button>
+            <button class="tb-btn ghost" style="font-size:.62rem;padding:5px 10px" onclick="osHideReset()">Avbryt</button>
+            <span id="os-reset-err" style="font-size:.72rem;color:var(--red);display:none">Feil passord</span>
           </div>
           <div id="vote-results-list"><div style="padding:20px;color:var(--muted);font-size:.8rem">Laster stemmer…</div></div>
         </div>
@@ -2069,6 +2079,32 @@ db.ref('yogurt-suggestions').orderByChild('ts').limitToLast(30).on('value',snap=
 
 function osSugDelete(id){ if(confirm('Slette dette forslaget?')) db.ref(`yogurt-suggestions/${id}`).remove(); }
 function osSugPromote(id, name){ alert(`Forslaget "${name}" kan legges til som smak under Smaker-panelet.`); }
+
+function osShowReset(){
+  const bar = document.getElementById('os-reset-bar');
+  bar.style.display = 'flex';
+  document.getElementById('os-reset-pw').focus();
+  document.getElementById('os-reset-err').style.display = 'none';
+}
+function osHideReset(){
+  document.getElementById('os-reset-bar').style.display = 'none';
+  document.getElementById('os-reset-pw').value = '';
+  document.getElementById('os-reset-err').style.display = 'none';
+}
+function osDoReset(){
+  const pw = document.getElementById('os-reset-pw').value;
+  if(pw !== 'Reset'){
+    document.getElementById('os-reset-err').style.display = 'inline';
+    document.getElementById('os-reset-pw').value = '';
+    document.getElementById('os-reset-pw').focus();
+    return;
+  }
+  // Delete this week's votes and increment reset version so everyone can vote again
+  db.ref(`yogurt-votes/${osWeekId}`).remove();
+  db.ref('yogurt-config/voteResetVersion').transaction(v => (v || 0) + 1);
+  osHideReset();
+  setSaveStatus('Stemmer nullstilt — alle kan stemme igjen ✓');
+}
 
 // Hook beholdning og salgs-tracker inn i panel-navigasjonen
 document.querySelectorAll('.side-btn[data-panel="beholdning"]').forEach(btn=>{

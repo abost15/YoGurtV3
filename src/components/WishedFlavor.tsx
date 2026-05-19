@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ref, update, push, increment, serverTimestamp } from 'firebase/database'
+import { ref, update, push, increment, serverTimestamp, onValue } from 'firebase/database'
 import { db } from '@/lib/firebase'
 import type { Flavor } from '@/lib/types'
 
@@ -34,7 +34,9 @@ function formatFriday(iso: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
   const weekId = nextFridayId()
-  const voteKey = `yogurt-voted-${weekId}`
+
+  const [resetVersion, setResetVersion] = useState(0)
+  const voteKey = `yogurt-voted-${weekId}-v${resetVersion}`
 
   const [picked, setPicked] = useState<string[]>([])
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -49,8 +51,17 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
   const [sugSent, setSugSent]   = useState(false)
   const sugTimerRef = useRef<number | null>(null)
 
+  // Listen for admin resets — new version = everyone can vote again
+  useEffect(() => {
+    return onValue(ref(db, 'yogurt-config/voteResetVersion'), snap => {
+      const v = snap.val() ?? 0
+      setResetVersion(v)
+    })
+  }, [])
+
   useEffect(() => {
     if (localStorage.getItem(voteKey)) setHasSubmitted(true)
+    else setHasSubmitted(false)
   }, [voteKey])
 
   useEffect(() => () => { if (sugTimerRef.current) window.clearTimeout(sugTimerRef.current) }, [])
