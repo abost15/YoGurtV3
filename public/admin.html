@@ -459,6 +459,18 @@
     .kasse-chip .kx{cursor:pointer;color:rgba(247,244,239,.25);font-weight:700;padding:0 2px;transition:color .1s}
     .kasse-chip .kx:hover{color:#fca5a5}
     @media(max-width:700px){.kasse-grid{grid-template-columns:repeat(2,1fr)}}
+    .kspp-sort{padding:4px 10px;border-radius:6px;font-family:'Space Grotesk',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.06em;border:1px solid rgba(247,244,239,.1);background:transparent;color:rgba(247,244,239,.35);cursor:pointer;transition:all .12s}
+    .kspp-sort:hover{color:rgba(247,244,239,.7);border-color:rgba(247,244,239,.25)}
+    .kspp-sort.active{background:rgba(196,149,42,.15);border-color:rgba(196,149,42,.35);color:#C4952A}
+    .kspp-row{display:flex;align-items:center;gap:12px;padding:11px 22px;cursor:pointer;transition:background .12s;border-bottom:1px solid rgba(247,244,239,.05)}
+    .kspp-row:hover{background:rgba(247,244,239,.04)}
+    .kspp-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:#C4952A;background:rgba(196,149,42,.1);padding:3px 8px;border-radius:5px;letter-spacing:.12em;flex-shrink:0}
+    .kspp-name{font-size:.85rem;font-weight:600;color:#F7F4EF;flex:1}
+    .kspp-class{font-size:.65rem;color:rgba(247,244,239,.35);margin-left:5px;font-weight:400}
+    .kspp-dots{display:flex;gap:3px}
+    .kspp-dot{width:10px;height:10px;border-radius:50%;background:rgba(247,244,239,.12)}
+    .kspp-dot.f{background:#C4952A}
+    .kspp-free{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:100px;background:rgba(196,149,42,.2);color:#C4952A;letter-spacing:.06em;white-space:nowrap}
 
     /* coming soon */
     .coming{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:40px;text-align:center;color:var(--muted)}
@@ -909,7 +921,6 @@
             <div class="pay-row">
               <button class="pay-btn active" onclick="stSetPay(this,'vipps')">💳 Vipps</button>
               <button class="pay-btn" onclick="stSetPay(this,'kontant')">💵 Kontant</button>
-              <button class="pay-btn" onclick="stSetPay(this,'stempel')">🎫 Stempel</button>
             </div>
           </div>
         </div>
@@ -1123,7 +1134,6 @@
     <div class="kasse-divider"></div>
     <button class="kasse-pay-btn active" onclick="kasseSetPay(this,'vipps')">💳 Vipps</button>
     <button class="kasse-pay-btn" onclick="kasseSetPay(this,'kontant')">💵 Kontant</button>
-    <button class="kasse-pay-btn" onclick="kasseSetPay(this,'stempel')">🎫 Stempel</button>
   </div>
   <div class="kasse-grid" id="kasse-flavor-grid"></div>
   <div class="kasse-footer">
@@ -1134,6 +1144,52 @@
     <span class="kasse-sold" id="kasse-sold-disp">0 solgt</span>
     <div class="kasse-undo-wrap" id="kasse-undo-wrap">
       <span style="font-size:.7rem;color:rgba(247,244,239,.2);align-self:center">Ingen salg ennå</span>
+    </div>
+  </div>
+</div>
+
+<!-- STAMP POPUP -->
+<div id="kspp-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#1C1B19;border:1px solid rgba(247,244,239,.1);border-radius:20px;width:min(420px,100%);max-height:82vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+
+    <!-- Header: what's being bought -->
+    <div style="padding:20px 22px 14px;border-bottom:1px solid rgba(247,244,239,.08)">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,244,239,.3);margin-bottom:8px">Registrer salg</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span id="kspp-emo" style="font-size:2rem"></span>
+        <div>
+          <div id="kspp-title" style="font-family:'DM Serif Display',serif;font-size:1.2rem;color:#F7F4EF;letter-spacing:-.01em"></div>
+          <div id="kspp-meta" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:rgba(247,244,239,.4);margin-top:2px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div style="padding:12px 22px;border-bottom:1px solid rgba(247,244,239,.08)">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,244,239,.3);margin-bottom:8px">Stempelkort?</div>
+      <input id="kspp-search" type="text" placeholder="Søk kode, navn eller klasse..." oninput="ksppSearch(this.value)"
+        style="width:100%;padding:10px 14px;background:rgba(247,244,239,.05);border:1.5px solid rgba(247,244,239,.12);border-radius:10px;color:#F7F4EF;font-family:'Space Grotesk',sans-serif;font-size:.85rem;outline:none;transition:border-color .15s"
+        onfocus="this.style.borderColor='rgba(196,149,42,.5)'" onblur="this.style.borderColor='rgba(247,244,239,.12)'"/>
+    </div>
+
+    <!-- Sort bar -->
+    <div style="display:flex;gap:4px;padding:8px 22px;border-bottom:1px solid rgba(247,244,239,.06);flex-shrink:0">
+      <button class="kspp-sort active" onclick="ksppSetSort('name',this)">A–Å</button>
+      <button class="kspp-sort" onclick="ksppSetSort('stamps',this)">Flest stempler</button>
+      <button class="kspp-sort" onclick="ksppSetSort('soon',this)">Snart gratis 🎁</button>
+      <button class="kspp-sort" onclick="ksppSetSort('class',this)">Klasse</button>
+    </div>
+
+    <!-- Customer list -->
+    <div id="kspp-list" style="overflow-y:auto;flex:1;padding:6px 0"></div>
+
+    <!-- Footer -->
+    <div style="padding:14px 22px;border-top:1px solid rgba(247,244,239,.08)">
+      <button onclick="ksppSkip()" style="width:100%;padding:12px;background:rgba(247,244,239,.05);border:1px solid rgba(247,244,239,.12);border-radius:10px;color:rgba(247,244,239,.5);font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .15s"
+        onmouseover="this.style.background='rgba(247,244,239,.09)';this.style.color='#F7F4EF'"
+        onmouseout="this.style.background='rgba(247,244,239,.05)';this.style.color='rgba(247,244,239,.5)'">
+        Uten stempelkort &nbsp;→
+      </button>
     </div>
   </div>
 </div>
@@ -2023,16 +2079,92 @@ function kasseRenderGrid(){
   }).join('');
 }
 
+// ── Stamp popup state ──
+let ksppPending=null, ksppTapEl=null, ksppSort='name', ksppQuery='';
+
 function kasseTap(el,name){
   if(!stActive)return;
-  if(!stTotals[name])stTotals[name]={S:0,M:0,L:0,total:0};
-  stTotals[name][stSize]++;stTotals[name].total++;
-  const sale={name,size:stSize,price:stPrice,payment:stPayment,ts:Date.now()};
+  const f=flavors.find(x=>x.name===name);
+  ksppPending={name,emoji:f?.emoji||'🍦',size:stSize,price:stPrice,payment:stPayment};
+  ksppTapEl=el;
+  ksppQuery=''; ksppSort='name';
+  document.getElementById('kspp-search').value='';
+  document.getElementById('kspp-emo').textContent=f?.emoji||'🍦';
+  document.getElementById('kspp-title').textContent=name;
+  document.getElementById('kspp-meta').textContent=`${stSize === 'S'?'Liten':stSize==='M'?'Medium':'Stor'} · ${stPrice} kr · ${stPayment.charAt(0).toUpperCase()+stPayment.slice(1)}`;
+  document.querySelectorAll('.kspp-sort').forEach((b,i)=>b.classList.toggle('active',i===0));
+  ksppRenderList();
+  const ov=document.getElementById('kspp-overlay'); ov.style.display='flex';
+  setTimeout(()=>document.getElementById('kspp-search').focus(),80);
+}
+
+function ksppRegisterSale(stampCode){
+  const sale={...ksppPending,ts:Date.now(),stampCode:stampCode||null};
+  if(!stTotals[sale.name])stTotals[sale.name]={S:0,M:0,L:0,total:0};
+  stTotals[sale.name][sale.size]++;stTotals[sale.name].total++;
   stSales.push(sale);
-  const bump=document.createElement('div');bump.className='kasse-bump';
-  el.appendChild(bump);setTimeout(()=>bump.remove(),400);
+  if(ksppTapEl){
+    const bump=document.createElement('div');bump.className='kasse-bump';
+    ksppTapEl.appendChild(bump);setTimeout(()=>bump.remove(),400);
+  }
   kasseRenderGrid();kasseUpdateFooter();kasseAddUndo(sale,stSales.length-1);
   stUpdateSummary();
+  document.getElementById('kspp-overlay').style.display='none';
+  ksppPending=null;ksppTapEl=null;
+}
+
+function ksppSkip(){ ksppRegisterSale(null); }
+
+function ksppSelectCustomer(code){
+  const c=lojCustomers[code]; if(!c)return;
+  const newStamps=(c.stamps||0)+1;
+  const isFree=newStamps>5;
+  const finalStamps=isFree?0:newStamps;
+  const newFree=(c.freeGiven||0)+(isFree?1:0);
+  db.ref(`yogurt-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
+  ksppRegisterSale(code);
+  lojShowCustomer(code,{...c,stamps:finalStamps});
+}
+
+function ksppSearch(q){ ksppQuery=q.toLowerCase(); ksppRenderList(); }
+function ksppSetSort(s,btn){
+  ksppSort=s;
+  document.querySelectorAll('.kspp-sort').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ksppRenderList();
+}
+
+function ksppRenderList(){
+  const list=document.getElementById('kspp-list'); if(!list)return;
+  let entries=Object.entries(lojCustomers);
+  if(ksppQuery) entries=entries.filter(([code,c])=>
+    code.toLowerCase().includes(ksppQuery)||
+    (c.name||'').toLowerCase().includes(ksppQuery)||
+    (c.class||'').toLowerCase().includes(ksppQuery));
+  entries.sort(([ac,a],[bc,b])=>{
+    if(ksppSort==='name') return (a.name||'').localeCompare(b.name||'','no');
+    if(ksppSort==='stamps') return (b.stamps||0)-(a.stamps||0);
+    if(ksppSort==='soon') return ((b.stamps||0)===5?1:0)-((a.stamps||0)===5?1:0);
+    if(ksppSort==='class') return (a.class||'').localeCompare(b.class||'','no');
+    return 0;
+  });
+  if(!entries.length){
+    list.innerHTML='<div style="padding:24px;text-align:center;color:rgba(247,244,239,.25);font-size:.82rem">Ingen kunder funnet</div>';
+    return;
+  }
+  list.innerHTML=entries.map(([code,c])=>{
+    const s=c.stamps||0;
+    const isFree=s>=5;
+    const dots=Array.from({length:6},(_,i)=>`<div class="kspp-dot${i<s?' f':''}"></div>`).join('');
+    return `<div class="kspp-row" onclick="ksppSelectCustomer('${code}')">
+      <span class="kspp-code">${code}</span>
+      <div style="flex:1;min-width:0">
+        <span class="kspp-name">${c.name||'—'}</span><span class="kspp-class">${c.class||''}</span>
+      </div>
+      <div class="kspp-dots">${dots}</div>
+      ${isFree?'<span class="kspp-free">🎁 GRATIS</span>':''}
+    </div>`;
+  }).join('');
 }
 
 function kasseUpdateFooter(){
