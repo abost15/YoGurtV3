@@ -2410,7 +2410,7 @@ function lojRender(){
     c.name?.toLowerCase().includes(lojSearch)||code.toLowerCase().includes(lojSearch)||c.class?.toLowerCase().includes(lojSearch));
   if(!entries.length){list.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:.8rem">Ingen kunder her</div>';return;}
   list.innerHTML=entries.map(([code,c])=>{
-    const status=c.stamps===5?'<span class="cl-status soon">🎁 1 til</span>':c.stamps>0?'<span class="cl-status active">Aktiv</span>':'<span class="cl-status dormant">Inaktiv</span>';
+    const status=c.stamps>=5?'<span class="cl-status soon">🎁 Gratis!</span>':`<span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;color:var(--muted)">${c.stamps||0}/5</span>`;
     const dots=Array.from({length:6},(_,i)=>`<span class="${i<c.stamps?'f':''}"></span>`).join('');
     return `<div class="cust-list-row">
       <span class="cl-code">${code}</span>
