@@ -2,14 +2,34 @@
   "rules": {
     "yogurt-data": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "yogurt-votes": {
-      ".read": "auth != null",
+      ".read": true,
       ".write": true
     },
     "yogurt-suggestions": {
-      ".read": "auth != null",
+      ".read": true,
+      ".write": true
+    },
+    "yogurt-config": {
+      ".read": true,
+      ".write": true
+    },
+    "yogurt-loyalty": {
+      ".read": true,
+      ".write": true
+    },
+    "yogurt-displays": {
+      ".read": true,
+      ".write": true
+    },
+    "yogurt-maskin": {
+      ".read": true,
+      ".write": true
+    },
+    "yogurt-transactions": {
+      ".read": true,
       ".write": true
     }
   }

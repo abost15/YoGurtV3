@@ -53,10 +53,11 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
 
   // Listen for admin resets — new version = everyone can vote again
   useEffect(() => {
-    return onValue(ref(db, 'yogurt-config/voteResetVersion'), snap => {
-      const v = snap.val() ?? 0
-      setResetVersion(v)
-    })
+    return onValue(
+      ref(db, 'yogurt-config/voteResetVersion'),
+      snap => { setResetVersion(snap.val() ?? 0) },
+      () => { /* permission error: keep resetVersion at 0 */ }
+    )
   }, [])
 
   useEffect(() => {
