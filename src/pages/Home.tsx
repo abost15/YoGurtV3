@@ -141,14 +141,6 @@ function ContactOverlay({ open, onClose }: { open: boolean; onClose: () => void 
             </a>
           </motion.div>
 
-          <a
-            href="/admin.html"
-            aria-label="Admin-panel"
-            onClick={e => e.stopPropagation()}
-            style={{ position: 'absolute', bottom: 22, left: 22, width: 9, height: 9, borderRadius: '50%', background: '#9B9488', opacity: .5, display: 'block' }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = '.85'; e.currentTarget.style.transform = 'scale(1.5)' }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = '.5'; e.currentTarget.style.transform = 'scale(1)' }}
-          />
         </motion.div>
       )}
     </AnimatePresence>
@@ -298,14 +290,14 @@ export default function Home() {
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px 0' }}
         variants={fadeSlideDown} initial="hidden" animate="show"
       >
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="YoGurt — tilbake til toppen"
+        <motion.a
+          href="/admin.html"
+          aria-label="Admin-panel"
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.22, ease: QUART }}
-          style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 17, fontWeight: 700, letterSpacing: '.01em', cursor: 'pointer', transformOrigin: 'left center', background: 'none', border: 'none', padding: 0, color: '#1C1B19' }}
-        >YoGurt</motion.button>
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 17, fontWeight: 700, letterSpacing: '.01em', cursor: 'pointer', transformOrigin: 'left center', color: '#1C1B19', textDecoration: 'none' }}
+        >YoGurt</motion.a>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           {[{ label: 'Smaker', target: 'smaker' }, { label: 'Tider', target: 'tider' }, { label: 'Ønsket', target: 'onsket' }].map(({ label, target }) => (
             <motion.button
