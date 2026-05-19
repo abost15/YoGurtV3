@@ -500,6 +500,8 @@
       <div class="nav-lbl">Økonomi</div>
       <button class="side-btn" data-panel="regnskap"><span class="side-icon">💰</span>Regnskap</button>
       <button class="side-btn" data-panel="statistikk"><span class="side-icon">📊</span>Statistikk</button>
+      <div class="nav-lbl">System</div>
+      <button class="side-btn" data-panel="firebase"><span class="side-icon">🔥</span>Firebase</button>
       <div class="nav-lbl">Historikk</div>
       <button class="side-btn" data-panel="logg"><span class="side-icon">📋</span>Logg</button>
     </aside>
@@ -746,6 +748,78 @@
           <div class="card">
             <div class="card-head">Siste 5 transaksjoner</div>
             <div id="stat-recent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FIREBASE STATUS -->
+      <div class="panel" id="panel-firebase">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="panel-title">Firebase</div>
+            <div class="panel-sub">Live status på alle databasenoder og tjenester</div>
+          </div>
+          <span class="live-pulse" id="fb-conn-badge">KOBLER TIL…</span>
+        </div>
+
+        <!-- Tilkobling -->
+        <div class="card">
+          <div class="card-head">Tilkobling</div>
+          <div style="padding:18px;display:flex;flex-wrap:wrap;gap:12px">
+            <div class="stat-box" style="flex:1;min-width:160px">
+              <div class="stat-lbl">Database</div>
+              <div class="stat-val" id="fb-s-db" style="font-size:1rem">—</div>
+              <div class="stat-sub" id="fb-s-db-url" style="word-break:break-all"></div>
+            </div>
+            <div class="stat-box" style="flex:1;min-width:160px">
+              <div class="stat-lbl">Hosting</div>
+              <div class="stat-val" style="font-size:1rem;color:var(--green)">● Online</div>
+              <div class="stat-sub">yogurt-f0fa7.web.app</div>
+            </div>
+            <div class="stat-box" style="flex:1;min-width:160px">
+              <div class="stat-lbl">Siste sjekk</div>
+              <div class="stat-val" id="fb-s-time" style="font-size:1rem">—</div>
+              <div class="stat-sub">Oppdateres live</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Noder -->
+        <div class="card">
+          <div class="card-head">Databasenoder</div>
+          <div id="fb-nodes-list"></div>
+        </div>
+
+        <!-- Detaljer -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="stat-grid">
+
+          <div class="card">
+            <div class="card-head">🗳️ Stemmer denne uken</div>
+            <div id="fb-votes-detail" style="padding:6px 0"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">💡 Forslag</div>
+            <div id="fb-sug-detail" style="padding:6px 0"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">🎫 Stempelkort</div>
+            <div id="fb-loyalty-detail" style="padding:6px 0"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">⚙️ Motor</div>
+            <div id="fb-motor-detail" style="padding:6px 0"></div>
+          </div>
+
+        </div>
+
+        <div class="info-card">
+          <div class="icon">🔥</div>
+          <div>
+            <div class="h">Firebase Realtime Database</div>
+            <div class="p">Prosjekt: <strong>yogurt-f0fa7</strong> · Region: <strong>europe-west1</strong> · Gratis Spark-plan · Alle noder oppdateres live via WebSocket.</div>
           </div>
         </div>
       </div>
@@ -2105,6 +2179,166 @@ function osDoReset(){
     .catch(err => { console.error(err); alert('Feil ved nullstilling: ' + err.message); });
   osHideReset();
 }
+
+// ══════════════════════════════════════════════════
+// FIREBASE STATUS
+// ══════════════════════════════════════════════════
+const FB_NODES = [
+  { key: 'yogurt-data',         label: 'Smaker & tider',   icon: '🍦' },
+  { key: 'yogurt-votes',        label: 'Stemmer',          icon: '🗳️' },
+  { key: 'yogurt-suggestions',  label: 'Forslag',          icon: '💡' },
+  { key: 'yogurt-config',       label: 'Konfigurasjon',    icon: '⚙️' },
+  { key: 'yogurt-loyalty',      label: 'Stempelkort',      icon: '🎫' },
+  { key: 'yogurt-transactions', label: 'Transaksjoner',    icon: '💰' },
+  { key: 'yogurt-displays',     label: 'Displays',         icon: '🖥️' },
+  { key: 'yogurt-maskin',       label: 'Motor',            icon: '🔧' },
+];
+const fbNodeState = {};
+
+function fbRenderNodes(){
+  const list = document.getElementById('fb-nodes-list'); if(!list) return;
+  list.innerHTML = FB_NODES.map(n => {
+    const s = fbNodeState[n.key];
+    const exists = s && s.exists;
+    const count = s ? s.count : '—';
+    const age = s && s.ts ? Math.round((Date.now()-s.ts)/1000) : null;
+    const ageStr = age === null ? '' : age < 60 ? `${age}s siden` : `${Math.floor(age/60)}m siden`;
+    return `<div style="display:grid;grid-template-columns:32px 1fr 80px 100px 110px;gap:12px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.2rem;text-align:center">${n.icon}</span>
+      <div>
+        <div style="font-size:.85rem;font-weight:600">${n.label}</div>
+        <div style="font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">${n.key}</div>
+      </div>
+      <span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;text-align:center;
+        background:${exists?'rgba(22,163,74,.12)':'rgba(220,38,38,.08)'};
+        color:${exists?'var(--green)':'var(--muted)'}">
+        ${exists ? '● Aktiv' : '○ Tom'}
+      </span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;text-align:right">
+        ${exists ? count : '—'}
+      </span>
+      <span style="font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">${ageStr}</span>
+    </div>`;
+  }).join('')
+  + `<div style="padding:10px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace">
+      <span>Siste oppdatering</span><span id="fb-last-update">—</span></div>`;
+}
+
+function fbSetNode(key, data){
+  const count = data === null ? 0 :
+    typeof data === 'object' ? Object.keys(data).length :
+    typeof data === 'number' ? data : 1;
+  fbNodeState[key] = { exists: data !== null, count, ts: Date.now() };
+  fbRenderNodes();
+  const el = document.getElementById('fb-last-update');
+  if(el) el.textContent = new Date().toLocaleTimeString('no-NO');
+}
+
+// Listen to all nodes
+FB_NODES.forEach(n => {
+  db.ref(n.key).on('value', snap => {
+    fbSetNode(n.key, snap.val());
+  });
+});
+
+// Connection state
+db.ref('.info/connected').on('value', snap => {
+  const online = snap.val() === true;
+  const badge = document.getElementById('fb-conn-badge');
+  const dbStatus = document.getElementById('fb-s-db');
+  const timeEl = document.getElementById('fb-s-time');
+  if(badge){ badge.textContent = online ? 'TILKOBLET' : 'FRAKOBLET'; badge.style.color = online ? 'var(--green)' : 'var(--red)'; }
+  if(dbStatus){ dbStatus.textContent = online ? '● Tilkoblet' : '○ Frakoblet'; dbStatus.style.color = online ? 'var(--green)' : 'var(--red)'; }
+  const urlEl = document.getElementById('fb-s-db-url');
+  if(urlEl) urlEl.textContent = 'europe-west1.firebasedatabase.app';
+  if(timeEl) timeEl.textContent = new Date().toLocaleTimeString('no-NO');
+});
+setInterval(() => {
+  const el = document.getElementById('fb-s-time');
+  if(el && document.getElementById('panel-firebase')?.classList.contains('active'))
+    el.textContent = new Date().toLocaleTimeString('no-NO');
+}, 5000);
+
+// Vote details
+db.ref(`yogurt-votes/${osWeekId}`).on('value', snap => {
+  const data = snap.val() || {};
+  const list = document.getElementById('fb-votes-detail'); if(!list) return;
+  const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const total = entries.reduce((s,[,v])=>s+(+v||0),0);
+  if(!entries.length){ list.innerHTML='<div style="padding:16px 18px;color:var(--muted);font-size:.8rem">Ingen stemmer denne uken</div>'; return; }
+  list.innerHTML = entries.map(([name,count])=>{
+    const f = flavors.find(x=>x.name===name);
+    const pct = total>0?Math.round((count/total)*100):0;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--border)">
+      <span>${f?.emoji||'🍦'}</span>
+      <div style="flex:1">
+        <div style="font-size:.78rem;font-weight:600;margin-bottom:3px">${name}</div>
+        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border)">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div>
+        </div>
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;min-width:30px;text-align:right">${count}</span>
+    </div>`;
+  }).join('')
+  + `<div style="padding:9px 18px;font-size:.7rem;color:var(--muted)">Totalt ${total} stemmer · uke ${osWeekId}</div>`;
+});
+
+// Suggestion details
+db.ref('yogurt-suggestions').limitToLast(5).on('value', snap => {
+  const data = snap.val() || {};
+  const list = document.getElementById('fb-sug-detail'); if(!list) return;
+  const entries = Object.values(data).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(!entries.length){ list.innerHTML='<div style="padding:16px 18px;color:var(--muted);font-size:.8rem">Ingen forslag ennå</div>'; return; }
+  list.innerHTML = entries.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.1rem">${s.emoji||'🍦'}</span>
+      <div style="flex:1">
+        <div style="font-size:.78rem;font-weight:600">${s.name||'—'}</div>
+        <div style="font-size:.65rem;color:var(--muted)">${s.by||'Anonym'}</div>
+      </div>
+      <span style="font-size:.7rem;color:var(--muted)">❤️ ${s.likes||0}</span>
+    </div>`).join('')
+  + `<div style="padding:9px 18px;font-size:.7rem;color:var(--muted)">Viser siste 5 av ${Object.keys(data).length}</div>`;
+});
+
+// Loyalty details
+db.ref('yogurt-loyalty').on('value', snap => {
+  const data = snap.val() || {};
+  const list = document.getElementById('fb-loyalty-detail'); if(!list) return;
+  const entries = Object.entries(data);
+  const total = entries.length;
+  const soon = entries.filter(([,c])=>c.stamps===5).length;
+  const avgStamps = total ? (entries.reduce((s,[,c])=>s+(c.stamps||0),0)/total).toFixed(1) : 0;
+  list.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:4px 0">
+      ${[['Kunder',total],['Snart gratis',soon],['Snitt stempler',avgStamps]].map(([l,v])=>`
+      <div style="padding:14px 18px;text-align:center;border-right:1px solid var(--border)">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:700">${v}</div>
+        <div style="font-size:.62rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.1em;font-weight:600">${l}</div>
+      </div>`).join('')}
+    </div>`;
+});
+
+// Motor details
+db.ref('yogurt-maskin/status').on('value', snap => {
+  const s = snap.val() || {};
+  const list = document.getElementById('fb-motor-detail'); if(!list) return;
+  const age = s.lastSeen ? Math.round((Date.now()-s.lastSeen)/1000) : null;
+  const online = age !== null && age < 5;
+  list.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px 0">
+      ${[
+        ['Status', online ? '<span style="color:var(--green)">● Online</span>' : '<span style="color:var(--muted)">○ Offline</span>'],
+        ['RPM', s.rpm ?? '—'],
+        ['Strøm', s.current_mA ? s.current_mA+' mA' : '—'],
+        ['Uptime', s.uptime_s ? (s.uptime_s<60?s.uptime_s+'s':Math.floor(s.uptime_s/60)+'m') : '—'],
+      ].map(([l,v])=>`
+      <div style="padding:12px 18px;border-bottom:1px solid var(--border)">
+        <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:3px">${l}</div>
+        <div style="font-size:.85rem;font-weight:600">${v}</div>
+      </div>`).join('')}
+    </div>`;
+});
 
 // Hook beholdning og salgs-tracker inn i panel-navigasjonen
 document.querySelectorAll('.side-btn[data-panel="beholdning"]').forEach(btn=>{
