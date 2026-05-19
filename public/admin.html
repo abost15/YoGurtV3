@@ -477,6 +477,7 @@
     </div>
     <div class="tb-right">
       <a href="/" class="tb-btn ghost">← Til nettsiden</a>
+      <span id="grace-badge" style="display:none;font-size:.65rem;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--muted);padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px"></span>
       <button class="tb-btn ghost" id="logout-btn">Logg ut</button>
       <button class="tb-btn primary" id="save-btn-top">Lagre</button>
     </div>
@@ -1100,29 +1101,76 @@ function saveData(d){ db.ref('yogurt-data').set(d); }
 
 let flavors=DEFAULT.flavors, times=DEFAULT.times, dirty=false, previewIdx=0;
 
+// ── Grace period session ──
+const GRACE_MS = 5 * 60 * 1000; // 5 minutes
+const SESSION_KEY = 'yogurt-admin-ts';
+let keepAliveTimer = null, graceCountdown = null;
+
+function sessionRemaining(){
+  const ts = parseInt(localStorage.getItem(SESSION_KEY) || '0');
+  return ts ? Math.max(0, GRACE_MS - (Date.now() - ts)) : 0;
+}
+function saveSession(){ localStorage.setItem(SESSION_KEY, String(Date.now())); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+function startKeepAlive(){
+  clearInterval(keepAliveTimer);
+  saveSession();
+  keepAliveTimer = setInterval(saveSession, 30000); // refresh every 30s while on page
+}
+
+function startGraceCountdown(){
+  clearInterval(graceCountdown);
+  const badge = document.getElementById('grace-badge');
+  graceCountdown = setInterval(()=>{
+    const rem = sessionRemaining();
+    if(badge){
+      if(rem <= 0){
+        badge.style.display = 'none';
+      } else {
+        const m = Math.floor(rem/60000);
+        const s = String(Math.floor((rem%60000)/1000)).padStart(2,'0');
+        badge.textContent = `⏱ ${m}:${s}`;
+        badge.style.display = 'inline';
+      }
+    }
+  }, 1000);
+}
+
 // ── Login ──
 const gate=document.getElementById('gate');
 const app=document.getElementById('app');
 const pwInput=document.getElementById('pw');
 const pwErr=document.getElementById('pw-err');
 
+function doLogin(fromGrace){
+  gate.classList.add('hidden');
+  app.classList.add('visible');
+  if(fromGrace){
+    const s=document.getElementById('save-status');
+    if(s){ s.textContent='Logget inn automatisk (grace period)'; s.className='saved'; setTimeout(()=>{ if(s.textContent.startsWith('Logget')) s.textContent='Ingen endringer'; s.className=''; },3000); }
+  }
+  renderAll();
+  db.ref('yogurt-data').once('value',snap=>{
+    const d=snap.val();
+    if(d&&d.flavors&&d.times){
+      d.flavors.forEach((f,i)=>{
+        if(!f.tc2) f.tc2=DEFAULT.flavors[i]?.tc2||f.tc;
+        if(!f.sted) f.sted='Kantina';
+        if(f.pris===undefined) f.pris='25 kr';
+      });
+      flavors=d.flavors; times=d.times;
+      renderAll();
+    } else { saveData(DEFAULT); }
+  },()=>{});
+  startKeepAlive();
+  startGraceCountdown();
+}
+
 function tryLogin(){
   if(pwInput.value===ADMIN_PW){
-    gate.classList.add('hidden');
-    app.classList.add('visible');
-    renderAll(); // vis standardinnhold med en gang
-    db.ref('yogurt-data').once('value',snap=>{
-      const d=snap.val();
-      if(d&&d.flavors&&d.times){
-        d.flavors.forEach((f,i)=>{
-          if(!f.tc2) f.tc2=DEFAULT.flavors[i]?.tc2||f.tc;
-          if(!f.sted) f.sted='Kantina';
-          if(f.pris===undefined) f.pris='25 kr';
-        });
-        flavors=d.flavors; times=d.times;
-        renderAll(); // oppdater med Firebase-data
-      } else { saveData(DEFAULT); }
-    },()=>{}); // ignorer feil, standarddata vises allerede
+    saveSession();
+    doLogin(false);
   } else {
     pwErr.textContent='Feil passord — prøv igjen';
     pwInput.value=''; pwInput.focus();
@@ -1132,6 +1180,9 @@ function tryLogin(){
 }
 document.getElementById('pw-btn').addEventListener('click',tryLogin);
 pwInput.addEventListener('keydown',e=>{ if(e.key==='Enter') tryLogin(); });
+
+// Auto-login if within grace period
+if(sessionRemaining() > 0){ doLogin(true); }
 
 // ── Sidebar nav ──
 document.querySelectorAll('.side-btn[data-panel]').forEach(btn=>{
@@ -2356,6 +2407,11 @@ document.getElementById('lo-confirm').addEventListener('click',()=>{
   loOverlay.classList.remove('open');
   app.classList.remove('visible'); gate.classList.remove('hidden');
   pwInput.value=''; pwErr.textContent='';
+  clearSession();
+  clearInterval(keepAliveTimer);
+  clearInterval(graceCountdown);
+  const badge=document.getElementById('grace-badge');
+  if(badge) badge.style.display='none';
 });
 </script>
 </body>
