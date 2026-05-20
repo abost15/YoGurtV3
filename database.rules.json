@@ -31,6 +31,10 @@
     "yogurt-transactions": {
       ".read": true,
       ".write": true
+    },
+    "yogurt-receipts": {
+      ".read": true,
+      ".write": true
     }
   }
 }

@@ -1,57 +1,89 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { ref, onValue } from 'firebase/database'
+import { db } from '@/lib/firebase'
 
-const STORAGE_KEY = 'yogurt-recipes-v4'
+const STORAGE_KEY = 'yogurt-recipes-v10'
 
+// pkgP = pakningspris (kr), pkgS = pakkestørrelse (g/ml) — pris beregnes automatisk
+// Alle baser bruker GRESK yoghurt (10% fett) — mer fett og protein, mindre vann = kremere is
 const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: Ingredient[]; instructions: string }> = {
   ultra: {
-    label: 'Ultra-enkel (3 ingredienser)',
-    sub: 'Ingen koking · superrask',
+    label: 'Rask (4 ingredienser)',
+    sub: '~16% fett · ingen koking · 10 min',
     ingredients: [
-      { name: 'Yoghurt naturell (TINE)', qty: 110, unit: 'g', pris: 0.025 },
-      { name: 'Kremfløte',              qty: 25,  unit: 'g', pris: 0.080 },
-      { name: 'Sukker',                 qty: 18,  unit: 'g', pris: 0.015 },
+      { name: 'Gresk yoghurt 10%',      qty: 85, unit: 'g',  pris: 0.064, pkgP: 64, pkgS: 1000 },
+      { name: 'Kremfløte 38%',          qty: 40, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
+      { name: 'Sukker',                 qty: 12, unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
+      { name: 'Lys sirup (Dansukker)', qty: 10, unit: 'g',  pris: 0.036, pkgP: 18, pkgS: 500  },
     ],
-    instructions: 'Ultra-enkel — ingen koking:\n1. Visp sammen alt i en bolle.\n2. Smak til — vil dere ha søtere?\n3. Modne i kjøleskap min 4 timer (over natten = best).\n4. Kjør i maskinen i 10-15 min. Server med en gang.',
+    instructions: 'Rask base:\n1. Visp alt kaldt i en bolle til glatt og jevnt.\n2. Smak til — litt søtere enn ønsket (kulde demper sødme).\n3. MODNE I KJØLESKAP minimum 2 timer — over natten er best.\n4. Kjør i maskinen 10–15 min til kremet konsistens.\n5. Server med en gang for soft-serve, eller frys 30 min for fastere is.\n\n💡 Lys sirup er nøkkelen — den hindrer store iskrystaller og holder isen myk.',
   },
   enkel: {
-    label: 'Enkel+ (5 ingredienser) — ANBEFALT',
-    sub: 'Ingen koking · god tekstur',
+    label: 'Kremet (5 ingredienser) — ANBEFALT',
+    sub: '~17% fett · ingen koking · best balanse',
     ingredients: [
-      { name: 'Yoghurt naturell (TINE)', qty: 100, unit: 'g', pris: 0.025 },
-      { name: 'Kremfløte',              qty: 25,  unit: 'g', pris: 0.080 },
-      { name: 'Sukker',                 qty: 15,  unit: 'g', pris: 0.015 },
-      { name: 'Lys sirup (Dansukker)',  qty: 5,   unit: 'g', pris: 0.040 },
-      { name: 'Sitronsaft',             qty: 1,   unit: 'g', pris: 0.040 },
+      { name: 'Gresk yoghurt 10%',      qty: 80, unit: 'g',  pris: 0.064, pkgP: 64,  pkgS: 1000 },
+      { name: 'Kremfløte 38%',          qty: 45, unit: 'g',  pris: 0.070, pkgP: 70,  pkgS: 1000 },
+      { name: 'Sukker',                 qty: 13, unit: 'g',  pris: 0.024, pkgP: 24,  pkgS: 1000 },
+      { name: 'Lys sirup (Dansukker)', qty: 12, unit: 'g',  pris: 0.036, pkgP: 18,  pkgS: 500  },
+      { name: 'Sitronsaft',             qty: 1,  unit: 'ml', pris: 0.038, pkgP: 57,  pkgS: 1500 },
     ],
-    instructions: 'Enkel+ — anbefalt for dere:\n1. Visp sammen alle ingrediensene kaldt i en bolle til glatt.\n2. Smak til — juster sukker eller sitron.\n3. MODNE I KJØLESKAP min 4 timer — helst over natten. Kritisk for tekstur!\n4. Kjør i maskinen til ønsket konsistens (10-15 min).\n5. Server med en gang for best munnfølelse.\n\n💡 Lys sirup hindrer iskrystaller — gir bedre tekstur enn ren sukker.',
+    instructions: 'Kremet base — anbefalt:\n1. Visp alle ingrediensene kaldt i en bolle til helt glatt.\n2. Smak til — juster sukker om nødvendig.\n3. MODNE I KJØLESKAP minst 4 timer, helst over natten. Dette er det viktigste steget!\n4. Kjør i maskinen 12–15 min til tykk og kremet konsistens.\n5. Server direkte fra maskinen for soft-serve, eller sett i fryser 20–30 min for fastere is.\n\n💡 12g sirup (mot 5g før) er den viktigste endringen — sirup hindrer iskrystaller langt bedre enn sukker alene.\n💡 Gresk yoghurt har halve vanninnholdet av vanlig yoghurt = mye kremere resultat.',
   },
   balansert: {
-    label: 'Balansert (6 ingredienser)',
-    sub: 'Ingen koking · mer luftig med eggehvite',
+    label: 'Profesjonell (6 ingredienser)',
+    sub: '~17% fett · maisenna som stabilisator · tykkest',
     ingredients: [
-      { name: 'Yoghurt naturell (TINE)', qty: 95, unit: 'g', pris: 0.025 },
-      { name: 'Helmelk',                qty: 15, unit: 'g', pris: 0.018 },
-      { name: 'Kremfløte',              qty: 20, unit: 'g', pris: 0.080 },
-      { name: 'Sukker',                 qty: 14, unit: 'g', pris: 0.015 },
-      { name: 'Lys sirup (Dansukker)', qty: 4,  unit: 'g', pris: 0.040 },
-      { name: 'Eggehvite (1 egg/6 pors.)', qty: 7, unit: 'g', pris: 0.030 },
+      { name: 'Gresk yoghurt 10%',      qty: 75, unit: 'g',  pris: 0.064, pkgP: 64, pkgS: 1000 },
+      { name: 'Kremfløte 38%',          qty: 50, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
+      { name: 'Sukker',                 qty: 12, unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
+      { name: 'Lys sirup (Dansukker)', qty: 14, unit: 'g',  pris: 0.036, pkgP: 18, pkgS: 500  },
+      { name: 'Maisenna (Maizena)',     qty: 2,  unit: 'g',  pris: 0.040, pkgP: 20, pkgS: 500  },
+      { name: 'Sitronsaft',             qty: 1,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
     ],
-    instructions: 'Balansert — mer luftig med eggehvite:\n1. Visp sammen yoghurt + helmelk + kremfløte + sukker + sirup i bolle 1.\n2. I bolle 2: pisk eggehviten STIV (luftig, holder form).\n3. Fold eggehviten forsiktig inn i bolle 1 — ikke pisk, brett.\n4. MODNE I KJØLESKAP min 4 timer — over natten = best.\n5. Kjør i maskinen 10-15 min.\n\n💡 Stiv eggehvite = mer luft = mer "soft-serve"-aktig tekstur.',
+    instructions: 'Profesjonell base med maisenna:\n1. Bland maisenna med 1 ss kaldt vann til klumpfri pasta i liten bolle.\n2. Varm kremfløten i gryte til den nesten koker (70–80°C). Ta av varmen.\n3. Rør maizena-pastaen inn i den varme kremfløten — visp raskt.\n4. La avkjøle til romtemperatur (ca. 20 min).\n5. Rør inn yoghurt, sukker, sirup og sitronsaft.\n6. MODNE I KJØLESKAP minst 4 timer — over natten er best.\n7. Kjør i maskinen 12–15 min.\n\n💡 Maisenna binder vannet i blandingen og hindrer iskrystaller — dette er hemmeligheten til butikk-is.\n💡 50g kremfløte per porsjon gir rikelig fett for en ekstra silkemyk tekstur.',
   },
 }
 
-interface Ingredient { name: string; qty: number; unit: string; pris: number }
+interface Ingredient { name: string; qty: number; unit: string; pris: number; pkgP?: number; pkgS?: number }
 interface SupplyItem  { name: string; per: string; cost: number }
 
 interface AppData {
   baseVersion: string
   base: Ingredient[]
   baseInstructions: string
+  sizePrices: { S: number; M: number; L: number }
   recipes: Record<string, Ingredient[]>
   flavorInstructions: Record<string, string>
   baseCosts: SupplyItem[]
   flavorPrices: Record<string, number>
   margin: number
+}
+
+// Kobler oppskrift-ingrediensnavn til Firebase-nøkkel fra Kassalapp
+const INGREDIENT_KEY: Record<string, string> = {
+  'Gresk yoghurt 10%':             'gresk_yoghurt',
+  'Kremfløte 38%':                 'kremfløte',
+  'Yoghurt naturell (TINE)':       'yoghurt_naturell',
+  'Kremfløte':                     'kremfløte',
+  'Sukker':                        'sukker',
+  'Lys sirup (Dansukker)':         'lys_sirup',
+  'Sitronsaft':                    'sitronsaft',
+  'Helmelk':                       'helmelk',
+  'Eggehvite (1 egg/6 pors.)':     'egg',
+  'Vaniljesukker (Tørresheim)':    'vaniljesukker',
+  'Mango (frosen, Findus)':        'mango',
+  'Kakaopulver (Freia)':           'kakaopulver',
+  'Mørk sjokolade (Freia)':        'sjokolade_mork',
+  'Bytt yoghurt → gresk 10%':      'gresk_yoghurt',
+  'Maisenna (Maizena)':            'maisenna',
+  'Gresk yoghurt (juster ned)':    'gresk_yoghurt',
+  'Ananas (Dole, frosen)':         'ananas',
+  'Kokosmelk (TCC/Aroy-D)':        'kokosmelk',
+  'Limesaft (Jif)':                'limesaft',
+  'Skogsbær (frosen, Findus)':     'skogsbaer',
+  'Ekstra sukker':                 'sukker',
+  'Yoghurt (juster ned)':          'yoghurt_naturell',
 }
 
 const FLAVOR_META: Record<string, { emoji: string }> = {
@@ -67,19 +99,32 @@ const DEFAULT_DATA: AppData = {
   baseVersion: 'enkel',
   base: BASE_VERSIONS.enkel.ingredients.map(x => ({ ...x })),
   baseInstructions: BASE_VERSIONS.enkel.instructions,
+  sizePrices: { S: 20, M: 25, L: 30 },
   recipes: {
-    'Classic Vanilla':  [{ name: 'Vaniljesukker (Tørresheim)', qty: 4,   unit: 'g', pris: 0.150 }],
-    'Mango Delight':    [{ name: 'Mango (frosen, Findus)',    qty: 35,  unit: 'g', pris: 0.060 },
-                         { name: 'Yoghurt (juster ned)',      qty: -15, unit: 'g', pris: 0.025 }],
-    'Chocolate Deluxe': [{ name: 'Kakaopulver (Freia)',       qty: 8,   unit: 'g', pris: 0.180 },
-                         { name: 'Mørk sjokolade (Freia)',    qty: 6,   unit: 'g', pris: 0.140 },
-                         { name: 'Ekstra sukker',             qty: 3,   unit: 'g', pris: 0.015 }],
-    'Greek Yogurt':     [{ name: 'Bytt yoghurt → gresk 10%',  qty: 0,   unit: 'g', pris: 0.040 }],
-    'Tropical Freeze':  [{ name: 'Ananas (Dole, frosen)',     qty: 20,  unit: 'g', pris: 0.055 },
-                         { name: 'Kokosmelk (TCC/Aroy-D)',    qty: 15,  unit: 'g', pris: 0.040 },
-                         { name: 'Limesaft (Jif)',            qty: 2,   unit: 'g', pris: 0.050 }],
-    'Forest Berry':     [{ name: 'Skogsbær (frosen, Findus)', qty: 30,  unit: 'g', pris: 0.050 },
-                         { name: 'Ekstra sukker',             qty: 3,   unit: 'g', pris: 0.015 }],
+    'Classic Vanilla':  [
+      { name: 'Vaniljesukker (Freia, KIWI)', qty: 4,  unit: 'g', pris: 0.120, pkgP: 21,  pkgS: 175  },
+    ],
+    'Mango Delight':    [
+      { name: 'Mango frossen',              qty: 35,  unit: 'g', pris: 0.070, pkgP: 35,  pkgS: 500  },
+      { name: 'Gresk yoghurt (juster ned)', qty: -15, unit: 'g', pris: 0.064, pkgP: 64,  pkgS: 1000 },
+    ],
+    'Chocolate Deluxe': [
+      { name: 'Kakaopulver (ren, mørk)',    qty: 8,   unit: 'g', pris: 0.121, pkgP: 85,  pkgS: 700  },
+      { name: 'Kokesjokolade Eldorado KIWI',qty: 6,   unit: 'g', pris: 0.099, pkgP: 10,  pkgS: 100  },
+      { name: 'Ekstra sukker (Eldorado)',   qty: 3,   unit: 'g', pris: 0.024, pkgP: 24,  pkgS: 1000 },
+    ],
+    'Greek Yogurt':     [
+      { name: 'Bytt yoghurt → gresk 10%',  qty: 0,   unit: 'g', pris: 0.064, pkgP: 64,  pkgS: 1000 },
+    ],
+    'Tropical Freeze':  [
+      { name: 'Ananas First Price (Meny)',  qty: 20,  unit: 'g', pris: 0.039, pkgP: 22,  pkgS: 565  },
+      { name: 'Kokosmelk Eldorado (SPAR)', qty: 15,  unit: 'ml',pris: 0.036, pkgP: 9,   pkgS: 250  },
+      { name: 'Limejuice Realemon (SPAR)', qty: 2,   unit: 'ml',pris: 0.140, pkgP: 35,  pkgS: 250  },
+    ],
+    'Forest Berry':     [
+      { name: 'Skogsbær frossen',          qty: 30,  unit: 'g', pris: 0.120, pkgP: 60,  pkgS: 500  },
+      { name: 'Ekstra sukker (Eldorado)',  qty: 3,   unit: 'g', pris: 0.024, pkgP: 24,  pkgS: 1000 },
+    ],
   },
   flavorInstructions: {
     'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Visp vaniljesukkeret inn i basen.\n• Tips: Et knivspiss salt løfter smaken.\n• Modne over natten gir best vaniljesmak.',
@@ -90,18 +135,20 @@ const DEFAULT_DATA: AppData = {
     'Forest Berry':     '🫐 Skogsbær:\n• Tin bærene og purér. Sil bort frø for glatt is.\n• Trenger ekstra sukker fordi bær er syrlige.\n• Hold 5g hele bær til å røre inn på slutten.',
   },
   baseCosts: [
-    { name: 'Kopp 200ml',       per: 'stk',     cost: 1.20 },
-    { name: 'Lokk',             per: 'stk',     cost: 0.30 },
-    { name: 'Skje (tre/plast)', per: 'stk',     cost: 0.40 },
-    { name: 'Serviett',         per: 'stk',     cost: 0.05 },
-    { name: 'Strøssel (snitt)', per: 'porsjon', cost: 0.80 },
+    { name: 'S-kopp 138ml (Hafjellfest)', per: 'stk',     cost: 2.60 },
+    { name: 'M-kopp 195ml (Hafjellfest)', per: 'stk',     cost: 3.20 },
+    { name: 'L-kopp 303ml (Hafjellfest)', per: 'stk',     cost: 3.80 },
+    { name: 'Lokk',                       per: 'stk',     cost: 0.30 },
+    { name: 'Skje (tre/plast)',           per: 'stk',     cost: 0.40 },
+    { name: 'Serviett',                   per: 'stk',     cost: 0.05 },
+    { name: 'Strøssel (snitt)',           per: 'porsjon', cost: 0.80 },
   ],
   flavorPrices: {
     'Classic Vanilla': 25, 'Mango Delight': 25,
     'Chocolate Deluxe': 25, 'Greek Yogurt': 22,
     'Tropical Freeze': 25, 'Forest Berry': 25,
   },
-  margin: 50,
+  margin: 10,
 }
 
 // ── CSS tokens ──────────────────────────────────────────
@@ -165,16 +212,63 @@ export default function Recipes() {
     try { const s = localStorage.getItem(STORAGE_KEY); if (s) return JSON.parse(s) } catch {}
     return JSON.parse(JSON.stringify(DEFAULT_DATA))
   })
-  const [tab, setTab]       = useState<'oppskrifter' | 'base' | 'basiskost' | 'priskalkyle'>('oppskrifter')
-  const [flavor, setFlavor] = useState('Classic Vanilla')
+  const [tab, setTab]         = useState<'oppskrifter' | 'base' | 'basiskost' | 'priskalkyle'>('oppskrifter')
+  const [flavor, setFlavor]   = useState('Classic Vanilla')
+  const [priceTs, setPriceTs] = useState<number | null>(null)
+  const liveRef = useRef(false)
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) }, [data])
 
-  const flavorNames   = Object.keys(data.recipes)
-  const baseCost      = data.base.reduce((s, r) => s + r.qty * r.pris, 0)
-  const supplyTotal   = data.baseCosts.reduce((s, b) => s + b.cost, 0)
-  const recipeCost    = (name: string) => baseCost + (data.recipes[name] || []).reduce((s, r) => s + r.qty * r.pris, 0)
-  const totalCost     = (name: string) => recipeCost(name) + supplyTotal
+  // Les priser fra Firebase og oppdater ingredienskostnader
+  useEffect(() => {
+    if (liveRef.current) return
+    liveRef.current = true
+    return onValue(ref(db, 'yogurt-config/ingredientPrices'), snap => {
+      const prices = snap.val()
+      if (!prices) return
+      setData(prev => {
+        const next = JSON.parse(JSON.stringify(prev)) as AppData
+        const applyPrices = (arr: typeof next.base) =>
+          arr.map(ing => {
+            const key = INGREDIENT_KEY[ing.name]
+            const p = key && prices[key]
+            if (p?.pris_g) return {
+              ...ing,
+              pris: p.pris_g,
+              ...(p.pkgP && p.pkgS ? { pkgP: p.pkgP, pkgS: p.pkgS } : {}),
+            }
+            return ing
+          })
+        next.base = applyPrices(next.base)
+        Object.keys(next.recipes).forEach(flavor => {
+          next.recipes[flavor] = applyPrices(next.recipes[flavor])
+        })
+        return next
+      })
+      // finn nyeste ts
+      const latest = Math.max(...Object.values(prices).map((p: any) => p.ts || 0))
+      if (latest) setPriceTs(latest)
+    })
+  }, [])
+
+  const [batchL, setBatchL]         = useState(2)
+  const [calcFlavor, setCalcFlavor] = useState('Classic Vanilla')
+
+  const flavorNames     = Object.keys(data.recipes)
+  const effP            = (r: Ingredient) => (r.pkgP && r.pkgS) ? r.pkgP / r.pkgS : r.pris
+  const baseCost        = data.base.reduce((s, r) => s + r.qty * effP(r), 0)
+  const supplyTotal     = data.baseCosts.reduce((s, b) => s + b.cost, 0)
+  const recipeCost      = (name: string) => baseCost + (data.recipes[name] || []).reduce((s, r) => s + r.qty * effP(r), 0)
+  const totalCost       = (name: string) => recipeCost(name) + supplyTotal
+  const baseWeight      = data.base.reduce((s, r) => s + Math.max(0, r.qty), 0)
+  const portionsPerLtr  = baseWeight > 0 ? 1000 / baseWeight : 6.6
+  const batchPortions   = batchL * portionsPerLtr
+  const fmtAmt          = (g: number, unit: string) => {
+    const abs = Math.abs(g)
+    if (abs >= 1000) return (abs / 1000).toFixed(2) + ' kg'
+    if (abs >= 100)  return Math.round(abs) + ' ' + unit
+    return abs.toFixed(0) + ' ' + unit
+  }
 
   // Deep-update helper
   const update = (path: string, value: unknown) => {
@@ -209,7 +303,14 @@ export default function Recipes() {
         <div style={{ padding: '22px 28px 18px', borderBottom: `1px solid ${c.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16 }}>
           <div>
             <div style={{ fontFamily: 'DM Serif Display, serif', fontStyle: 'italic', fontSize: 28, letterSpacing: '-.02em' }}>Oppskrifter & Kalkyle</div>
-            <div style={{ fontSize: 11, color: c.muted, marginTop: 3 }}>Alle felter er redigerbare · endringer lagres automatisk</div>
+            <div style={{ fontSize: 11, color: c.muted, marginTop: 3 }}>
+              Alle felter er redigerbare · endringer lagres automatisk
+              {priceTs && (
+                <span style={{ marginLeft: 10, color: c.green, fontWeight: 600 }}>
+                  ✓ Priser fra Kassalapp ({new Date(priceTs).toLocaleDateString('no-NO', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})})
+                </span>
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <Btn variant="ghost" onClick={() => window.location.href = '/'}>← Tilbake</Btn>
@@ -264,17 +365,20 @@ export default function Recipes() {
                   <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted }}>Felles base (samme for alle smaker)</span>
                   <span style={{ fontSize: 11, color: c.muted, fontFamily: 'JetBrains Mono, monospace' }}>{baseCost.toFixed(2)} kr</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 60px 110px 100px 36px' }}>
-                  {(['Ingrediens', 'Mengde', 'Enhet', 'Pris/enhet', 'Sum', ''] as const).map((h, i) => (
-                    <div key={i} style={{ ...hdrSt, textAlign: i === 1 || i === 3 || i === 4 ? 'right' : 'left', borderRight: i === 5 ? 'none' : hdrSt.borderRight }}>{h}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 50px 90px 100px 90px 36px' }}>
+                  {['Ingrediens', 'Per porsjon', 'Enhet', 'Pakkepris (kr)', 'Pakkestørrelse (g)', 'Sum (kr)', ''].map((h, i) => (
+                    <div key={i} style={{ ...hdrSt, textAlign: i >= 1 && i <= 5 ? 'right' : 'left', borderRight: i === 6 ? 'none' : hdrSt.borderRight }}>{h}</div>
                   ))}
                   {data.base.map((r, i) => (
                     <div key={i} style={{ display: 'contents' }}>
                       <TxtCell value={r.name} onChange={v => update(`base.${i}.name`, v)} />
-                      <NumCell value={r.qty}  onChange={v => update(`base.${i}.qty`, v)} />
-                      <TxtCell value={r.unit} onChange={v => update(`base.${i}.unit`, v)} placeholder="g" />
-                      <NumCell value={r.pris} onChange={v => update(`base.${i}.pris`, v)} suffix="kr" />
-                      <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 600 }}>{(r.qty * r.pris).toFixed(2)}</div>
+                      <NumCell value={r.qty}   onChange={v => update(`base.${i}.qty`, v)} suffix={r.unit||'g'} />
+                      <TxtCell value={r.unit}  onChange={v => update(`base.${i}.unit`, v)} placeholder="g" />
+                      <NumCell value={r.pkgP ?? 0} onChange={v => { update(`base.${i}.pkgP`, v); update(`base.${i}.pris`, r.pkgS ? v/r.pkgS : r.pris) }} suffix="kr" />
+                      <NumCell value={r.pkgS ?? 0} onChange={v => { update(`base.${i}.pkgS`, v); update(`base.${i}.pris`, v > 0 ? (r.pkgP??0)/v : r.pris) }} suffix={r.unit||'g'} />
+                      <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 600, color: c.green }}>
+                        {effP(r) > 0 ? (r.qty * effP(r)).toFixed(2) : '—'}
+                      </div>
                       <div style={{ ...cellBorder, borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <button onClick={() => setData(p => ({ ...p, base: p.base.filter((_, idx) => idx !== i) }))}
                           style={{ width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, color: c.muted, fontSize: 14 }}>×</button>
@@ -291,14 +395,17 @@ export default function Recipes() {
                   <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted }}>{FLAVOR_META[flavor]?.emoji} {flavor} — smak-spesifikt</span>
                   <span style={{ fontSize: 11, color: c.muted, fontFamily: 'JetBrains Mono, monospace' }}>{(data.recipes[flavor] || []).reduce((s, r) => s + r.qty * r.pris, 0).toFixed(2)} kr</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 60px 110px 100px 36px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 50px 90px 100px 90px 36px' }}>
                   {(data.recipes[flavor] || []).map((r, i) => (
                     <div key={i} style={{ display: 'contents' }}>
                       <TxtCell value={r.name} onChange={v => update(`recipes.${flavor}.${i}.name`, v)} />
-                      <NumCell value={r.qty}  onChange={v => update(`recipes.${flavor}.${i}.qty`, v)} />
-                      <TxtCell value={r.unit} onChange={v => update(`recipes.${flavor}.${i}.unit`, v)} />
-                      <NumCell value={r.pris} onChange={v => update(`recipes.${flavor}.${i}.pris`, v)} suffix="kr" />
-                      <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 600 }}>{(r.qty * r.pris).toFixed(2)}</div>
+                      <NumCell value={r.qty}   onChange={v => update(`recipes.${flavor}.${i}.qty`, v)} suffix={r.unit||'g'} />
+                      <TxtCell value={r.unit}  onChange={v => update(`recipes.${flavor}.${i}.unit`, v)} />
+                      <NumCell value={r.pkgP ?? 0} onChange={v => { update(`recipes.${flavor}.${i}.pkgP`, v); update(`recipes.${flavor}.${i}.pris`, r.pkgS ? v/r.pkgS : r.pris) }} suffix="kr" />
+                      <NumCell value={r.pkgS ?? 0} onChange={v => { update(`recipes.${flavor}.${i}.pkgS`, v); update(`recipes.${flavor}.${i}.pris`, v > 0 ? (r.pkgP??0)/v : r.pris) }} suffix={r.unit||'g'} />
+                      <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 600, color: c.green }}>
+                        {effP(r) > 0 ? (r.qty * effP(r)).toFixed(2) : '—'}
+                      </div>
                       <div style={{ ...cellBorder, borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <button onClick={() => setData(p => ({ ...p, recipes: { ...p.recipes, [flavor]: p.recipes[flavor].filter((_, idx) => idx !== i) } }))}
                           style={{ width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, color: c.muted, fontSize: 14 }}>×</button>
@@ -346,7 +453,78 @@ export default function Recipes() {
                   style={{ width: '100%', minHeight: 160, padding: '14px 18px', resize: 'vertical', border: 'none', outline: 'none', background: '#fff', fontFamily: 'Space Grotesk, sans-serif', fontSize: 12.5, lineHeight: 1.75, color: c.text, whiteSpace: 'pre-wrap' }} />
               </div>
 
-              <div style={{ marginTop: 14, padding: '12px 14px', background: c.card, border: `1px solid ${c.border}`, borderRadius: 8, fontSize: 13, color: '#6B6359', fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
+              {/* ── Batch-kalkulator ── */}
+              <div style={{ marginTop: 16, background: '#fff', border: `1px solid ${c.border2}`, borderRadius: 10, overflow: 'hidden' }}>
+                {/* Header med dropdown */}
+                <div style={{ padding: '12px 16px', background: `linear-gradient(90deg,rgba(28,27,25,.04),transparent)`, borderBottom: `1px solid ${c.border2}`, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.16em', textTransform: 'uppercase', color: c.muted }}>🧮 Handleliste for batch</span>
+                  <select value={batchL} onChange={e => setBatchL(Number(e.target.value))}
+                    style={{ padding: '7px 12px', border: `2px solid ${c.accent}`, borderRadius: 8, fontFamily: 'Space Grotesk, sans-serif', fontSize: 14, fontWeight: 700, color: c.accent, background: 'rgba(196,149,42,.06)', cursor: 'pointer', outline: 'none' }}>
+                    {[1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20].map(l => (
+                      <option key={l} value={l}>{l} liter</option>
+                    ))}
+                  </select>
+                  <span style={{ fontSize: 12, color: c.muted }}>
+                    ≈ <strong style={{ color: c.text }}>{Math.round(batchPortions)}</strong> porsjoner
+                    &nbsp;·&nbsp;
+                    råvarekost: <strong style={{ color: c.green }}>{(batchPortions * recipeCost(flavor)).toFixed(0)} kr</strong>
+                    &nbsp;·&nbsp;
+                    inntekt ved 25 kr: <strong style={{ color: c.accent }}>{Math.round(batchPortions * 25)} kr</strong>
+                  </span>
+                </div>
+
+                {/* Ingrediensliste skalert */}
+                <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '4px 24px', alignItems: 'baseline' }}>
+                  {/* Base */}
+                  <div style={{ gridColumn: '1 / -1', fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: c.muted, paddingBottom: 6, borderBottom: `1px solid ${c.border}`, marginBottom: 4 }}>
+                    Felles base
+                  </div>
+                  {data.base.map((r, i) => (
+                    <div key={i} style={{ display: 'contents' }}>
+                      <span style={{ fontSize: 13, color: c.text, paddingBottom: 3 }}>{r.name}</span>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, color: c.text, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        {fmtAmt(r.qty * batchPortions, r.unit)}
+                      </span>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: c.muted, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        {(r.qty * batchPortions * effP(r)).toFixed(2)} kr
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* Smakstilsetning */}
+                  {(data.recipes[flavor] || []).filter(r => r.qty !== 0).length > 0 && <>
+                    <div style={{ gridColumn: '1 / -1', fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: c.muted, paddingBottom: 6, borderBottom: `1px solid ${c.border}`, marginTop: 12, marginBottom: 4 }}>
+                      {FLAVOR_META[flavor]?.emoji} {flavor} — tilsetning
+                    </div>
+                    {(data.recipes[flavor] || []).filter(r => r.qty !== 0).map((r, i) => (
+                      <div key={i} style={{ display: 'contents' }}>
+                        <span style={{ fontSize: 13, color: r.qty < 0 ? c.muted : c.text, paddingBottom: 3, fontStyle: r.qty < 0 ? 'italic' : 'normal' }}>
+                          {r.name}{r.qty < 0 ? ' (trekk fra)' : ''}
+                        </span>
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, color: r.qty < 0 ? c.muted : c.text, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          {fmtAmt(Math.abs(r.qty) * batchPortions, r.unit)}
+                        </span>
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: c.muted, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          {(Math.abs(r.qty) * batchPortions * effP(r)).toFixed(2)} kr
+                        </span>
+                      </div>
+                    ))}
+                  </>}
+
+                  {/* Total */}
+                  <div style={{ gridColumn: '1 / -1', borderTop: `2px solid ${c.border2}`, marginTop: 10, paddingTop: 10, display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0 24px' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: c.text }}>Total råvarekost</span>
+                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, color: c.green, textAlign: 'right' }}>
+                      {(batchPortions * recipeCost(flavor)).toFixed(0)} kr
+                    </span>
+                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: c.muted, textAlign: 'right' }}>
+                      {(recipeCost(flavor)).toFixed(2)} kr/pors.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 10, padding: '10px 14px', background: c.card, border: `1px solid ${c.border}`, borderRadius: 8, fontSize: 12.5, color: '#6B6359', fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
                 💡 Klikk i en celle for å redigere. Trykk × for å fjerne en rad. Alt lagres automatisk.
               </div>
             </div>
@@ -356,44 +534,79 @@ export default function Recipes() {
           {tab === 'base' && (
             <div>
               <div style={{ marginBottom: 12, padding: '12px 14px', background: c.card, border: `1px solid ${c.border}`, borderRadius: 8, fontSize: 13, color: '#6B6359', fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
-                Ingrediensene som er like for <em>alle</em> smaker. Endringer her påvirker alle smaker.
+                Ingrediensene som er like for <em>alle</em> smaker. Velg batch-størrelse for å se nøyaktig hva du trenger å kjøpe.
               </div>
+
+              {/* Base-versjon velger + batch dropdown på samme rad */}
               <div style={{ marginBottom: 12, padding: '14px 16px', background: '#fff', border: `1px solid ${c.border}`, borderRadius: 10, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.accent, marginBottom: 2 }}>Velg base-versjon</div>
-                  <div style={{ fontSize: 11, color: c.muted }}>Bytter ingredienser og tilberedningstekst</div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.accent, marginBottom: 4 }}>Base-versjon</div>
+                  <select value={data.baseVersion} onChange={e => switchBase(e.target.value)}
+                    style={{ width: '100%', padding: '8px 12px', background: c.bg, border: `1.5px solid ${c.border2}`, borderRadius: 7, fontFamily: 'Space Grotesk, sans-serif', fontSize: 13, fontWeight: 600, color: c.text, cursor: 'pointer', outline: 'none' }}>
+                    {Object.entries(BASE_VERSIONS).map(([key, v]) => <option key={key} value={key}>{v.label}</option>)}
+                  </select>
                 </div>
-                <select value={data.baseVersion} onChange={e => switchBase(e.target.value)}
-                  style={{ flex: 1, minWidth: 200, padding: '10px 12px', background: c.bg, border: `1.5px solid ${c.border2}`, borderRadius: 7, fontFamily: 'Space Grotesk, sans-serif', fontSize: 13, fontWeight: 600, color: c.text, cursor: 'pointer', outline: 'none' }}>
-                  {Object.entries(BASE_VERSIONS).map(([key, v]) => <option key={key} value={key}>{v.label}</option>)}
-                </select>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.accent, marginBottom: 4 }}>Batch størrelse</div>
+                  <select value={batchL} onChange={e => setBatchL(Number(e.target.value))}
+                    style={{ padding: '8px 14px', border: `2px solid ${c.accent}`, borderRadius: 8, fontFamily: 'Space Grotesk, sans-serif', fontSize: 14, fontWeight: 700, color: c.accent, background: 'rgba(196,149,42,.06)', cursor: 'pointer', outline: 'none' }}>
+                    {[1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20].map(l => (
+                      <option key={l} value={l}>{l} liter</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ fontSize: 12, color: c.muted }}>
+                  ≈ <strong style={{ color: c.text }}>{Math.round(batchPortions)}</strong> porsjoner &nbsp;·&nbsp; råvarer: <strong style={{ color: c.green }}>{(baseCost * batchPortions).toFixed(0)} kr</strong>
+                </div>
               </div>
+
+              {/* Ingredienstabell — viser batch-mengder */}
               <div style={{ background: '#fff', border: `1px solid ${c.border2}`, borderRadius: 10, overflow: 'hidden' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 60px 110px 100px 36px' }}>
-                  {(['Ingrediens', 'Mengde', 'Enhet', 'Pris/enhet', 'Sum', ''] as const).map((h, i) => (
-                    <div key={i} style={{ ...hdrSt, textAlign: i === 1 || i === 3 || i === 4 ? 'right' : 'left', borderRight: i === 5 ? 'none' : hdrSt.borderRight }}>{h}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 50px 90px 90px 80px 36px' }}>
+                  {['Ingrediens', `For ${batchL}L`, 'Enhet', 'Pakkepris (kr)', 'Pakke (g)', 'Kjøp', ''].map((header, i) => (
+                    <div key={i} style={{ ...hdrSt, textAlign: i >= 1 && i <= 5 ? 'right' : 'left', borderRight: i === 6 ? 'none' : hdrSt.borderRight }}>{header}</div>
                   ))}
-                  {data.base.map((r, i) => (
-                    <div key={i} style={{ display: 'contents' }}>
-                      <TxtCell value={r.name} onChange={v => update(`base.${i}.name`, v)} />
-                      <NumCell value={r.qty}  onChange={v => update(`base.${i}.qty`, v)} />
-                      <TxtCell value={r.unit} onChange={v => update(`base.${i}.unit`, v)} />
-                      <NumCell value={r.pris} onChange={v => update(`base.${i}.pris`, v)} suffix="kr" />
-                      <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 600 }}>{(r.qty * r.pris).toFixed(2)}</div>
-                      <div style={{ ...cellBorder, borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={() => setData(p => ({ ...p, base: p.base.filter((_, idx) => idx !== i) }))}
-                          style={{ width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, color: c.muted, fontSize: 14 }}>×</button>
+                  {data.base.map((r, i) => {
+                    const batchAmt = r.qty * batchPortions
+                    const ep = effP(r)
+                    const pkgs = (r.pkgP && r.pkgS && r.pkgS > 0) ? Math.ceil(Math.abs(batchAmt) / r.pkgS) : null
+                    return (
+                      <div key={i} style={{ display: 'contents' }}>
+                        <TxtCell value={r.name} onChange={v => update(`base.${i}.name`, v)} />
+                        <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, textAlign: 'right', color: c.accent }}>
+                          {fmtAmt(batchAmt, r.unit)}
+                        </div>
+                        <TxtCell value={r.unit} onChange={v => update(`base.${i}.unit`, v)} placeholder="g" />
+                        <NumCell value={r.pkgP ?? 0} onChange={v => { update(`base.${i}.pkgP`, v); update(`base.${i}.pris`, r.pkgS ? v/r.pkgS : r.pris) }} suffix="kr" />
+                        <NumCell value={r.pkgS ?? 0} onChange={v => { update(`base.${i}.pkgS`, v); update(`base.${i}.pris`, v > 0 ? (r.pkgP??0)/v : r.pris) }} suffix={r.unit||'g'} />
+                        <div style={{ ...cellBorder, padding: '8px 10px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, textAlign: 'right', color: c.muted }}>
+                          {pkgs !== null ? `${pkgs} pk` : ep > 0 ? `${(batchAmt * ep).toFixed(0)} kr` : '—'}
+                        </div>
+                        <div style={{ ...cellBorder, borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <button onClick={() => setData(p => ({ ...p, base: p.base.filter((_, idx) => idx !== i) }))}
+                            style={{ width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, color: c.muted, fontSize: 14 }}>×</button>
+                        </div>
                       </div>
+                    )
+                  })}
+                  <div style={{ gridColumn: '1 / -1', padding: '10px 14px', background: c.bg, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, gap: 16 }}>
+                    <Btn onClick={() => setData(p => ({ ...p, base: [...p.base, { name: 'Ny ingrediens', qty: 0, unit: 'g', pris: 0, pkgP: 0, pkgS: 0 }] }))}>+ Legg til ingrediens</Btn>
+                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.muted }}>Råvarekost for {batchL}L</span>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: 15, color: c.green }}>{(baseCost * batchPortions).toFixed(0)} kr</span>
+                      <span style={{ color: c.muted, fontSize: 11 }}>({baseCost.toFixed(2)} kr/pors.)</span>
                     </div>
-                  ))}
-                  <div style={{ gridColumn: '1 / -1', padding: '12px 14px', background: c.bg, display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                    <span style={{ fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', fontSize: 10 }}>Base-kostnad per porsjon</span>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: c.accent }}>{baseCost.toFixed(2)} kr</span>
                   </div>
                 </div>
-                <div style={{ padding: '10px 12px', borderTop: `1px solid ${c.border2}` }}>
-                  <Btn onClick={() => setData(p => ({ ...p, base: [...p.base, { name: 'Ny ingrediens', qty: 0, unit: 'g', pris: 0 }] }))}>+ Legg til ingrediens</Btn>
+              </div>
+
+              {/* Instruksjonstekst */}
+              <div style={{ marginTop: 12, background: '#fff', border: `1px solid ${c.border2}`, borderRadius: 10, overflow: 'hidden' }}>
+                <div style={{ padding: '9px 14px', background: c.surface, borderBottom: `1px solid ${c.border2}`, fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted }}>
+                  Fremgangsmåte — {BASE_VERSIONS[data.baseVersion]?.label}
                 </div>
+                <textarea value={data.baseInstructions} onChange={e => update('baseInstructions', e.target.value)}
+                  style={{ width: '100%', minHeight: 140, padding: '14px 16px', resize: 'vertical', border: 'none', outline: 'none', background: '#fff', fontFamily: 'Space Grotesk, sans-serif', fontSize: 12.5, lineHeight: 1.75, color: c.text, whiteSpace: 'pre-wrap' }} />
               </div>
             </div>
           )}
@@ -403,6 +616,8 @@ export default function Recipes() {
             <div>
               <div style={{ marginBottom: 12, padding: '12px 14px', background: c.card, border: `1px solid ${c.border}`, borderRadius: 8, fontSize: 13, color: '#6B6359', fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
                 Faste kostnader per porsjon — emballasje, bestikk og strøssel.
+                {' '}Koppprisene er fra <strong>Hafjellfestutstyr.no</strong> (50 stk/pakke).
+                {' '}<strong>Tips:</strong> «Total basiskost» summerer alle rader — slett koppstørrelsene du ikke selger for riktig tall.
               </div>
               <div style={{ background: '#fff', border: `1px solid ${c.border2}`, borderRadius: 10, overflow: 'hidden' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 130px 36px' }}>
@@ -429,20 +644,174 @@ export default function Recipes() {
                   <Btn onClick={() => setData(p => ({ ...p, baseCosts: [...p.baseCosts, { name: 'Ny vare', per: 'stk', cost: 0 }] }))}>+ Legg til vare</Btn>
                 </div>
               </div>
+
+              {/* Per-størrelse kostnadsoversikt */}
+              <div style={{ marginTop: 14, background: '#fff', border: `1px solid ${c.border2}`, borderRadius: 10, overflow: 'hidden' }}>
+                <div style={{ padding: '10px 14px', background: c.surface, borderBottom: `1px solid ${c.border2}`, fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted }}>
+                  Emballasjekost per størrelse (inkl. lokk + skje + serviett + strøssel)
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0 }}>
+                  {[
+                    { lbl: `S — Liten (${data.sizePrices?.S ?? 20} kr)`, kopp: 'S-kopp', salgspris: data.sizePrices?.S ?? 20 },
+                    { lbl: `M — Medium (${data.sizePrices?.M ?? 25} kr)`, kopp: 'M-kopp', salgspris: data.sizePrices?.M ?? 25 },
+                    { lbl: `L — Stor (${data.sizePrices?.L ?? 30} kr)`, kopp: 'L-kopp', salgspris: data.sizePrices?.L ?? 30 },
+                  ].map(({ lbl, kopp, salgspris }, si) => {
+                    const koppKost = data.baseCosts.find(b => b.name.startsWith(kopp))?.cost ?? 0
+                    const andreBasisvarer = data.baseCosts.filter(b => !b.name.includes('kopp')).reduce((s, b) => s + b.cost, 0)
+                    const emb = koppKost + andreBasisvarer
+                    const raw = baseCost
+                    const total = raw + emb
+                    const margin = salgspris - total
+                    return (
+                      <div key={si} style={{ padding: '14px 16px', borderRight: si < 2 ? `1px solid ${c.border2}` : 'none' }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: c.text, marginBottom: 10 }}>{lbl}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                          <span style={{ color: c.muted }}>Råvarer</span>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{raw.toFixed(2)} kr</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                          <span style={{ color: c.muted }}>Emballasje</span>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{emb.toFixed(2)} kr</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, borderTop: `1px solid ${c.border}`, paddingTop: 6, marginTop: 6 }}>
+                          <span>Kostpris</span>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{total.toFixed(2)} kr</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginTop: 4 }}>
+                          <span style={{ color: c.muted, fontSize: 11 }}>Margin</span>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace', color: margin > 0 ? c.green : c.red }}>{margin > 0 ? '+' : ''}{margin.toFixed(2)} kr</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           )}
 
           {/* ══ PRISKALKYLE ══ */}
           {tab === 'priskalkyle' && (
             <div>
+              {/* Batch-analyse: S/M/L */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.16em', textTransform: 'uppercase', color: c.muted }}>Batch analyse</div>
+                  <select value={batchL} onChange={e => setBatchL(Number(e.target.value))}
+                    style={{ padding: '7px 12px', border: `2px solid ${c.accent}`, borderRadius: 8, fontFamily: 'Space Grotesk, sans-serif', fontSize: 13, fontWeight: 700, color: c.accent, background: 'rgba(196,149,42,.06)', cursor: 'pointer', outline: 'none' }}>
+                    {[1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20].map(l => (
+                      <option key={l} value={l}>{l} liter</option>
+                    ))}
+                  </select>
+                  <select value={calcFlavor} onChange={e => setCalcFlavor(e.target.value)}
+                    style={{ padding: '7px 12px', border: `1.5px solid ${c.border2}`, borderRadius: 8, fontFamily: 'Space Grotesk, sans-serif', fontSize: 13, fontWeight: 600, color: c.text, background: '#fff', cursor: 'pointer', outline: 'none' }}>
+                    {flavorNames.map(n => (
+                      <option key={n} value={n}>{FLAVOR_META[n]?.emoji} {n}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {(() => {
+                  const flavorRawCost = recipeCost(calcFlavor)      // total raw cost per full portion (base + smak)
+                  const costPerG      = baseWeight > 0 ? flavorRawCost / baseWeight : 0
+                  const otherEmb      = data.baseCosts.filter(b => !b.name.toLowerCase().includes('kopp')).reduce((s, b) => s + b.cost, 0)
+                  const sizes = [
+                    { lbl: 'S — Liten',  ml: 138, pris: data.sizePrices?.S ?? 20, key: 'S' as const, kopp: 'S-kopp' },
+                    { lbl: 'M — Medium', ml: 195, pris: data.sizePrices?.M ?? 25, key: 'M' as const, kopp: 'M-kopp' },
+                    { lbl: 'L — Stor',   ml: 303, pris: data.sizePrices?.L ?? 30, key: 'L' as const, kopp: 'L-kopp' },
+                  ]
+                  return (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                      {sizes.map(({ lbl, ml, pris, key, kopp }, si) => {
+                        const servings     = Math.floor((batchL * 1000) / ml)
+                        const rawPerServ   = costPerG * ml
+                        const koppKost     = data.baseCosts.find(b => b.name.startsWith(kopp))?.cost ?? 0
+                        const embPerServ   = koppKost + otherEmb
+                        const totalPerServ = rawPerServ + embPerServ
+                        const batchCost    = totalPerServ * servings
+                        const batchRev     = pris * servings
+                        const profit       = batchRev - batchCost
+                        const marginPct    = batchRev > 0 ? (profit / batchRev) * 100 : 0
+                        const isGood       = profit > 0
+                        return (
+                          <div key={si} style={{ background: '#fff', border: `1.5px solid ${isGood ? 'rgba(22,163,74,.3)' : c.border2}`, borderRadius: 12, overflow: 'hidden' }}>
+                            <div style={{ padding: '12px 16px', background: isGood ? 'rgba(22,163,74,.05)' : c.surface, borderBottom: `1px solid ${c.border2}` }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: c.text, marginBottom: 2 }}>{lbl}</div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: 28, color: c.accent }}>{servings}</span>
+                                <span style={{ fontSize: 11, color: c.muted }}>porsjoner fra {batchL}L</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                                <span style={{ fontSize: 11, color: c.muted }}>{ml}ml · salgspris</span>
+                                <input type="number" value={pris} min="1" step="1"
+                                  onChange={e => {
+                                    const v = parseFloat(e.target.value) || 0
+                                    const next = { ...data.sizePrices, [key]: v }
+                                    update('sizePrices', next)
+                                    import('firebase/database').then(({ ref: fbRef, set }) => set(fbRef(db, 'yogurt-config/sizePrices'), next))
+                                  }}
+                                  style={{ width: 48, padding: '2px 6px', border: `1.5px solid ${isGood ? 'rgba(22,163,74,.4)' : c.border2}`, borderRadius: 6, fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, color: c.accent, textAlign: 'center', outline: 'none', background: 'rgba(255,255,255,.7)' }} />
+                                <span style={{ fontSize: 11, color: c.muted }}>kr</span>
+                              </div>
+                            </div>
+                            <div style={{ padding: '12px 16px' }}>
+                              {([
+                                ['Råvarer/pors.', rawPerServ, false],
+                                ['Emballasje/pors.', embPerServ, false],
+                                ['Kostpris/pors.', totalPerServ, true],
+                              ] as [string, number, boolean][]).map(([label, val, bold]) => (
+                                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                                  <span style={{ color: c.muted }}>{label}</span>
+                                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: bold ? 700 : 400 }}>{val.toFixed(2)} kr</span>
+                                </div>
+                              ))}
+                              <div style={{ borderTop: `1px solid ${c.border}`, marginTop: 8, paddingTop: 8 }}>
+                                {([
+                                  ['Total inntekt', batchRev, c.green],
+                                  ['Total kostnad', batchCost, c.red],
+                                ] as [string, number, string][]).map(([label, val, col]) => (
+                                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                                    <span style={{ color: c.muted }}>{label}</span>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', color: col }}>{val.toFixed(0)} kr</span>
+                                  </div>
+                                ))}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 8, borderTop: `2px solid ${c.border2}` }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em' }}>Profitt</span>
+                                  <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 16, fontWeight: 700, color: isGood ? c.green : c.red }}>
+                                      {profit >= 0 ? '+' : ''}{profit.toFixed(0)} kr
+                                    </div>
+                                    <div style={{ fontSize: 11, color: isGood ? c.green : c.red }}>{marginPct.toFixed(0)}% margin</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })()}
+              </div>
+
+              {/* Skillelinje */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 16px' }}>
+                <div style={{ flex: 1, height: 1, background: c.border }} />
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted }}>Per smak — detaljert kalkyle</span>
+                <div style={{ flex: 1, height: 1, background: c.border }} />
+              </div>
+
+              {/* Margin-input */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                 <div style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 10, padding: 14 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted, marginBottom: 8 }}>Ønsket margin</div>
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <input type="range" min="0" max="200" value={data.margin}
-                      onChange={e => update('margin', +e.target.value)}
-                      style={{ flex: 1, accentColor: c.accent }} />
-                    <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: c.accent, minWidth: 70, textAlign: 'right' }}>{data.margin}%</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: c.muted, marginBottom: 8 }}>Ønsket fortjeneste per porsjon</div>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <input type="number" min="0" max="200" step="1" value={data.margin}
+                      onChange={e => update('margin', parseFloat(e.target.value) || 0)}
+                      style={{ flex: 1, padding: '8px 12px', border: `1.5px solid ${c.border2}`, borderRadius: 8, fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700, color: c.accent, textAlign: 'right', outline: 'none', background: c.bg }} />
+                    <span style={{ fontSize: 14, fontWeight: 700, color: c.muted }}>kr</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: c.muted, marginTop: 6 }}>
+                    Anbefalt pris = kostpris + {data.margin} kr
                   </div>
                 </div>
                 <div style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 10, padding: 14, display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -466,7 +835,7 @@ export default function Recipes() {
                   {flavorNames.map(name => {
                     const rc  = recipeCost(name)
                     const tot = totalCost(name)
-                    const rec = tot * (1 + data.margin / 100)
+                    const rec = tot + data.margin
                     const cur = data.flavorPrices[name] || 0
                     const ok  = cur >= rec
                     return (
@@ -489,12 +858,11 @@ export default function Recipes() {
                 </div>
               </div>
 
-              {/* Oppsummering */}
               {(() => {
-                const all       = flavorNames.map(n => ({ tot: totalCost(n), cur: data.flavorPrices[n] || 0, rec: totalCost(n) * (1 + data.margin / 100) }))
+                const all       = flavorNames.map(n => ({ tot: totalCost(n), cur: data.flavorPrices[n] || 0, rec: totalCost(n) + data.margin }))
                 const numOk     = all.filter(x => x.cur >= x.rec).length
                 const avgCost   = all.reduce((s, x) => s + x.tot, 0) / all.length
-                const avgMargin = all.reduce((s, x) => s + (x.cur > 0 ? (x.cur / x.tot - 1) * 100 : 0), 0) / all.length
+                const avgMargin = all.reduce((s, x) => s + (x.cur > 0 ? x.cur - x.tot : 0), 0) / all.length
                 return (
                   <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     <div style={{ padding: 14, background: 'rgba(22,163,74,.06)', border: '1px solid rgba(22,163,74,.25)', borderRadius: 10 }}>
@@ -508,9 +876,9 @@ export default function Recipes() {
                       <div style={{ fontSize: 10, color: c.accent, marginTop: 2 }}>per porsjon</div>
                     </div>
                     <div style={{ padding: 14, background: c.text, borderRadius: 10, color: c.bg }}>
-                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .5 }}>Reell margin</div>
-                      <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#E8C470' }}>{avgMargin.toFixed(0)}%</div>
-                      <div style={{ fontSize: 10, opacity: .5, marginTop: 2 }}>snitt på faktiske priser</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .5 }}>Snitt profitt</div>
+                      <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#E8C470' }}>+{avgMargin.toFixed(0)} kr</div>
+                      <div style={{ fontSize: 10, opacity: .5, marginTop: 2 }}>per porsjon (snitt alle smaker)</div>
                     </div>
                   </div>
                 )

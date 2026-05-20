@@ -201,6 +201,51 @@
     .tx-del:hover{color:var(--red)}
     .tx-empty{padding:40px;text-align:center;color:var(--muted);font-size:.82rem}
 
+    /* ── Kvitteringer ── */
+    .reg-tabs{display:flex;gap:6px;margin-bottom:16px}
+    .reg-tab{padding:7px 16px;border-radius:7px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--muted);font-family:'Space Grotesk',sans-serif;letter-spacing:.04em;transition:all .15s}
+    .reg-tab:hover{background:var(--card);color:var(--text)}
+    .reg-tab.active{background:var(--text);color:var(--bg);border-color:transparent}
+    .kv-list{display:flex;flex-direction:column}
+    .kv-row{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;gap:12px}
+    .kv-row:last-child{border-bottom:none}
+    .kv-row:hover{background:rgba(0,0,0,.02)}
+    .kv-num{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:rgba(196,149,42,.1);padding:3px 8px;border-radius:5px;flex-shrink:0}
+    .kv-info{flex:1;min-width:0}
+    .kv-date{font-size:.82rem;font-weight:600}
+    .kv-meta{font-size:.68rem;color:var(--muted);margin-top:2px}
+    .kv-amt{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:#2d6a4f;flex-shrink:0}
+    .kv-arrow{color:var(--muted);font-size:.9rem;flex-shrink:0}
+    /* receipt modal */
+    #receipt-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+    #receipt-modal.open{display:flex}
+    .receipt-wrap{background:#fff;border-radius:4px;max-width:340px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+    .receipt{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#1a1a1a;padding:28px 24px;line-height:1.6}
+    .receipt-header{text-align:center;margin-bottom:20px}
+    .receipt-logo{font-size:1.5rem;font-weight:700;letter-spacing:.04em;margin-bottom:2px}
+    .receipt-sub{font-size:.62rem;color:#666;letter-spacing:.1em;text-transform:uppercase}
+    .receipt-divider{border:none;border-top:1px dashed #ccc;margin:12px 0}
+    .receipt-divider.solid{border-top:1px solid #aaa}
+    .receipt-kv-num{text-align:center;font-size:.65rem;color:#888;margin-bottom:4px}
+    .receipt-date{text-align:center;font-size:.72rem;color:#555;margin-bottom:14px}
+    .receipt-section-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#999;margin:10px 0 6px}
+    .receipt-item{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+    .receipt-item .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .receipt-item .size{color:#888;width:20px;text-align:center;flex-shrink:0}
+    .receipt-item .price{text-align:right;flex-shrink:0;font-weight:600}
+    .receipt-pay-row{display:flex;justify-content:space-between;padding:2px 0;color:#555}
+    .receipt-total-row{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;padding:4px 0;margin-top:2px}
+    .receipt-footer{text-align:center;margin-top:16px;font-size:.62rem;color:#999;line-height:1.8}
+    .receipt-stamp{text-align:center;font-size:.68rem;color:#555;background:#f5f5f5;border-radius:4px;padding:6px 10px;margin:10px 0;border:1px dashed #ddd}
+    .receipt-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--border);background:var(--bg)}
+    .receipt-close-btn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border2);background:transparent;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
+    .receipt-print-btn{flex:1;padding:10px;border-radius:8px;border:none;background:var(--text);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
+    @media print{
+      body > *{display:none!important}
+      #receipt-print-area{display:block!important;font-family:'JetBrains Mono',monospace;font-size:11px;width:280px;margin:0 auto}
+    }
+    #receipt-print-area{display:none}
+
     /* statistikk lists */
     .stat-line{display:flex;justify-content:space-between;align-items:center;padding:9px 18px;border-bottom:1px solid var(--border);font-size:.8rem}
     .stat-line:last-child{border-bottom:none}
@@ -367,7 +412,7 @@
     .stamp.last-stamped{animation:stampbump .5s cubic-bezier(.34,1.56,.64,1)}
     @keyframes stampbump{0%{transform:scale(0) rotate(0)}60%{transform:scale(1.3) rotate(-8deg)}100%{transform:scale(1) rotate(-8deg)}}
     .stamp-bonus{padding:8px 16px;background:#3B2208;color:#FEF9C3;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;margin-top:14px}
-    .cust-list-row{display:grid;grid-template-columns:auto 1fr 100px 120px auto;gap:14px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border)}
+    .cust-list-row{display:grid;grid-template-columns:auto 1fr 100px 120px auto;gap:10px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border)}
     .cust-list-row:last-child{border-bottom:none}
     .cust-list-row:hover{background:rgba(0,0,0,.02)}
     .cl-code{font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:700;color:var(--accent);background:rgba(196,149,42,.1);padding:3px 9px;border-radius:5px;letter-spacing:.12em}
@@ -388,6 +433,20 @@
     .lt-filter{padding:6px 12px;border-radius:7px;font-size:.66rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--muted);font-family:inherit;letter-spacing:.05em;transition:all .15s}
     .lt-filter:hover{background:var(--card);color:var(--text)}
     .lt-filter.active{background:var(--text);color:var(--bg);border-color:transparent}
+
+    /* ── QR-kode modal ── */
+    #qr-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center;padding:24px}
+    #qr-modal.open{display:flex}
+    .qr-box{background:#fff;border-radius:20px;padding:32px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .qr-box h3{font-family:'DM Serif Display',serif;font-size:1.3rem;color:#3B2208;margin-bottom:4px}
+    .qr-box .qr-sub{font-size:.75rem;color:#9B7B5A;margin-bottom:20px}
+    #qr-img{width:200px;height:200px;border-radius:12px;border:2px solid #F0EDE6;margin-bottom:16px}
+    .qr-kode{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#C49526;letter-spacing:.18em;margin-bottom:8px}
+    .qr-url{font-size:.65rem;color:#9B7B5A;word-break:break-all;margin-bottom:20px;padding:8px 12px;background:#F7F4EF;border-radius:8px}
+    .qr-close{padding:10px 28px;background:#3B2208;color:#FEF9C3;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+    .qr-close:hover{opacity:.85}
+    .cl-qr-btn{padding:5px 10px;border-radius:6px;font-size:.62rem;font-weight:700;border:1.5px solid rgba(196,149,42,.4);background:rgba(196,149,42,.08);color:var(--accent);cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:all .15s}
+    .cl-qr-btn:hover{background:rgba(196,149,42,.18)}
 
     /* ── NY: Ønsket smak (admin) ── */
     .sug-admin-row{display:grid;grid-template-columns:50px 1fr 100px 90px 110px;gap:14px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--border)}
@@ -472,6 +531,118 @@
     .kspp-dot.f{background:#C4952A}
     .kspp-free{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:100px;background:rgba(196,149,42,.2);color:#C4952A;letter-spacing:.06em;white-space:nowrap}
 
+    /* ── Kasse split layout ── */
+    .kasse-main{display:flex;flex:1;overflow:hidden;gap:0}
+    .kasse-order{width:260px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid rgba(247,244,239,.07);background:rgba(0,0,0,.18)}
+    .kasse-order-head{padding:12px 18px 8px;font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,244,239,.3);border-bottom:1px solid rgba(247,244,239,.06)}
+    .kasse-order-items{flex:1;overflow-y:auto;padding:6px 0}
+    .kasse-order-empty{padding:32px 18px;text-align:center;font-size:.75rem;color:rgba(247,244,239,.18);line-height:1.7}
+    .kasse-item-row{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(247,244,239,.04);animation:itemIn .18s ease-out}
+    @keyframes itemIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+    .kasse-item-emo{font-size:1.2rem;flex-shrink:0;width:26px;text-align:center}
+    .kasse-item-info{flex:1;min-width:0}
+    .kasse-item-name{font-size:.78rem;font-weight:600;color:#F7F4EF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kasse-item-meta{display:flex;gap:5px;align-items:center;margin-top:2px}
+    .kasse-item-size{font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(247,244,239,.08);color:rgba(247,244,239,.5);font-family:'JetBrains Mono',monospace}
+    .kasse-item-pay{font-size:.55rem;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-weight:600}
+    .kasse-item-pay.vipps{background:rgba(255,128,0,.15);color:#ffa040}
+    .kasse-item-pay.kontant{background:rgba(45,106,79,.2);color:#4ade80}
+    .kasse-item-pay.stempel{background:rgba(196,149,42,.15);color:#C4952A}
+    .kasse-item-price{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;color:rgba(247,244,239,.7);flex-shrink:0}
+    .kasse-item-del{background:none;border:none;color:rgba(247,244,239,.2);cursor:pointer;font-size:.9rem;padding:2px 4px;border-radius:4px;transition:all .12s;flex-shrink:0;line-height:1}
+    .kasse-item-del:hover{color:#fca5a5;background:rgba(220,38,38,.12)}
+    .kasse-order-footer{border-top:1px solid rgba(247,244,239,.07);padding:12px 14px;flex-shrink:0}
+    .kasse-pay-split-row{display:flex;justify-content:space-between;font-size:.68rem;font-family:'JetBrains Mono',monospace;color:rgba(247,244,239,.35);margin-bottom:3px}
+    .kasse-pay-split-row span:last-child{color:rgba(247,244,239,.55)}
+    .kasse-total-line{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(247,244,239,.1)}
+    .kasse-total-lbl2{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+    .kasse-total2{font-family:'DM Serif Display',serif;font-size:1.6rem;letter-spacing:-.02em;color:#F7F4EF;line-height:1}
+    .kasse-count-pill{display:inline-flex;align-items:center;justify-content:center;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(247,244,239,.3);font-weight:600}
+    .kasse-products{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .kasse-products .kasse-controls{border-bottom:1px solid rgba(247,244,239,.07)}
+    .kasse-products .kasse-grid{flex:1;overflow:hidden}
+
+    /* ── Kasse checkout/receipt views ── */
+    .kasse-to-checkout{width:100%;padding:13px;background:#C4952A;border:none;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:700;color:#1C1B19;cursor:pointer;margin-top:10px;transition:opacity .15s}
+    .kasse-to-checkout:hover{opacity:.9}
+    .kasse-to-checkout:disabled{opacity:.3;cursor:not-allowed}
+    .kv-checkout-wrap{flex:1;overflow-y:auto;background:#1C1B19}
+    .kv-checkout-inner{max-width:520px;margin:0 auto;padding:28px 24px}
+    .kco-section{margin-bottom:26px}
+    .kco-head{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,244,239,.3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(247,244,239,.06)}
+    .kco-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(247,244,239,.05)}
+    .kco-item:last-child{border-bottom:none}
+    .kco-item-emo{font-size:1.2rem;width:26px;text-align:center;flex-shrink:0}
+    .kco-item-name{flex:1;font-size:.82rem;font-weight:600;color:#F7F4EF}
+    .kco-item-size{font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(247,244,239,.08);color:rgba(247,244,239,.5);font-family:'JetBrains Mono',monospace}
+    .kco-item-price{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700;color:rgba(247,244,239,.7)}
+    .kco-item-del{background:none;border:none;color:rgba(247,244,239,.2);cursor:pointer;font-size:.9rem;padding:2px 6px;border-radius:4px;transition:color .12s}
+    .kco-item-del:hover{color:#fca5a5}
+    .kco-total-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;border-top:1px solid rgba(247,244,239,.12)}
+    .kco-total-lbl{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+    .kco-total-val{font-family:'DM Serif Display',serif;font-size:2rem;color:#F7F4EF}
+    .kco-stamp-input{width:100%;padding:11px 14px;background:rgba(247,244,239,.05);border:1.5px solid rgba(247,244,239,.1);border-radius:10px;color:#F7F4EF;font-family:'Space Grotesk',sans-serif;font-size:.88rem;outline:none;transition:border-color .15s}
+    .kco-stamp-input:focus{border-color:rgba(196,149,42,.5)}
+    .kco-stamp-input::placeholder{color:rgba(247,244,239,.25)}
+    .kco-stamp-results{margin-top:8px;border:1px solid rgba(247,244,239,.08);border-radius:10px;overflow:hidden;max-height:190px;overflow-y:auto}
+    .kco-stamp-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .12s;border-bottom:1px solid rgba(247,244,239,.05)}
+    .kco-stamp-row:last-child{border-bottom:none}
+    .kco-stamp-row:hover{background:rgba(247,244,239,.05)}
+    .kco-stamp-sel{background:rgba(196,149,42,.08);border:1.5px solid rgba(196,149,42,.25);border-radius:10px;padding:12px 14px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .kco-stamp-sel-info{flex:1;min-width:0}
+    .kco-stamp-sel-name{font-size:.85rem;font-weight:600;color:#F7F4EF}
+    .kco-stamp-sel-meta{font-size:.68rem;color:rgba(247,244,239,.5);margin-top:2px}
+    .kco-stamp-sel-free{font-size:.7rem;font-weight:700;color:#C4952A;background:rgba(196,149,42,.15);padding:4px 10px;border-radius:6px;white-space:nowrap}
+    .kco-stamp-clear{background:none;border:none;color:rgba(247,244,239,.25);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;transition:color .12s}
+    .kco-stamp-clear:hover{color:#fca5a5}
+    .kco-pay-btns{display:flex;gap:10px}
+    .kco-pay-btn{flex:1;padding:14px;border:2px solid rgba(247,244,239,.12);background:transparent;border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:600;color:rgba(247,244,239,.45);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+    .kco-pay-btn:hover{border-color:rgba(247,244,239,.3);color:#F7F4EF}
+    .kco-pay-btn.active{background:rgba(247,244,239,.08);border-color:rgba(247,244,239,.5);color:#F7F4EF}
+    .kco-betal-btn{width:100%;padding:16px;background:#C4952A;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#1C1B19;cursor:pointer;margin-top:6px;transition:opacity .15s}
+    .kco-betal-btn:hover{opacity:.9}
+    .kasse-back-btn{padding:8px 16px;background:transparent;border:1px solid rgba(247,244,239,.15);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:.72rem;font-weight:600;color:rgba(247,244,239,.45);cursor:pointer;transition:all .15s}
+    .kasse-back-btn:hover{border-color:rgba(247,244,239,.4);color:#F7F4EF}
+    .kv-receipt-wrap{flex:1;overflow-y:auto;background:#181611;display:flex;flex-direction:column;align-items:center;padding:32px 20px}
+    .kv-receipt-paper{background:#fff;border-radius:3px;width:min(300px,100%);padding:24px 20px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#1a1a1a;line-height:1.6;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+    .kv-receipt-actions{display:flex;gap:10px;margin-top:20px;width:min(300px,100%)}
+    .kv-receipt-btn{flex:1;padding:13px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;text-align:center}
+    .kv-receipt-btn.done{background:transparent;border:1.5px solid rgba(247,244,239,.25);color:#F7F4EF}
+    .kv-receipt-btn.print{background:#C4952A;border:none;color:#1C1B19}
+    .kv-receipt-btn:hover{opacity:.85}
+    .kco-cart-badge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(196,149,42,.15);color:#C4952A;margin-left:6px}
+
+    /* ── Innkjøpspriser ── */
+    .pris-grid{display:flex;flex-direction:column;gap:0}
+    .pris-row{display:grid;grid-template-columns:180px 1fr 90px 100px 110px 80px;gap:12px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border);font-size:.78rem;transition:background .12s}
+    .pris-row:hover{background:rgba(0,0,0,.02)}
+    .pris-row:last-child{border-bottom:none}
+    .pris-row.loading{opacity:.4}
+    .pris-head{display:grid;grid-template-columns:180px 1fr 90px 100px 110px 80px;gap:12px;padding:9px 18px;border-bottom:1px solid var(--border);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .pris-ing{font-weight:600;color:var(--text)}
+    .pris-product{font-size:.73rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .pris-kr{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
+    .pris-per-kg{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted)}
+    .pris-butikk{font-size:.68rem;color:var(--muted)}
+    .pris-trend{font-size:.72rem;font-weight:700;text-align:right}
+    .pris-trend.up{color:var(--red)}
+    .pris-trend.down{color:var(--green)}
+    .pris-trend.same{color:var(--muted)}
+    .pris-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .pris-kpi-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    .pris-kpi{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+    .pris-kpi .lbl{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .pris-kpi .val{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--text)}
+    .pris-kpi .sub{font-size:.65rem;color:var(--muted);margin-top:2px}
+    .pris-kpi.profit .val{color:var(--green)}
+    .pris-kpi.loss .val{color:var(--red)}
+    .pris-refresh-btn{padding:9px 20px;background:var(--text);color:var(--bg);border:none;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity .15s}
+    .pris-refresh-btn:hover{opacity:.8}
+    .pris-refresh-btn:disabled{opacity:.4;cursor:not-allowed}
+    .pris-last-updated{font-size:.68rem;color:var(--muted);margin-left:auto;align-self:center}
+    .pris-error{background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#B91C1C;margin-bottom:12px;display:none}
+
     /* coming soon */
     .coming{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:40px;text-align:center;color:var(--muted)}
     .coming-icon{font-size:2rem;margin-bottom:10px}
@@ -555,6 +726,8 @@
       <div class="nav-lbl">Økonomi</div>
       <button class="side-btn" data-panel="regnskap"><span class="side-icon">💰</span>Regnskap</button>
       <button class="side-btn" data-panel="statistikk"><span class="side-icon">📊</span>Statistikk</button>
+      <button class="side-btn" data-panel="oppskrifter"><span class="side-icon">📖</span>Oppskrifter</button>
+      <button class="side-btn" data-panel="priser"><span class="side-icon">🛒</span>Innkjøpspriser</button>
       <div class="nav-lbl">System</div>
       <button class="side-btn" data-panel="firebase"><span class="side-icon">🔥</span>Firebase</button>
       <div class="nav-lbl">Historikk</div>
@@ -762,25 +935,50 @@
       <div class="panel" id="panel-regnskap">
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
           <div><div class="panel-title">Regnskap</div><div class="panel-sub">Føre inntekter og utgifter — lagres i Firebase</div></div>
-          <div style="display:flex;gap:8px">
+        </div>
+
+        <!-- Tabs -->
+        <div class="reg-tabs">
+          <button class="reg-tab active" id="reg-tab-tx" onclick="regShowTab('tx')">Transaksjoner</button>
+          <button class="reg-tab" id="reg-tab-kv" onclick="regShowTab('kv')">🧾 Kvitteringer</button>
+        </div>
+
+        <!-- Transaksjoner -->
+        <div id="reg-panel-tx">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
             <button class="tx-filter active" data-tx-filter="all">Alle</button>
             <button class="tx-filter" data-tx-filter="income">Inntekter</button>
             <button class="tx-filter" data-tx-filter="expense">Utgifter</button>
             <button class="tb-btn primary" id="tx-add-btn" style="padding:8px 16px">+ Ny transaksjon</button>
           </div>
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div class="stat-box kpi inc"><div class="stat-lbl">Totale inntekter</div><div class="stat-val" id="reg-inc">0 kr</div></div>
-          <div class="stat-box kpi exp"><div class="stat-lbl">Totale utgifter</div><div class="stat-val" id="reg-exp">0 kr</div></div>
-          <div class="stat-box kpi" id="reg-net-box"><div class="stat-lbl">Resultat</div><div class="stat-val" id="reg-net">0 kr</div></div>
-          <div class="stat-box kpi neu"><div class="stat-lbl">Antall transaksjoner</div><div class="stat-val" id="reg-count">0</div></div>
-        </div>
-        <div class="card">
-          <div class="card-head" id="tx-head">Alle transaksjoner</div>
-          <div class="tx-table-head">
-            <span>Dato</span><span>Beskrivelse</span><span>Kategori</span><span>Type</span><span style="text-align:right">Beløp</span><span></span>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="stat-box kpi inc"><div class="stat-lbl">Totale inntekter</div><div class="stat-val" id="reg-inc">0 kr</div></div>
+            <div class="stat-box kpi exp"><div class="stat-lbl">Totale utgifter</div><div class="stat-val" id="reg-exp">0 kr</div></div>
+            <div class="stat-box kpi" id="reg-net-box"><div class="stat-lbl">Resultat</div><div class="stat-val" id="reg-net">0 kr</div></div>
+            <div class="stat-box kpi neu"><div class="stat-lbl">Antall transaksjoner</div><div class="stat-val" id="reg-count">0</div></div>
           </div>
-          <div id="tx-list"></div>
+          <div class="card">
+            <div class="card-head" id="tx-head">Alle transaksjoner</div>
+            <div class="tx-table-head">
+              <span>Dato</span><span>Beskrivelse</span><span>Kategori</span><span>Type</span><span style="text-align:right">Beløp</span><span></span>
+            </div>
+            <div id="tx-list"></div>
+          </div>
+        </div>
+
+        <!-- Kvitteringer -->
+        <div id="reg-panel-kv" style="display:none">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+            <div class="stat-box kpi inc"><div class="stat-lbl">Totalt solgt</div><div class="stat-val" id="kv-stat-total">0 kr</div></div>
+            <div class="stat-box kpi neu"><div class="stat-lbl">Antall økter</div><div class="stat-val" id="kv-stat-sessions">0</div></div>
+            <div class="stat-box kpi"><div class="stat-lbl">Porsjoner solgt</div><div class="stat-val" id="kv-stat-portions">0</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head">Alle kvitteringer — klikk for å åpne</div>
+            <div class="kv-list" id="kv-list">
+              <div class="tx-empty">Ingen kvitteringer ennå.<br>Kvitteringer lagres automatisk når du avslutter en salgsøkt.</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -803,6 +1001,49 @@
           <div class="card">
             <div class="card-head">Siste 5 transaksjoner</div>
             <div id="stat-recent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPPSKRIFTER -->
+      <div class="panel" id="panel-oppskrifter" style="padding:0;gap:0">
+        <iframe
+          src="/oppskrifter"
+          id="oppskrifter-iframe"
+          style="border:none;width:100%;min-height:calc(100vh - 120px);border-radius:12px"
+          title="Oppskrifter"
+        ></iframe>
+      </div>
+
+      <!-- INNKJØPSPRISER -->
+      <div class="panel" id="panel-priser">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <div class="panel-title">Innkjøpspriser</div>
+            <div class="panel-sub">Live priser fra Kassalapp — billigste alternativ per ingrediens</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="pris-last-updated" id="pris-last-updated"></span>
+            <button class="pris-refresh-btn" id="pris-refresh-btn" onclick="prisHentAlt()">
+              🔄 Oppdater priser
+            </button>
+          </div>
+        </div>
+        <div class="pris-error" id="pris-error">Kunne ikke hente priser. Sjekk internettforbindelsen.</div>
+        <div class="pris-kpi-row" id="pris-kpis">
+          <div class="pris-kpi"><div class="lbl">Total innkjøp (36 porsjoner)</div><div class="val" id="pris-kpi-total">—</div><div class="sub">6 smaker × 6 porsjoner</div></div>
+          <div class="pris-kpi"><div class="lbl">Kostnad per porsjon</div><div class="val" id="pris-kpi-per">—</div><div class="sub">Råvarekost</div></div>
+          <div class="pris-kpi"><div class="lbl">Margin ved 25 kr</div><div class="val" id="pris-kpi-25">—</div><div class="sub">Salgspris 25 kr</div></div>
+          <div class="pris-kpi"><div class="lbl">Margin ved 30 kr</div><div class="val" id="pris-kpi-30">—</div><div class="sub">Salgspris 30 kr</div></div>
+        </div>
+        <div class="card">
+          <div class="pris-head">
+            <span>Ingrediens</span><span>Billigste produkt</span><span>Pris</span><span>Kr/kg</span><span>Butikk</span><span style="text-align:right">Trend</span>
+          </div>
+          <div class="pris-grid" id="pris-grid">
+            <div style="padding:40px;text-align:center;color:var(--muted);font-size:.82rem">
+              Trykk "Oppdater priser" for å hente ferske priser fra Kassalapp
+            </div>
           </div>
         </div>
       </div>
@@ -975,7 +1216,7 @@
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
           <div>
             <div class="panel-title">Stempelkort</div>
-            <div class="panel-sub">Kjøp 5 yogurter, få den 6. gratis — bygger faste kunder</div>
+            <div class="panel-sub">Kjøp 4 yogurter, få den 5. gratis — bygger faste kunder</div>
           </div>
           <span class="live-pulse" id="loj-count-badge">0 AKTIVE KORT</span>
         </div>
@@ -1016,7 +1257,7 @@
         </div>
         <div class="stat-row">
           <div class="stat-box"><div class="stat-lbl">Aktive kort</div><div class="stat-val" id="loj-stat-active">0</div><div class="stat-sub">Registrerte kunder</div></div>
-          <div class="stat-box"><div class="stat-lbl">Snart gratis</div><div class="stat-val" id="loj-stat-soon">0</div><div class="stat-sub">5 stempler</div></div>
+          <div class="stat-box"><div class="stat-lbl">Snart gratis</div><div class="stat-val" id="loj-stat-soon">0</div><div class="stat-sub">4 stempler</div></div>
           <div class="stat-box"><div class="stat-lbl">Gratis utdelt</div><div class="stat-val" id="loj-stat-free">0</div><div class="stat-sub">Totalt</div></div>
         </div>
         <div class="card">
@@ -1127,23 +1368,70 @@
     </div>
     <button class="kasse-exit" onclick="kasseClose()">■ &nbsp;Avslutt økt</button>
   </div>
-  <div class="kasse-controls">
-    <button class="kasse-size-btn" onclick="kasseSetSize(this,'S',20)"><span class="ksz-l">Liten</span><span class="ksz-p">20 kr</span></button>
-    <button class="kasse-size-btn active" onclick="kasseSetSize(this,'M',25)"><span class="ksz-l">Medium</span><span class="ksz-p">25 kr</span></button>
-    <button class="kasse-size-btn" onclick="kasseSetSize(this,'L',30)"><span class="ksz-l">Stor</span><span class="ksz-p">30 kr</span></button>
-    <div class="kasse-divider"></div>
-    <button class="kasse-pay-btn active" onclick="kasseSetPay(this,'vipps')">💳 Vipps</button>
-    <button class="kasse-pay-btn" onclick="kasseSetPay(this,'kontant')">💵 Kontant</button>
-  </div>
-  <div class="kasse-grid" id="kasse-flavor-grid"></div>
-  <div class="kasse-footer">
-    <div class="kasse-total-wrap">
-      <div class="kasse-total-lbl">Totalt</div>
-      <div class="kasse-total" id="kasse-total-disp">0 kr</div>
+  <!-- VIEW 1: ORDER (build cart) -->
+  <div id="kv-order" class="kasse-main" style="flex:1;overflow:hidden;display:flex">
+    <div class="kasse-order">
+      <div class="kasse-order-head">Kurv<span class="kco-cart-badge" id="kasse-cart-badge">tom</span></div>
+      <div class="kasse-order-items" id="kasse-order-items">
+        <div class="kasse-order-empty">Ingen varer ennå.<br>Trykk på en smak for å legge til.</div>
+      </div>
+      <div class="kasse-order-footer">
+        <div class="kasse-total-line">
+          <span class="kasse-total-lbl2">Totalt</span>
+          <span class="kasse-total2" id="kasse-total-disp">0 kr</span>
+        </div>
+        <div class="kasse-count-pill" id="kasse-sold-disp" style="margin-bottom:8px">0 varer</div>
+        <button class="kasse-to-checkout" id="kasse-checkout-btn" disabled onclick="kasseGoCheckout()">Til betaling →</button>
+      </div>
     </div>
-    <span class="kasse-sold" id="kasse-sold-disp">0 solgt</span>
-    <div class="kasse-undo-wrap" id="kasse-undo-wrap">
-      <span style="font-size:.7rem;color:rgba(247,244,239,.2);align-self:center">Ingen salg ennå</span>
+    <div class="kasse-products">
+      <div class="kasse-controls">
+        <button class="kasse-size-btn" id="ksz-s" onclick="kasseSetSize(this,'S',kasseSzPris.S)"><span class="ksz-l">Liten</span><span class="ksz-p" id="ksz-s-p">20 kr</span></button>
+        <button class="kasse-size-btn active" id="ksz-m" onclick="kasseSetSize(this,'M',kasseSzPris.M)"><span class="ksz-l">Medium</span><span class="ksz-p" id="ksz-m-p">25 kr</span></button>
+        <button class="kasse-size-btn" id="ksz-l" onclick="kasseSetSize(this,'L',kasseSzPris.L)"><span class="ksz-l">Stor</span><span class="ksz-p" id="ksz-l-p">30 kr</span></button>
+      </div>
+      <div class="kasse-grid" id="kasse-flavor-grid"></div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: CHECKOUT -->
+  <div id="kv-checkout" class="kv-checkout-wrap" style="display:none">
+    <div class="kv-checkout-inner">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <button class="kasse-back-btn" onclick="kasseGoOrder()">← Tilbake</button>
+        <span style="font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,244,239,.3)">Betaling</span>
+      </div>
+      <div class="kco-section">
+        <div class="kco-head">Bestilling</div>
+        <div id="kco-items"></div>
+        <div class="kco-total-row">
+          <span class="kco-total-lbl">Totalt</span>
+          <span class="kco-total-val" id="kco-total">0 kr</span>
+        </div>
+      </div>
+      <div class="kco-section">
+        <div class="kco-head">Klippekort (valgfritt)</div>
+        <input class="kco-stamp-input" id="kco-stamp-input" type="text" placeholder="Søk navn eller kode..." autocomplete="off" oninput="kcoStampSearch(this.value)"/>
+        <div class="kco-stamp-results" id="kco-stamp-results" style="display:none"></div>
+        <div id="kco-stamp-selected" style="display:none"></div>
+      </div>
+      <div class="kco-section">
+        <div class="kco-head">Betalingsmåte</div>
+        <div class="kco-pay-btns">
+          <button class="kco-pay-btn active" id="kco-pay-vipps" onclick="kcoSetPay(this,'vipps')">💳 Vipps</button>
+          <button class="kco-pay-btn" id="kco-pay-kontant" onclick="kcoSetPay(this,'kontant')">💵 Kontant</button>
+        </div>
+      </div>
+      <button class="kco-betal-btn" id="kco-betal-btn" onclick="kasseBetal()">Betal 0 kr →</button>
+    </div>
+  </div>
+
+  <!-- VIEW 3: RECEIPT PREVIEW -->
+  <div id="kv-receipt" class="kv-receipt-wrap" style="display:none">
+    <div class="kv-receipt-paper" id="kv-receipt-content"></div>
+    <div class="kv-receipt-actions">
+      <button class="kv-receipt-btn done" onclick="kasseNyOrdre()">← Ny ordre</button>
+      <button class="kv-receipt-btn print" onclick="window.print()">🖨️ Skriv ut</button>
     </div>
   </div>
 
@@ -1304,6 +1592,10 @@ document.querySelectorAll('.side-btn[data-panel]').forEach(btn=>{
     if(btn.dataset.panel==='regnskap') renderTx();
     if(btn.dataset.panel==='statistikk') renderStatistikk();
     if(btn.dataset.panel==='display') renderDisplays();
+    if(btn.dataset.panel==='oppskrifter'){
+      const fr=document.getElementById('oppskrifter-iframe');
+      fr.src='/oppskrifter?v='+Date.now();
+    }
   });
 });
 
@@ -1993,47 +2285,67 @@ function motorMove(){
 // ══════════════════════════════════════════════════
 // SALGS-TRACKER
 // ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// STØRRELSESPRISER — leses fra Firebase (settes i Oppskrifter → Priskalkyle)
+// ══════════════════════════════════════════════════
+let kasseSzPris = { S: 20, M: 25, L: 30 };
+db.ref('yogurt-config/sizePrices').on('value', snap => {
+  const v = snap.val();
+  if (v) {
+    kasseSzPris = { S: v.S || 20, M: v.M || 25, L: v.L || 30 };
+    const sp = document.getElementById('ksz-s-p'); if (sp) sp.textContent = kasseSzPris.S + ' kr';
+    const mp = document.getElementById('ksz-m-p'); if (mp) mp.textContent = kasseSzPris.M + ' kr';
+    const lp = document.getElementById('ksz-l-p'); if (lp) lp.textContent = kasseSzPris.L + ' kr';
+  }
+});
+
+// ══════════════════════════════════════════════════
+// KASSE — state
+// ══════════════════════════════════════════════════
 let stSize='M', stPrice=25, stPayment='vipps';
 let stActive=false, stStartTime=null, stElapsedTimer=null;
-let stSales=[], stTotals={};
+let stSales=[], stTotals={};          // session totals (all completed orders)
+let kasseCart=[];                      // current cart being built
+let kassePayment='vipps';             // payment for current checkout
+let kasseStampCode=null;              // selected stamp customer code
+let kasseStampCustomer=null;          // selected stamp customer data
 
-function stSetSize(btn, size, price){
+// ── Helpers ──
+function kasseCartTotal(){ return kasseCart.reduce((s,x)=>s+x.price,0); }
+function kasseView(v){
+  document.getElementById('kv-order').style.display=v==='order'?'flex':'none';
+  document.getElementById('kv-checkout').style.display=v==='checkout'?'block':'none';
+  document.getElementById('kv-receipt').style.display=v==='receipt'?'flex':'none';
+}
+
+// ── Open / close session ──
+function stSetSize(btn,size,price){
   btn.closest('.size-row').querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  stSize=size; stPrice=price;
+  btn.classList.add('active'); stSize=size; stPrice=price;
 }
-function stSetPay(btn, pay){
+function stSetPay(btn,pay){
   btn.closest('.pay-row').querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  stPayment=pay;
+  btn.classList.add('active'); stPayment=pay;
 }
-function stToggle(){
-  if(!stActive){ kasseOpen(); } else { kasseClose(); }
-}
+function stToggle(){ if(!stActive){ kasseOpen(); } else { kasseClose(); } }
 
 function kasseOpen(){
   stActive=true; stStartTime=Date.now(); stSales=[]; stTotals={};
-  stSize='M'; stPrice=25; stPayment='vipps';
-
-  // Reset controls
+  kasseCart=[]; kassePayment='vipps'; kasseStampCode=null; kasseStampCustomer=null;
+  stSize='M'; stPrice=25;
   document.querySelectorAll('.kasse-size-btn').forEach((b,i)=>b.classList.toggle('active',i===1));
-  document.querySelectorAll('.kasse-pay-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
-
   const now=new Date();
   const dateStr=now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('kasse-session-label').textContent=dateStr;
   document.getElementById('st-session-title').textContent=`Salgsøkt — ${dateStr}`;
   document.getElementById('st-session-sub').textContent=`Startet ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   document.getElementById('st-toggle').textContent='■ Avslutt økt';
-
+  kasseView('order');
   kasseRenderGrid();
-  kasseUpdateFooter();
-  document.getElementById('kasse-undo-wrap').innerHTML='<span style="font-size:.7rem;color:rgba(247,244,239,.2);align-self:center">Ingen salg ennå</span>';
-
+  kasseCartRender();
   document.getElementById('kasse-overlay').classList.add('open');
-  const overlay=document.getElementById('kasse-overlay');
-  (overlay.requestFullscreen||overlay.webkitRequestFullscreen||function(){}).call(overlay);
-
+  const rfs=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;
+  if(rfs) rfs.call(document.documentElement).catch(()=>{});
   clearInterval(stElapsedTimer);
   stElapsedTimer=setInterval(()=>{
     const d=Math.floor((Date.now()-stStartTime)/1000);
@@ -2057,20 +2369,72 @@ function kasseClose(){
   stUpdateSummary(); stRenderTapGrid();
 }
 
+// ── Size selector in kasse order view ──
 function kasseSetSize(btn,size,price){
   btn.closest('.kasse-controls').querySelectorAll('.kasse-size-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active'); stSize=size; stPrice=price;
 }
-function kasseSetPay(btn,pay){
-  btn.closest('.kasse-controls').querySelectorAll('.kasse-pay-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); stPayment=pay;
+
+// ── Cart management ──
+function kasseTap(el,name){
+  if(!stActive)return;
+  const f=flavors.find(x=>x.name===name);
+  kasseCart.push({name,emoji:f?.emoji||'🍦',size:stSize,price:stPrice});
+  const bump=document.createElement('div');bump.className='kasse-bump';
+  el.appendChild(bump);setTimeout(()=>bump.remove(),400);
+  kasseCartRender();
+  kasseRenderGrid();
 }
 
+function kasseCartRemove(idx){
+  kasseCart.splice(idx,1);
+  kasseCartRender();
+  kasseRenderGrid();
+}
+
+function kasseCartRender(){
+  const el=document.getElementById('kasse-order-items'); if(!el)return;
+  const total=kasseCartTotal();
+  const count=kasseCart.length;
+  // badge
+  const badge=document.getElementById('kasse-cart-badge');
+  if(badge) badge.textContent=count?count+' varer':'tom';
+  // total
+  const td=document.getElementById('kasse-total-disp'); if(td)td.textContent=total.toLocaleString('no-NO')+' kr';
+  // count pill
+  const cp=document.getElementById('kasse-sold-disp'); if(cp)cp.textContent=count+' varer';
+  // checkout button
+  const cb=document.getElementById('kasse-checkout-btn'); if(cb)cb.disabled=count===0;
+  if(cb)cb.textContent=count?`Til betaling (${total.toLocaleString('no-NO')} kr) →`:'Til betaling →';
+  // list
+  if(!count){
+    el.innerHTML='<div class="kasse-order-empty">Ingen varer ennå.<br>Trykk på en smak for å legge til.</div>';
+    return;
+  }
+  el.innerHTML=kasseCart.map((s,i)=>`
+    <div class="kasse-item-row">
+      <span class="kasse-item-emo">${s.emoji}</span>
+      <div class="kasse-item-info">
+        <div class="kasse-item-name">${s.name}</div>
+        <div class="kasse-item-meta"><span class="kasse-item-size">${s.size}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:rgba(247,244,239,.35)">${s.price} kr</span></div>
+      </div>
+      <span class="kasse-item-price">${s.price} kr</span>
+      <button class="kasse-item-del" onclick="kasseCartRemove(${i})">×</button>
+    </div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+// ── Render flavor grid (shows cart counts) ──
 function kasseRenderGrid(){
   const grid=document.getElementById('kasse-flavor-grid'); if(!grid)return;
+  const cartCounts={};
+  kasseCart.forEach(s=>{
+    if(!cartCounts[s.name])cartCounts[s.name]={S:0,M:0,L:0,total:0};
+    cartCounts[s.name][s.size]++;cartCounts[s.name].total++;
+  });
   grid.innerHTML=flavors.map(f=>{
-    const tot=stTotals[f.name]?.total||0;
-    const s=stTotals[f.name]?.S||0, m=stTotals[f.name]?.M||0, l=stTotals[f.name]?.L||0;
+    const tot=cartCounts[f.name]?.total||0;
+    const s=cartCounts[f.name]?.S||0,m=cartCounts[f.name]?.M||0,l=cartCounts[f.name]?.L||0;
     return `<div class="kasse-card${f.available?'':' unavail'}" onclick="${f.available?`kasseTap(this,'${f.name.replace(/'/g,"\\'")}')`:''}" >
       <span class="kasse-emo">${f.emoji}</span>
       <span class="kasse-name">${f.name}</span>
@@ -2080,24 +2444,238 @@ function kasseRenderGrid(){
   }).join('');
 }
 
-// ── Stamp popup state ──
-let ksppPending=null, ksppTapEl=null, ksppSort='name', ksppQuery='';
-
-function kasseTap(el,name){
-  if(!stActive)return;
-  const f=flavors.find(x=>x.name===name);
-  ksppPending={name,emoji:f?.emoji||'🍦',size:stSize,price:stPrice,payment:stPayment};
-  ksppTapEl=el;
-  ksppQuery=''; ksppSort='name';
-  document.getElementById('kspp-search').value='';
-  document.getElementById('kspp-emo').textContent=f?.emoji||'🍦';
-  document.getElementById('kspp-title').textContent=name;
-  document.getElementById('kspp-meta').textContent=`${stSize === 'S'?'Liten':stSize==='M'?'Medium':'Stor'} · ${stPrice} kr · ${stPayment.charAt(0).toUpperCase()+stPayment.slice(1)}`;
-  document.querySelectorAll('.kspp-sort').forEach((b,i)=>b.classList.toggle('active',i===0));
-  ksppRenderList();
-  const ov=document.getElementById('kspp-overlay'); ov.style.display='flex';
-  setTimeout(()=>document.getElementById('kspp-search').focus(),80);
+// ── Navigate to checkout ──
+function kasseGoOrder(){
+  kasseView('order');
+  kasseCartRender();
 }
+
+function kasseGoCheckout(){
+  if(!kasseCart.length)return;
+  kassePayment='vipps';
+  kasseStampCode=null; kasseStampCustomer=null;
+  // Reset checkout UI
+  document.getElementById('kco-pay-vipps').classList.add('active');
+  document.getElementById('kco-pay-kontant').classList.remove('active');
+  document.getElementById('kco-stamp-input').value='';
+  document.getElementById('kco-stamp-results').style.display='none';
+  document.getElementById('kco-stamp-results').innerHTML='';
+  document.getElementById('kco-stamp-selected').style.display='none';
+  // Render order summary
+  const total=kasseCartTotal();
+  document.getElementById('kco-total').textContent=total.toLocaleString('no-NO')+' kr';
+  document.getElementById('kco-betal-btn').textContent=`Betal ${total.toLocaleString('no-NO')} kr →`;
+  const itemsEl=document.getElementById('kco-items');
+  itemsEl.innerHTML=kasseCart.map((s,i)=>`
+    <div class="kco-item">
+      <span class="kco-item-emo">${s.emoji}</span>
+      <span class="kco-item-name">${s.name}</span>
+      <span class="kco-item-size">${s.size}</span>
+      <span class="kco-item-price">${s.price} kr</span>
+      <button class="kco-item-del" onclick="kasseCartRemove(${i});kasseGoCheckout()" title="Fjern">×</button>
+    </div>`).join('');
+  kasseView('checkout');
+  setTimeout(()=>document.getElementById('kco-stamp-input').focus(),100);
+}
+
+// ── Checkout: stamp card ──
+let kcoStampQuery='';
+function kcoStampSearch(q){
+  kcoStampQuery=q.toLowerCase().trim();
+  const results=document.getElementById('kco-stamp-results');
+  if(!kcoStampQuery){results.style.display='none';results.innerHTML='';return;}
+  const entries=Object.entries(lojCustomers).filter(([code,c])=>
+    code.toLowerCase().includes(kcoStampQuery)||
+    (c.name||'').toLowerCase().includes(kcoStampQuery)||
+    (c.class||'').toLowerCase().includes(kcoStampQuery));
+  if(!entries.length){
+    results.innerHTML='<div style="padding:14px 16px;font-size:.78rem;color:rgba(247,244,239,.3)">Ingen treff</div>';
+    results.style.display='block';return;
+  }
+  results.innerHTML=entries.slice(0,8).map(([code,c])=>{
+    const s=c.stamps||0;
+    const dots=Array.from({length:5},(_,i)=>`<div class="kspp-dot${i<s?' f':''}"></div>`).join('');
+    const sizes=c.stampSizes;
+    const sizeTxt=sizes?`S×${sizes.S||0} M×${sizes.M||0} L×${sizes.L||0}`:'';
+    return `<div class="kco-stamp-row" onclick="kcoSelectCustomer('${code}')">
+      <span class="kspp-code">${code}</span>
+      <div style="flex:1;min-width:0">
+        <span class="kspp-name">${c.name||'—'}</span><span class="kspp-class">${c.class||''}</span>
+        ${sizeTxt?`<div style="font-size:.6rem;color:rgba(247,244,239,.3);margin-top:2px">${sizeTxt}</div>`:''}
+      </div>
+      <div class="kspp-dots">${dots}</div>
+      ${s>=4?'<span class="kspp-free">🎁 GRATIS</span>':''}
+    </div>`;
+  }).join('');
+  results.style.display='block';
+}
+
+function kcoSelectCustomer(code){
+  const c=lojCustomers[code]; if(!c)return;
+  kasseStampCode=code; kasseStampCustomer={...c};
+  document.getElementById('kco-stamp-results').style.display='none';
+  document.getElementById('kco-stamp-input').value='';
+  const newStamps=(c.stamps||0)+kasseCart.length;
+  const freesEarned=Math.floor(newStamps/5)-Math.floor((c.stamps||0)/5);
+  const stampsAfter=newStamps%5===0&&freesEarned>0?0:newStamps%5+(freesEarned>0?0:0);
+  // simpler: just show stamps+cart
+  const totalStampsAfter=Math.min((c.stamps||0)+kasseCart.length,5);
+  const isFree=(c.stamps||0)>=4||(c.stamps||0)+kasseCart.length>=5;
+  const sizes=c.stampSizes||{S:0,M:0,L:0};
+  const sizeInfo=`S×${sizes.S||0} M×${sizes.M||0} L×${sizes.L||0}`;
+  const stampsNow=c.stamps||0;
+  document.getElementById('kco-stamp-selected').style.display='flex';
+  document.getElementById('kco-stamp-selected').innerHTML=`
+    <div class="kco-stamp-sel">
+      <div class="kco-stamp-sel-info">
+        <div class="kco-stamp-sel-name">${c.name||code} <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(247,244,239,.4)">${code}</span></div>
+        <div class="kco-stamp-sel-meta">${stampsNow}/4 stempler · ${sizeInfo}</div>
+        <div style="display:flex;gap:4px;margin-top:6px">${Array.from({length:5},(_,i)=>`<div class="kspp-dot${i<stampsNow?' f':''}${i>=stampsNow&&i<stampsNow+kasseCart.length?' f':''}"></div>`).join('')}</div>
+        ${isFree?`<div style="font-size:.68rem;color:#C4952A;margin-top:6px">🎁 Gratis yogurt!</div>`:`<div style="font-size:.68rem;color:rgba(247,244,239,.4);margin-top:4px">+${kasseCart.length} stempel${kasseCart.length>1?'er':''} → ${Math.min(stampsNow+kasseCart.length,4)}/4</div>`}
+      </div>
+      <button class="kco-stamp-clear" onclick="kcoClearCustomer()" title="Fjern">×</button>
+    </div>`;
+}
+
+function kcoClearCustomer(){
+  kasseStampCode=null; kasseStampCustomer=null;
+  document.getElementById('kco-stamp-selected').style.display='none';
+  document.getElementById('kco-stamp-selected').innerHTML='';
+  document.getElementById('kco-stamp-input').value='';
+}
+
+function kcoSetPay(btn,pay){
+  kassePayment=pay;
+  document.querySelectorAll('.kco-pay-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Betal (process payment) ──
+function kasseBetal(){
+  if(!kasseCart.length)return;
+  const now=new Date();
+  const total=kasseCartTotal();
+  const ts=now.getTime();
+  const timeStr=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+
+  // Build sales with payment + stamp
+  const sales=kasseCart.map(s=>({...s,payment:kassePayment,stampCode:kasseStampCode,ts:now.getTime()}));
+
+  // Update stamp card if selected
+  if(kasseStampCode&&kasseStampCustomer){
+    const c=kasseStampCustomer;
+    const newStamps=(c.stamps||0)+kasseCart.length;
+    const freesEarned=Math.floor(newStamps/5)-Math.floor((c.stamps||0)/5);
+    const finalStamps=newStamps>=5?newStamps-5:newStamps;
+    const newFree=(c.freeGiven||0)+freesEarned;
+    // Track sizes
+    const sizes=c.stampSizes||{S:0,M:0,L:0};
+    kasseCart.forEach(s=>{sizes[s.size]=(sizes[s.size]||0)+1;});
+    db.ref(`yogurt-loyalty/${kasseStampCode}`).update({
+      stamps:finalStamps,freeGiven:newFree,lastSeen:ts,stampSizes:sizes
+    });
+    lojShowCustomer(kasseStampCode,{...c,stamps:finalStamps});
+  }
+
+  // Add to session sales
+  sales.forEach(s=>{
+    if(!stTotals[s.name])stTotals[s.name]={S:0,M:0,L:0,total:0};
+    stTotals[s.name][s.size]++;stTotals[s.name].total++;
+    stSales.push(s);
+  });
+  stUpdateSummary();
+
+  // Build receipt HTML
+  const kvNumPlaceholder='…';
+  const receiptItems=kasseCart.map(s=>`
+    <div class="receipt-item">
+      <span class="name">${s.emoji} ${s.name}</span>
+      <span class="size">${s.size}</span>
+      <span class="price">${s.price} kr</span>
+    </div>`).join('');
+  const stampLine=kasseStampCode&&kasseStampCustomer?
+    `<div class="receipt-stamp">🎟️ Klippekort: ${kasseStampCustomer.name||kasseStampCode} (${kasseStampCode})</div>`:'';
+  const payLabel=kassePayment==='vipps'?'Vipps':'Kontant';
+
+  const receiptHtml=`
+    <div class="receipt-header">
+      <div class="receipt-logo">🍦 YoGurt</div>
+      <div class="receipt-sub">Elevbedrift · 2026</div>
+    </div>
+    <hr class="receipt-divider solid"/>
+    <div class="receipt-kv-num" id="kv-inline-num">Kvittering #${kvNumPlaceholder}</div>
+    <div class="receipt-date">${now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'})} · ${timeStr}</div>
+    <hr class="receipt-divider"/>
+    <div class="receipt-section-lbl">Varer</div>
+    ${receiptItems}
+    <hr class="receipt-divider"/>
+    <div class="receipt-section-lbl">Betaling</div>
+    <div class="receipt-pay-row"><span>${payLabel}</span><span>${total} kr</span></div>
+    <hr class="receipt-divider solid"/>
+    <div class="receipt-total-row"><span>TOTALT</span><span>${total.toLocaleString('no-NO')} kr</span></div>
+    ${stampLine}
+    <hr class="receipt-divider"/>
+    <div class="receipt-footer">Takk for kjøpet! 🍦</div>`;
+
+  document.getElementById('kv-receipt-content').innerHTML=receiptHtml;
+  document.getElementById('receipt-print-area').innerHTML=receiptHtml;
+  kasseView('receipt');
+
+  // Save to Firebase (session save happens on close; save individual receipt now)
+  const id=Math.random().toString(36).slice(2,9);
+  const dateStr=now.toISOString().slice(0,10);
+  const label=now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'});
+  db.ref('yogurt-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
+    if(!committed)return;
+    const num=snap.val();
+    const kvNum=String(num).padStart(4,'0');
+    const numEl=document.getElementById('kv-inline-num');
+    if(numEl)numEl.textContent='Kvittering #'+kvNum;
+    db.ref(`yogurt-receipts/${id}`).set({
+      kvNum,ts:now.getTime(),date:dateStr,label,endTime:timeStr,
+      items:sales,total,vipps:kassePayment==='vipps'?total:0,
+      kontant:kassePayment==='kontant'?total:0,gratis:0,count:kasseCart.length
+    });
+  });
+
+  // Clear cart
+  kasseCart=[];
+  kasseStampCode=null;kasseStampCustomer=null;
+}
+
+// ── New order after receipt ──
+function kasseNyOrdre(){
+  kasseCart=[];
+  kasseView('order');
+  kasseRenderGrid();
+  kasseCartRender();
+}
+
+// ── Session totals (used by old stSales-based functions) ──
+function kasseUpdateFooter(){ kasseCartRender(); }
+
+function kasseUpdateOrderList(){ kasseCartRender(); }
+
+function kasseAddUndo(){ kasseCartRender(); }
+
+function kasseOrderRemove(idx){
+  kasseCart.splice(idx,1);
+  kasseCartRender();
+  kasseRenderGrid();
+}
+
+function kasseUndo(idx,chip){
+  if(chip)chip.remove();
+  stSales[idx]=null;
+  stTotals={};stSales.filter(Boolean).forEach(s=>{
+    if(!stTotals[s.name])stTotals[s.name]={S:0,M:0,L:0,total:0};
+    stTotals[s.name][s.size]++;stTotals[s.name].total++;
+  });
+  stRenderTapGrid(); stUpdateSummary();
+}
+
+// ── Stamp popup (used by stTap / salgs-tracker) ──
+let ksppPending=null, ksppTapEl=null, ksppSort='name', ksppQuery='';
 
 function ksppRegisterSale(stampCode){
   const sale={...ksppPending,ts:Date.now(),stampCode:stampCode||null};
@@ -2108,7 +2686,6 @@ function ksppRegisterSale(stampCode){
     const bump=document.createElement('div');bump.className='kasse-bump';
     ksppTapEl.appendChild(bump);setTimeout(()=>bump.remove(),400);
   }
-  kasseRenderGrid();kasseUpdateFooter();kasseAddUndo(sale,stSales.length-1);
   stUpdateSummary();
   document.getElementById('kspp-overlay').style.display='none';
   ksppPending=null;ksppTapEl=null;
@@ -2119,7 +2696,7 @@ function ksppSkip(){ ksppRegisterSale(null); }
 function ksppSelectCustomer(code){
   const c=lojCustomers[code]; if(!c)return;
   const newStamps=(c.stamps||0)+1;
-  const isFree=newStamps>5;
+  const isFree=newStamps>4;
   const finalStamps=isFree?0:newStamps;
   const newFree=(c.freeGiven||0)+(isFree?1:0);
   db.ref(`yogurt-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
@@ -2145,7 +2722,7 @@ function ksppRenderList(){
   entries.sort(([ac,a],[bc,b])=>{
     if(ksppSort==='name') return (a.name||'').localeCompare(b.name||'','no');
     if(ksppSort==='stamps') return (b.stamps||0)-(a.stamps||0);
-    if(ksppSort==='soon') return ((b.stamps||0)===5?1:0)-((a.stamps||0)===5?1:0);
+    if(ksppSort==='soon') return ((b.stamps||0)===4?1:0)-((a.stamps||0)===4?1:0);
     if(ksppSort==='class') return (a.class||'').localeCompare(b.class||'','no');
     return 0;
   });
@@ -2155,8 +2732,8 @@ function ksppRenderList(){
   }
   list.innerHTML=entries.map(([code,c])=>{
     const s=c.stamps||0;
-    const isFree=s>=5;
-    const dots=Array.from({length:6},(_,i)=>`<div class="kspp-dot${i<s?' f':''}"></div>`).join('');
+    const isFree=s>=4;
+    const dots=Array.from({length:5},(_,i)=>`<div class="kspp-dot${i<s?' f':''}"></div>`).join('');
     return `<div class="kspp-row" onclick="ksppSelectCustomer('${code}')">
       <span class="kspp-code">${code}</span>
       <div style="flex:1;min-width:0">
@@ -2166,32 +2743,6 @@ function ksppRenderList(){
       ${isFree?'<span class="kspp-free">🎁 GRATIS</span>':''}
     </div>`;
   }).join('');
-}
-
-function kasseUpdateFooter(){
-  const total=stSales.filter(Boolean).reduce((s,x)=>s+x.price,0);
-  const count=stSales.filter(Boolean).length;
-  const t=document.getElementById('kasse-total-disp'); if(t)t.textContent=total.toLocaleString('no-NO')+' kr';
-  const c=document.getElementById('kasse-sold-disp'); if(c)c.textContent=count+' solgt';
-}
-
-function kasseAddUndo(sale,idx){
-  const list=document.getElementById('kasse-undo-wrap'); if(!list)return;
-  list.querySelectorAll('span[style]').forEach(s=>s.remove());
-  const f=flavors.find(x=>x.name===sale.name);
-  const chip=document.createElement('div');chip.className='kasse-chip';
-  chip.innerHTML=`${f?.emoji||''} ${sale.name.split(' ')[0]} <span style="font-size:.55rem;padding:1px 5px;border-radius:3px;background:rgba(247,244,239,.08)">${sale.size}</span> <span class="kx" onclick="kasseUndo(${idx},this.closest('.kasse-chip'))">×</span>`;
-  list.prepend(chip);
-  if(list.children.length>5)list.lastChild.remove();
-}
-
-function kasseUndo(idx,chip){
-  stSales[idx]=null;chip.remove();
-  stTotals={};stSales.filter(Boolean).forEach(s=>{
-    if(!stTotals[s.name])stTotals[s.name]={S:0,M:0,L:0,total:0};
-    stTotals[s.name][s.size]++;stTotals[s.name].total++;
-  });
-  kasseRenderGrid();kasseUpdateFooter();stUpdateSummary();
 }
 
 document.addEventListener('keydown',e=>{
@@ -2284,14 +2835,153 @@ function stUndo(idx, chip){
   stRenderTapGrid(); stUpdateSummary();
 }
 function stSaveToRegnskap(){
-  const total=stSales.filter(Boolean).reduce((s,x)=>s+x.price,0);
+  const sales=stSales.filter(Boolean);
+  const total=sales.reduce((s,x)=>s+x.price,0);
   if(total===0) return;
   const now=new Date();
   const dateStr=now.toISOString().slice(0,10);
-  const desc=`Salg ${now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'})} · ${stSales.filter(Boolean).length} porsjoner`;
+  const label=now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'});
+  const endTime=now.toTimeString().slice(0,5);
+  const desc=`Salg ${label} · ${sales.length} porsjoner`;
   const id=Math.random().toString(36).slice(2,9);
   db.ref(`yogurt-transactions/${id}`).set({date:dateStr,description:desc,category:'Salg yogurt',type:'income',amount:total});
+
+  const vipps=sales.filter(x=>x.payment==='vipps').reduce((s,x)=>s+x.price,0);
+  const kontant=sales.filter(x=>x.payment==='kontant').reduce((s,x)=>s+x.price,0);
+  const gratis=sales.filter(x=>x.payment==='stempel').length;
+
+  // Sequential receipt number
+  db.ref('yogurt-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
+    if(!committed)return;
+    const num=snap.val();
+    const kvNum=String(num).padStart(4,'0');
+    db.ref(`yogurt-receipts/${id}`).set({
+      kvNum, ts:now.getTime(), date:dateStr, label, endTime,
+      items:sales, total, vipps, kontant, gratis, count:sales.length
+    });
+  });
   setSaveStatus('Salgsøkt lagret i Regnskap ✓');
+}
+
+// ══════════════════════════════════════════════════
+// KVITTERINGER
+// ══════════════════════════════════════════════════
+let kvReceipts={};
+db.ref('yogurt-receipts').on('value',snap=>{
+  kvReceipts=snap.val()||{};
+  if(document.getElementById('reg-panel-kv')?.style.display!=='none') renderKvitteringer();
+});
+
+function regShowTab(tab){
+  document.getElementById('reg-panel-tx').style.display=tab==='tx'?'':'none';
+  document.getElementById('reg-panel-kv').style.display=tab==='kv'?'':'none';
+  document.getElementById('reg-tab-tx').classList.toggle('active',tab==='tx');
+  document.getElementById('reg-tab-kv').classList.toggle('active',tab==='kv');
+  if(tab==='kv') renderKvitteringer();
+}
+
+function renderKvitteringer(){
+  const list=document.getElementById('kv-list'); if(!list)return;
+  const entries=Object.entries(kvReceipts).sort((a,b)=>b[1].ts-a[1].ts);
+  if(!entries.length){
+    list.innerHTML='<div class="tx-empty">Ingen kvitteringer ennå.<br>Kvitteringer lagres automatisk når du avslutter en salgsøkt.</div>';
+    document.getElementById('kv-stat-total').textContent='0 kr';
+    document.getElementById('kv-stat-sessions').textContent='0';
+    document.getElementById('kv-stat-portions').textContent='0';
+    return;
+  }
+  const totalKr=entries.reduce((s,[,r])=>s+r.total,0);
+  const totalPorsjoner=entries.reduce((s,[,r])=>s+r.count,0);
+  document.getElementById('kv-stat-total').textContent=totalKr.toLocaleString('no-NO')+' kr';
+  document.getElementById('kv-stat-sessions').textContent=entries.length;
+  document.getElementById('kv-stat-portions').textContent=totalPorsjoner;
+  list.innerHTML=entries.map(([id,r])=>`
+    <div class="kv-row" onclick="activeReceiptId='${id}';visKvittering('${id}')">
+      <span class="kv-num">${r.kvNum||id.slice(0,6).toUpperCase()}</span>
+      <div class="kv-info">
+        <div class="kv-date">${r.label||r.date}</div>
+        <div class="kv-meta">Kl. ${r.endTime||r.date} · ${r.count} porsjoner · Vipps ${r.vipps||0} kr / Kontant ${r.kontant||0} kr</div>
+      </div>
+      <div class="kv-amt">${(r.total||0).toLocaleString('no-NO')} kr</div>
+      <button class="tx-del" onclick="event.stopPropagation();slettKvittering('${id}')" title="Slett kvittering">🗑</button>
+    </div>`).join('');
+}
+
+function visKvittering(id){
+  const r=kvReceipts[id]; if(!r)return;
+  const items=r.items||[];
+
+  // Grupper varer
+  const grouped={};
+  items.forEach(s=>{
+    const k=s.name+'|'+s.size;
+    if(!grouped[k]) grouped[k]={name:s.name,emoji:s.emoji||'🍦',size:s.size,count:0,total:0};
+    grouped[k].count++; grouped[k].total+=s.price;
+  });
+  const sizeLabel=s=>s==='S'?'S':s==='M'?'M':'L';
+
+  const linesHtml=Object.values(grouped).map(g=>
+    `<div class="receipt-item">
+      <span class="name">${g.emoji} ${g.name}${g.count>1?' ×'+g.count:''}</span>
+      <span class="size">${sizeLabel(g.size)}</span>
+      <span class="price">${g.total} kr</span>
+    </div>`).join('');
+
+  const stampLines=items.filter(s=>s.stampCode).map(s=>
+    `<div class="receipt-stamp">🎟️ Stempelkort: ${s.stampCode}</div>`).join('');
+
+  const html=`
+    <div class="receipt-header">
+      <div class="receipt-logo">🍦 YoGurt</div>
+      <div class="receipt-sub">Elevbedrift · 2026</div>
+    </div>
+    <hr class="receipt-divider solid"/>
+    <div class="receipt-kv-num">${r.kvNum||id.toUpperCase()}</div>
+    <div class="receipt-date">${r.label||r.date} · ${r.endTime||''}</div>
+    <hr class="receipt-divider"/>
+    <div class="receipt-section-lbl">Varer</div>
+    ${linesHtml}
+    <hr class="receipt-divider"/>
+    <div class="receipt-section-lbl">Betaling</div>
+    ${r.vipps>0?`<div class="receipt-pay-row"><span>Vipps</span><span>${r.vipps} kr</span></div>`:''}
+    ${r.kontant>0?`<div class="receipt-pay-row"><span>Kontant</span><span>${r.kontant} kr</span></div>`:''}
+    ${r.gratis>0?`<div class="receipt-pay-row"><span>Gratis (klippekort)</span><span>${r.gratis} stk</span></div>`:''}
+    <hr class="receipt-divider solid"/>
+    <div class="receipt-total-row"><span>TOTALT</span><span>${(r.total||0).toLocaleString('no-NO')} kr</span></div>
+    ${stampLines}
+    <hr class="receipt-divider"/>
+    <div class="receipt-footer">
+      Takk for kjøpet! 🍦
+    </div>`;
+
+  document.getElementById('receipt-content').innerHTML=html;
+  document.getElementById('receipt-print-area').innerHTML=html;
+  document.getElementById('receipt-modal').classList.add('open');
+}
+
+function lukkKvittering(){
+  document.getElementById('receipt-modal').classList.remove('open');
+}
+
+function printKvittering(){
+  window.print();
+}
+
+let activeReceiptId=null;
+function visKvitteringWrapper(id){
+  activeReceiptId=id;
+  visKvittering(id);
+}
+function slettKvittering(id){
+  if(!confirm('Slett kvittering '+( kvReceipts[id]?.kvNum||id)+'?')) return;
+  db.ref(`yogurt-receipts/${id}`).remove();
+}
+function slettKvitteringFraModal(){
+  if(!activeReceiptId) return;
+  if(!confirm('Slett denne kvitteringen?')) return;
+  db.ref(`yogurt-receipts/${activeReceiptId}`).remove();
+  lukkKvittering();
+  activeReceiptId=null;
 }
 
 // ══════════════════════════════════════════════════
@@ -2352,7 +3042,7 @@ db.ref('yogurt-loyalty').on('value',snap=>{
   const badge=document.getElementById('loj-count-badge');
   if(badge) badge.textContent=activeCount+' AKTIVE KORT';
   const as=document.getElementById('loj-stat-active'); if(as) as.textContent=activeCount;
-  const soon=Object.values(lojCustomers).filter(c=>c.stamps===5).length;
+  const soon=Object.values(lojCustomers).filter(c=>c.stamps===4).length;
   const ss=document.getElementById('loj-stat-soon'); if(ss) ss.textContent=soon;
   const free=Object.values(lojCustomers).reduce((s,c)=>s+(c.freeGiven||0),0);
   const fs=document.getElementById('loj-stat-free'); if(fs) fs.textContent=free;
@@ -2384,8 +3074,8 @@ function qaStamp(){
   const cust=lojCustomers[code];
   if(!cust){alert('Fant ingen kunde med kode '+code);return;}
   const newStamps=(cust.stamps||0)+1;
-  const newFree=(cust.freeGiven||0)+(newStamps>5?1:0);
-  const finalStamps=newStamps>5?0:newStamps;
+  const newFree=(cust.freeGiven||0)+(newStamps>4?1:0);
+  const finalStamps=newStamps>4?0:newStamps;
   db.ref(`yogurt-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
   lojShowCustomer(code,{...cust,stamps:finalStamps});
 }
@@ -2395,29 +3085,32 @@ function lojShowCustomer(code,c){
   document.getElementById('loj-cust-name').textContent=c.name;
   document.getElementById('loj-cust-meta').textContent=`${code} · ${c.class||''}`;
   const stampsEl=document.getElementById('loj-cust-stamps');
-  stampsEl.innerHTML=Array.from({length:6},(_,i)=>`<div class="stamp${i<c.stamps?' filled':''}${i===c.stamps-1?' last-stamped':''}">${i<c.stamps?'🍦':''}</div>`).join('');
+  stampsEl.innerHTML=Array.from({length:5},(_,i)=>`<div class="stamp${i<c.stamps?' filled':''}${i===c.stamps-1?' last-stamped':''}">${i<c.stamps?'🍦':''}</div>`).join('');
   const bonus=document.getElementById('loj-cust-bonus');
-  if(c.stamps===5){bonus.textContent='🎁 1 stempel til, så en GRATIS yogurt!';bonus.style.display='inline-flex';}
+  if(c.stamps===4){bonus.textContent='🎁 1 stempel til, så en GRATIS yogurt!';bonus.style.display='inline-flex';}
   else if(c.stamps===0){bonus.textContent='🎁 Gratis yogurt! Nullstilt.';bonus.style.display='inline-flex';}
   else{bonus.style.display='none';}
 }
 function lojRender(){
   const list=document.getElementById('loj-list'); if(!list)return;
   let entries=Object.entries(lojCustomers);
-  if(lojFilterVal==='soon') entries=entries.filter(([,c])=>c.stamps===5);
+  if(lojFilterVal==='soon') entries=entries.filter(([,c])=>c.stamps===4);
   if(lojFilterVal==='active') entries=entries.filter(([,c])=>c.stamps>0&&c.stamps<5);
   if(lojSearch) entries=entries.filter(([code,c])=>
     c.name?.toLowerCase().includes(lojSearch)||code.toLowerCase().includes(lojSearch)||c.class?.toLowerCase().includes(lojSearch));
   if(!entries.length){list.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-size:.8rem">Ingen kunder her</div>';return;}
   list.innerHTML=entries.map(([code,c])=>{
     const status=c.stamps>=5?'<span class="cl-status soon">🎁 Gratis!</span>':`<span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;color:var(--muted)">${c.stamps||0}/5</span>`;
-    const dots=Array.from({length:6},(_,i)=>`<span class="${i<c.stamps?'f':''}"></span>`).join('');
+    const dots=Array.from({length:5},(_,i)=>`<span class="${i<c.stamps?'f':''}"></span>`).join('');
     return `<div class="cust-list-row">
       <span class="cl-code">${code}</span>
       <span><span class="cl-name">${c.name||'—'}</span><span class="cls">${c.class||''}</span></span>
       <div class="cl-progress">${dots}</div>
       ${status}
-      <button class="cl-btn" onclick="document.getElementById('scan-code-input').value='${code}';qaStamp()">+ Stempel</button>
+      <div style="display:flex;gap:5px">
+        <button class="cl-btn" onclick="document.getElementById('scan-code-input').value='${code}';qaStamp()">+ Stempel</button>
+        <button class="cl-qr-btn" onclick="visQR('${code}','${(c.name||'').replace(/'/g,'\\\'')}')" title="Vis QR-kode">QR</button>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2642,7 +3335,7 @@ db.ref('yogurt-loyalty').on('value', snap => {
   const list = document.getElementById('fb-loyalty-detail'); if(!list) return;
   const entries = Object.entries(data);
   const total = entries.length;
-  const soon = entries.filter(([,c])=>c.stamps===5).length;
+  const soon = entries.filter(([,c])=>c.stamps===4).length;
   const avgStamps = total ? (entries.reduce((s,[,c])=>s+(c.stamps||0),0)/total).toFixed(1) : 0;
   list.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:4px 0">
@@ -2700,6 +3393,208 @@ document.getElementById('lo-confirm').addEventListener('click',()=>{
 try {
   if(withinGrace()){ doLogin(); }
 } catch(e){ console.error('Grace period auto-login failed:', e); }
+
+// ══════════════════════════════════════════════════
+// INNKJØPSPRISER — Kassalapp API
+// ══════════════════════════════════════════════════
+const KASSAL_TOKEN = 'bGad2m2a3ZkQAxOqO6vFEnkQSx3THHpmJ5HNINXL';
+const KASSAL_URL   = 'https://kassal.app/api/v1/products';
+
+// Kun fysiske butikker i Trondheim — filtrerer ut nettbutikker
+const ONLINE_STORES = new Set(['oda','holdbart','engrosnett','slowly','kolonial','fudi','amazon']);
+
+// key = Firebase-nøkkel, need = omtrentlig behov per batch (36 porsjoner)
+const PRISDATA = [
+  // ── BASE ──
+  { ing:'Gresk yoghurt 10%',   key:'gresk_yoghurt',    q:'salakis gresk yoghurt 1kg',          need:2880, buy:3  },
+  { ing:'Kremfløte',           key:'kremfløte',        q:'kremfløte tine 1l',                  need:1620, buy:2  },
+  { ing:'Sukker',              key:'sukker',           q:'eldorado sukker 1kg',                need:468,  buy:1  },
+  { ing:'Lys sirup',           key:'lys_sirup',        q:'dansukker sirup lys 500g',           need:432,  buy:1  },
+  { ing:'Sitronsaft',          key:'sitronsaft',       q:'go sitronsaft juno 1,5l',            need:36,   buy:1  },
+  { ing:'Helmelk',             key:'helmelk',          q:'helmelk tine 1l',                    need:540,  buy:1  },
+  { ing:'Egg',                 key:'egg',              q:'egg frittgående coop 6pk',           need:6,    buy:1  },
+  // ── SMAK — Classic Vanilla ──
+  { ing:'Vaniljesukker',       key:'vaniljesukker',    q:'vaniljesukker freia 175g kiwi',      need:144,  buy:1  },
+  // ── SMAK — Mango Delight ──
+  { ing:'Mango (frossen)',     key:'mango',            q:'mango frossen',                      need:1260, buy:2  },
+  // ── SMAK — Chocolate Deluxe ──
+  { ing:'Kakaopulver',         key:'kakaopulver',      q:'kakaopulver ren mørk',               need:288,  buy:1  },
+  { ing:'Mørk sjokolade',      key:'sjokolade_mork',   q:'kokesjokolade mørk eldorado kiwi',   need:216,  buy:3  },
+  // ── SMAK — Tropical Freeze ──
+  { ing:'Ananas (hermetisk)',  key:'ananas',           q:'ananas biter first price 565g',      need:720,  buy:2  },
+  { ing:'Kokosmelk',           key:'kokosmelk',        q:'kokosmelk eldorado 250ml',           need:540,  buy:3  },
+  { ing:'Limesaft',            key:'limesaft',         q:'limejuice realemon 250ml',           need:72,   buy:1  },
+  // ── SMAK — Forest Berry ──
+  { ing:'Skogsbær (frosne)',   key:'skogsbaer',        q:'skogsbær frossen bær',               need:1080, buy:3  },
+];
+
+let prisCache = {};
+
+async function prisHentAlt() {
+  const btn = document.getElementById('pris-refresh-btn');
+  const grid = document.getElementById('pris-grid');
+  const errEl = document.getElementById('pris-error');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="pris-spinner"></span> Henter...';
+  errEl.style.display = 'none';
+
+  grid.innerHTML = PRISDATA.map(d => `
+    <div class="pris-row loading">
+      <span class="pris-ing">${d.ing}</span>
+      <span class="pris-product">Henter...</span>
+      <span>—</span><span>—</span><span>—</span><span>—</span>
+    </div>`).join('');
+
+  let totalKost = 0;
+  const rows = [];
+  let hasError = false;
+  const firebasePrices = {}; // lagres til Firebase for oppskriftsiden
+
+  for (const d of PRISDATA) {
+    try {
+      const res = await fetch(`${KASSAL_URL}?search=${encodeURIComponent(d.q)}&size=15`, {
+        headers: { 'Authorization': `Bearer ${KASSAL_TOKEN}` }
+      });
+      if (!res.ok) throw new Error(res.status);
+      const json = await res.json();
+
+      const items = (json.data || []).filter(p =>
+        p.current_price > 0 &&
+        !ONLINE_STORES.has((p.store?.name || '').toLowerCase())
+      );
+      if (!items.length) { rows.push({ ...d, found: false }); continue; }
+
+      const best = items.map(p => {
+        const m = p.name.match(/(\d+(?:[,.]\d+)?)\s*(kg|g|ml|l)\b/i);
+        let qty = 0;
+        if (m) {
+          const v = parseFloat(m[1].replace(',', '.'));
+          const u = m[2].toLowerCase();
+          qty = ['kg','l'].includes(u) ? v*1000 : v;
+        }
+        const ppu = qty > 0 ? p.current_price / qty * 1000 : 99999;
+        return { ...p, qty, ppu };
+      }).sort((a, b) => a.ppu - b.ppu)[0];
+
+      const hist = best.price_history || [];
+      const prev = hist.length > 1 ? hist[1].price : best.current_price;
+      const trend = best.current_price > prev ? 'up' : best.current_price < prev ? 'down' : 'same';
+      const trendTxt = trend === 'up' ? `↑ ${(best.current_price - prev).toFixed(0)} kr` :
+                       trend === 'down' ? `↓ ${(prev - best.current_price).toFixed(0)} kr` : '→';
+
+      const kost = best.current_price * d.buy;
+      totalKost += kost;
+      prisCache[d.ing] = { ...best, trend, trendTxt, kost, d };
+      rows.push({ ...d, found: true, best, trend, trendTxt, kost });
+
+      // Lagre til Firebase for oppskriftsiden (inkl. pkgP og pkgS)
+      if (d.key && best.ppu < 99999) {
+        firebasePrices[d.key] = {
+          pris_g: Math.round(best.ppu / 1000 * 100000) / 100000,
+          pkgP: best.current_price,
+          pkgS: best.qty || 0,
+          navn: best.name.slice(0, 60),
+          butikk: (best.store || {}).name || '',
+          ts: Date.now()
+        };
+      }
+    } catch (e) {
+      hasError = true;
+      rows.push({ ...d, found: false, err: true });
+    }
+  }
+
+  // Lagre til Firebase
+  if (Object.keys(firebasePrices).length) {
+    db.ref('yogurt-config/ingredientPrices').update(firebasePrices);
+  }
+
+  // Render tabell
+  grid.innerHTML = rows.map(r => {
+    if (!r.found) return `
+      <div class="pris-row">
+        <span class="pris-ing">${r.ing}</span>
+        <span class="pris-product" style="color:var(--muted);font-style:italic">${r.err ? 'API-feil' : 'Ikke funnet'}</span>
+        <span>—</span><span>—</span><span>—</span><span>—</span>
+      </div>`;
+    const p = r.best;
+    const ppkg = p.ppu < 99999 ? p.ppu.toFixed(0) + ' kr/kg' : '?';
+    const store = (p.store || {}).name || '?';
+    return `
+      <div class="pris-row">
+        <span class="pris-ing">${r.ing}</span>
+        <span class="pris-product" title="${p.name}">${p.name.slice(0,42)}${p.name.length>42?'…':''}</span>
+        <span class="pris-kr">${p.current_price.toFixed(0)} kr</span>
+        <span class="pris-per-kg">${ppkg}</span>
+        <span class="pris-butikk">${store}</span>
+        <span class="pris-trend ${r.trend}">${r.trendTxt}</span>
+      </div>`;
+  }).join('');
+
+  const per = totalKost / 36;
+  const m25 = 25 - per;
+  const m30 = 30 - per;
+  document.getElementById('pris-kpi-total').textContent = totalKost.toFixed(0) + ' kr';
+  document.getElementById('pris-kpi-per').textContent   = per.toFixed(2) + ' kr';
+  const el25 = document.getElementById('pris-kpi-25');
+  const el30 = document.getElementById('pris-kpi-30');
+  el25.textContent = (m25 >= 0 ? '+' : '') + m25.toFixed(2) + ' kr';
+  el30.textContent = (m30 >= 0 ? '+' : '') + m30.toFixed(2) + ' kr';
+  el25.closest('.pris-kpi').className = 'pris-kpi ' + (m25 >= 0 ? 'profit' : 'loss');
+  el30.closest('.pris-kpi').className = 'pris-kpi ' + (m30 >= 0 ? 'profit' : 'loss');
+
+  if (hasError) errEl.style.display = 'block';
+  document.getElementById('pris-last-updated').textContent =
+    'Oppdatert ' + new Date().toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
+  btn.disabled = false;
+  btn.innerHTML = '🔄 Oppdater priser';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('[data-panel="priser"]')?.addEventListener('click', () => {
+    if (!Object.keys(prisCache).length) setTimeout(prisHentAlt, 100);
+  });
+});
+</script>
+
+<!-- Kvitterings-modal -->
+<div id="receipt-modal" onclick="if(event.target===this)lukkKvittering()">
+  <div class="receipt-wrap">
+    <div class="receipt" id="receipt-content"></div>
+    <div class="receipt-actions">
+      <button class="receipt-close-btn" onclick="lukkKvittering()">Lukk</button>
+      <button class="receipt-close-btn" style="color:var(--red);border-color:rgba(220,38,38,.3)" onclick="slettKvitteringFraModal()">🗑 Slett</button>
+      <button class="receipt-print-btn" onclick="printKvittering()">🖨️ PDF</button>
+    </div>
+  </div>
+</div>
+<div id="receipt-print-area"></div>
+
+<!-- QR-kode modal -->
+<div id="qr-modal" onclick="if(event.target===this)lukkQR()">
+  <div class="qr-box">
+    <h3 id="qr-modal-navn"></h3>
+    <div class="qr-sub">Kunden skanner dette med telefonen sin</div>
+    <img id="qr-img" src="" alt="QR-kode"/>
+    <div class="qr-kode" id="qr-modal-kode"></div>
+    <div class="qr-url" id="qr-modal-url"></div>
+    <button class="qr-close" onclick="lukkQR()">Ferdig</button>
+  </div>
+</div>
+
+<script>
+function visQR(kode, navn) {
+  const url = `https://yogurt-f0fa7.web.app/klippekort.html?kode=${kode}`;
+  document.getElementById('qr-modal-navn').textContent = navn || kode;
+  document.getElementById('qr-modal-kode').textContent = kode;
+  document.getElementById('qr-modal-url').textContent = url;
+  document.getElementById('qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=3B2208&margin=10`;
+  document.getElementById('qr-modal').classList.add('open');
+}
+function lukkQR() {
+  document.getElementById('qr-modal').classList.remove('open');
+}
 </script>
 </body>
 </html>

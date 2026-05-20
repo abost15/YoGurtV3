@@ -307,6 +307,11 @@ export default function Home() {
               style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .4, background: 'none', border: 'none', cursor: 'pointer', color: '#1C1B19', padding: 0 }}
             >{label}</motion.button>
           ))}
+          <motion.a
+            href="/klippekort.html"
+            whileHover={{ opacity: .75 }}
+            style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .4, color: '#1C1B19', textDecoration: 'none' }}
+          >Klippekort</motion.a>
           <motion.button
             onClick={() => setOverlayOpen(true)}
             whileHover={{ opacity: .75 }}
@@ -426,6 +431,32 @@ export default function Home() {
 
       {/* Wished flavor: voting + suggestions (no results shown to users) */}
       <WishedFlavor flavors={flavors} />
+
+      {/* Klippekort */}
+      <motion.div
+        id="klippekort"
+        style={{ padding: '36px 28px 0' }}
+        variants={fadeIn} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-40px' }}
+      >
+        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', opacity: .35, marginBottom: 14 }}>
+          Klippekort
+        </div>
+        <motion.a
+          href="/klippekort.html"
+          whileHover={{ x: 4 }}
+          transition={{ duration: 0.2, ease: QUART }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #E8E3DC', textDecoration: 'none', color: '#1C1B19' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontSize: 22, width: 32, textAlign: 'center', flexShrink: 0 }} aria-hidden="true">🎟️</span>
+            <div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, fontWeight: 400, letterSpacing: '-.01em' }}>Sjekk klippekortet ditt</div>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '.12em', textTransform: 'uppercase', color: 'oklch(42% 0.13 65)', marginTop: 1 }}>Kjøp 4 – få den 5. gratis</div>
+            </div>
+          </div>
+          <motion.span animate={{ x: [0, 3, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }} style={{ fontSize: 14, opacity: .3 }}>›</motion.span>
+        </motion.a>
+      </motion.div>
 
       {/* Footer */}
       <motion.footer
