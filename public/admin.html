@@ -236,13 +236,29 @@
     .receipt-pay-row{display:flex;justify-content:space-between;padding:2px 0;color:#555}
     .receipt-total-row{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;padding:4px 0;margin-top:2px}
     .receipt-footer{text-align:center;margin-top:16px;font-size:.62rem;color:#999;line-height:1.8}
+    .receipt-qr{text-align:center;margin-top:12px;font-size:.6rem;color:#aaa;letter-spacing:.05em}.receipt-qr img{width:90px;height:90px;display:block;margin:0 auto 4px}
     .receipt-stamp{text-align:center;font-size:.68rem;color:#555;background:#f5f5f5;border-radius:4px;padding:6px 10px;margin:10px 0;border:1px dashed #ddd}
     .receipt-actions{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--border);background:var(--bg)}
     .receipt-close-btn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border2);background:transparent;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
     .receipt-print-btn{flex:1;padding:10px;border-radius:8px;border:none;background:var(--text);color:var(--bg);font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
+    #lapp-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center}
+    #lapp-modal.open{display:flex}
+    #lapp-content{background:#fff;border-radius:6px;padding:28px 24px;text-align:center;font-family:'JetBrains Mono',monospace;color:#1a1a1a;width:260px}
+    #lapp-content .lapp-logo{font-size:1.3rem;font-weight:700;margin-bottom:4px}
+    #lapp-content .lapp-navn{font-size:1rem;font-weight:700;margin:10px 0 2px}
+    #lapp-content .lapp-kode{font-size:1.5rem;font-weight:700;letter-spacing:.15em;margin-bottom:12px}
+    #lapp-content img{width:160px;height:160px;margin:0 auto 10px;display:block}
+    #lapp-content .lapp-hint{font-size:.58rem;color:#888;margin-top:4px}
+    #lapp-actions{display:flex;gap:8px;margin-top:14px;width:260px}
+    #lapp-actions button{flex:1;padding:10px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
+    #lapp-print-btn{background:#1a1a1a;color:#fff;border:none}
+    #lapp-close-btn{background:transparent;border:1.5px solid #ccc;color:#333}
     @media print{
       body > *{display:none!important}
       #receipt-print-area{display:block!important;font-family:'JetBrains Mono',monospace;font-size:11px;width:280px;margin:0 auto}
+      #lapp-modal{display:block!important;position:static;background:none}
+      #lapp-content{box-shadow:none;border-radius:0;width:auto;padding:20px}
+      #lapp-actions{display:none!important}
     }
     #receipt-print-area{display:none}
 
@@ -614,20 +630,18 @@
 
     /* ── Innkjøpspriser ── */
     .pris-grid{display:flex;flex-direction:column;gap:0}
-    .pris-row{display:grid;grid-template-columns:180px 1fr 90px 100px 110px 80px;gap:12px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border);font-size:.78rem;transition:background .12s}
+    .pris-row{display:grid;grid-template-columns:180px 1fr 90px 100px 90px;gap:12px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border);font-size:.78rem;transition:background .12s}
     .pris-row:hover{background:rgba(0,0,0,.02)}
     .pris-row:last-child{border-bottom:none}
     .pris-row.loading{opacity:.4}
-    .pris-head{display:grid;grid-template-columns:180px 1fr 90px 100px 110px 80px;gap:12px;padding:9px 18px;border-bottom:1px solid var(--border);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .pris-head{display:grid;grid-template-columns:180px 1fr 90px 100px 90px;gap:12px;padding:9px 18px;border-bottom:1px solid var(--border);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
     .pris-ing{font-weight:600;color:var(--text)}
     .pris-product{font-size:.73rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .pris-kr{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
     .pris-per-kg{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted)}
-    .pris-butikk{font-size:.68rem;color:var(--muted)}
-    .pris-trend{font-size:.72rem;font-weight:700;text-align:right}
-    .pris-trend.up{color:var(--red)}
-    .pris-trend.down{color:var(--green)}
-    .pris-trend.same{color:var(--muted)}
+    .pris-tilbud{font-size:.68rem;font-weight:700;text-align:right}
+    .pris-tilbud.ja{color:var(--green)}
+    .pris-tilbud.nei{color:var(--muted)}
     .pris-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
     @keyframes spin{to{transform:rotate(360deg)}}
     .pris-kpi-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
@@ -642,6 +656,10 @@
     .pris-refresh-btn:disabled{opacity:.4;cursor:not-allowed}
     .pris-last-updated{font-size:.68rem;color:var(--muted);margin-left:auto;align-self:center}
     .pris-error{background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#B91C1C;margin-bottom:12px;display:none}
+    .pris-filter-btn{padding:6px 13px;border-radius:7px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--muted);font-family:'Space Grotesk',sans-serif;letter-spacing:.04em;transition:all .15s;white-space:nowrap}
+    .pris-filter-btn:hover{background:var(--card);color:var(--text)}
+    .pris-filter-btn.active{background:var(--text);color:var(--bg);border-color:transparent}
+    .pris-smak-tag{display:inline-block;padding:2px 7px;border-radius:5px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--card);color:var(--muted);margin-right:6px;vertical-align:middle}
 
     /* coming soon */
     .coming{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:40px;text-align:center;color:var(--muted)}
@@ -1020,25 +1038,34 @@
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
           <div>
             <div class="panel-title">Innkjøpspriser</div>
-            <div class="panel-sub">Live priser fra Kassalapp — billigste alternativ per ingrediens</div>
+            <div class="panel-sub">Live priser fra Oda — billigste alternativ per ingrediens</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
             <span class="pris-last-updated" id="pris-last-updated"></span>
-            <button class="pris-refresh-btn" id="pris-refresh-btn" onclick="prisHentAlt()">
-              🔄 Oppdater priser
+            <button class="pris-refresh-btn" id="pris-refresh-btn" onclick="prisLastFraFirebase()" title="Laster siste priser fra Firebase. Priser oppdateres automatisk hver natt via GitHub Actions.">
+              🔄 Last priser
             </button>
           </div>
         </div>
         <div class="pris-error" id="pris-error">Kunne ikke hente priser. Sjekk internettforbindelsen.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+          <button class="pris-filter-btn active" onclick="prisSetSmak('alle',this)">Alle smaker</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Classic Vanilla',this)">🍦 Classic Vanilla</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Mango Delight',this)">🥭 Mango Delight</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Chocolate Deluxe',this)">🍫 Chocolate Deluxe</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Greek Yogurt',this)">🫙 Greek Yogurt</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Tropical Sunrise',this)">🌅 Tropical Sunrise</button>
+          <button class="pris-filter-btn" onclick="prisSetSmak('Forest Berry',this)">🫐 Forest Berry</button>
+        </div>
         <div class="pris-kpi-row" id="pris-kpis">
-          <div class="pris-kpi"><div class="lbl">Total innkjøp (36 porsjoner)</div><div class="val" id="pris-kpi-total">—</div><div class="sub">6 smaker × 6 porsjoner</div></div>
+          <div class="pris-kpi"><div class="lbl" id="pris-kpi-total-lbl">Total innkjøp (36 porsjoner)</div><div class="val" id="pris-kpi-total">—</div><div class="sub" id="pris-kpi-total-sub">6 smaker × 6 porsjoner</div></div>
           <div class="pris-kpi"><div class="lbl">Kostnad per porsjon</div><div class="val" id="pris-kpi-per">—</div><div class="sub">Råvarekost</div></div>
           <div class="pris-kpi"><div class="lbl">Margin ved 25 kr</div><div class="val" id="pris-kpi-25">—</div><div class="sub">Salgspris 25 kr</div></div>
           <div class="pris-kpi"><div class="lbl">Margin ved 30 kr</div><div class="val" id="pris-kpi-30">—</div><div class="sub">Salgspris 30 kr</div></div>
         </div>
         <div class="card">
           <div class="pris-head">
-            <span>Ingrediens</span><span>Billigste produkt</span><span>Pris</span><span>Kr/kg</span><span>Butikk</span><span style="text-align:right">Trend</span>
+            <span>Ingrediens</span><span>Billigste produkt</span><span>Pris</span><span>Kr/kg</span><span style="text-align:right">Tilbud</span>
           </div>
           <div class="pris-grid" id="pris-grid">
             <div style="padding:40px;text-align:center;color:var(--muted);font-size:.82rem">
@@ -1504,7 +1531,7 @@ const DEFAULT = {
     {emoji:'🥭',name:'Mango Delight',   badge:'Fruktig', pris:'25 kr',sted:'Kantina',desc:'Søt og saftig mango fra solrike troper, blandet til perfeksjon.',available:true, g1:'#FFEDD5',g2:'#FB923C',tc:'#5C1A08',tc2:'#B04020'},
     {emoji:'🍫',name:'Chocolate Deluxe',badge:'Intens',  pris:'25 kr',sted:'Kantina',desc:'Mørk belgisk sjokolade møter kremete yogurt for ultimate nytelse.',available:false,g1:'#3D1409',g2:'#0A0200',tc:'#FEF3C7',tc2:'#D4A870'},
     {emoji:'🫙',name:'Greek Yogurt',    badge:'Naturlig',pris:'20 kr',sted:'Kantina',desc:'Naturlig gresk yogurt – frisk, syrlig og full av protein.',available:true, g1:'#F8FAFC',g2:'#CBD5E1',tc:'#1E293B',tc2:'#475569'},
-    {emoji:'🌴',name:'Tropical Freeze', badge:'Eksotisk',pris:'25 kr',sted:'Kantina',desc:'En eksplosjon av tropiske frukter – ananas, kokos og lime.',available:false,g1:'#CCFBF1',g2:'#0F9488',tc:'#042F2E',tc2:'#1A7A70'},
+    {emoji:'🌅',name:'Tropical Sunrise', badge:'Eksotisk',pris:'30 kr',sted:'Kantina',desc:'Søt blanding av ananas, melon og banan – fruktig og tropisk fra start til slutt.',available:false,g1:'#CCFBF1',g2:'#0F9488',tc:'#042F2E',tc2:'#1A7A70'},
     {emoji:'🫐',name:'Forest Berry',    badge:'Vill',    pris:'25 kr',sted:'Kantina',desc:'Blåbær, bringebær og jordbær fra norske skoger og enger.',available:true, g1:'#4C1D95',g2:'#1E0938',tc:'#EDE9FE',tc2:'#C4B0F0'},
   ],
   times:[
@@ -2615,7 +2642,8 @@ function kasseBetal(){
     <div class="receipt-total-row"><span>TOTALT</span><span>${total.toLocaleString('no-NO')} kr</span></div>
     ${stampLine}
     <hr class="receipt-divider"/>
-    <div class="receipt-footer">Takk for kjøpet! 🍦</div>`;
+    <div class="receipt-footer">Takk for kjøpet! 🍦</div>
+    <div class="receipt-qr"><img src="qr.png" alt="QR-kode"/><div>yogurt-f0fa7.web.app</div></div>`;
 
   document.getElementById('kv-receipt-content').innerHTML=receiptHtml;
   document.getElementById('receipt-print-area').innerHTML=receiptHtml;
@@ -2952,7 +2980,8 @@ function visKvittering(id){
     <hr class="receipt-divider"/>
     <div class="receipt-footer">
       Takk for kjøpet! 🍦
-    </div>`;
+    </div>
+    <div class="receipt-qr"><img src="qr.png" alt="QR-kode"/><div>yogurt-f0fa7.web.app</div></div>`;
 
   document.getElementById('receipt-content').innerHTML=html;
   document.getElementById('receipt-print-area').innerHTML=html;
@@ -3066,6 +3095,7 @@ function qaAddCustomer(){
   db.ref(`yogurt-loyalty/${code}`).set({name,class:cls,stamps:0,freeGiven:0,created:Date.now()});
   document.getElementById('qa-name').value='';
   document.getElementById('qa-code').value='';
+  visLapp(code,name);
 }
 function qaStamp(){
   const input=document.getElementById('scan-code-input'); if(!input)return;
@@ -3110,11 +3140,16 @@ function lojRender(){
       <div style="display:flex;gap:5px">
         <button class="cl-btn" onclick="document.getElementById('scan-code-input').value='${code}';qaStamp()">+ Stempel</button>
         <button class="cl-qr-btn" onclick="visQR('${code}','${(c.name||'').replace(/'/g,'\\\'')}')" title="Vis QR-kode">QR</button>
+        <button class="cl-qr-btn" style="color:var(--red);border-color:rgba(220,38,38,.3)" onclick="slettKunde('${code}','${(c.name||'').replace(/'/g,'\\\'')}')" title="Slett kunde">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 function lojFilter(q){ lojSearch=q.toLowerCase(); lojRender(); }
+function slettKunde(code,navn){
+  if(!confirm(`Slett ${navn} (${code})? Dette kan ikke angres.`))return;
+  db.ref(`yogurt-loyalty/${code}`).remove();
+}
 function lojSetFilter(val, btn){
   lojFilterVal=val;
   document.querySelectorAll('.lt-filter').forEach(b=>b.classList.remove('active'));
@@ -3395,40 +3430,94 @@ try {
 } catch(e){ console.error('Grace period auto-login failed:', e); }
 
 // ══════════════════════════════════════════════════
-// INNKJØPSPRISER — Kassalapp API
+// INNKJØPSPRISER — Oda API
 // ══════════════════════════════════════════════════
-const KASSAL_TOKEN = 'bGad2m2a3ZkQAxOqO6vFEnkQSx3THHpmJ5HNINXL';
-const KASSAL_URL   = 'https://kassal.app/api/v1/products';
-
-// Kun fysiske butikker i Trondheim — filtrerer ut nettbutikker
-const ONLINE_STORES = new Set(['oda','holdbart','engrosnett','slowly','kolonial','fudi','amazon']);
+const ODA_URL = 'https://oda.com/api/v1/search/';
 
 // key = Firebase-nøkkel, need = omtrentlig behov per batch (36 porsjoner)
 const PRISDATA = [
   // ── BASE ──
-  { ing:'Gresk yoghurt 10%',   key:'gresk_yoghurt',    q:'salakis gresk yoghurt 1kg',          need:2880, buy:3  },
-  { ing:'Kremfløte',           key:'kremfløte',        q:'kremfløte tine 1l',                  need:1620, buy:2  },
-  { ing:'Sukker',              key:'sukker',           q:'eldorado sukker 1kg',                need:468,  buy:1  },
-  { ing:'Lys sirup',           key:'lys_sirup',        q:'dansukker sirup lys 500g',           need:432,  buy:1  },
-  { ing:'Sitronsaft',          key:'sitronsaft',       q:'go sitronsaft juno 1,5l',            need:36,   buy:1  },
-  { ing:'Helmelk',             key:'helmelk',          q:'helmelk tine 1l',                    need:540,  buy:1  },
-  { ing:'Egg',                 key:'egg',              q:'egg frittgående coop 6pk',           need:6,    buy:1  },
+  { smak:'base', ing:'Yoghurt naturell',    key:'yoghurt_naturell', q:'yoghurt naturell',        filter:'naturell',    need:2880, buy:4  },
+  { smak:'base', ing:'Kremfløte',           key:'kremfløte',        q:'kremfløte',               filter:'kremfløte',   need:1620, buy:2  },
+  { smak:'base', ing:'Sukker',              key:'sukker',           q:'hvitt sukker',            filter:'sukker',      need:468,  buy:1  },
+  { smak:'base', ing:'Lys sirup',           key:'lys_sirup',        q:'lys sirup',               filter:'sirup',       need:432,  buy:1  },
+  { smak:'base', ing:'Sitronsaft',          key:'sitronsaft',       q:'sitronsaft',              filter:'sitronsaft',  need:36,   buy:1  },
+  { smak:'base', ing:'Helmelk',             key:'helmelk',          q:'helmelk',                 filter:'helmelk',     need:540,  buy:1  },
+  { smak:'base', ing:'Egg',                 key:'egg',              q:'egg 12',                  filter:'egg',         need:6,    buy:1  },
   // ── SMAK — Classic Vanilla ──
-  { ing:'Vaniljesukker',       key:'vaniljesukker',    q:'vaniljesukker freia 175g kiwi',      need:144,  buy:1  },
+  { smak:'Classic Vanilla', ing:'Vaniljesukker',    key:'vaniljesukker',    q:'vaniljesukker',   filter:'vaniljesukker', need:144, buy:1  },
+  { smak:'Classic Vanilla', ing:'Maisstivelse',     key:'maisenna',         q:'maisstivelse',    filter:'maisstivelse',  need:72,  buy:1  },
   // ── SMAK — Mango Delight ──
-  { ing:'Mango (frossen)',     key:'mango',            q:'mango frossen',                      need:1260, buy:2  },
+  { smak:'Mango Delight', ing:'Mango (frossen)',    key:'mango',            q:'mango frossen',   filter:'mango',         need:1260, buy:2 },
   // ── SMAK — Chocolate Deluxe ──
-  { ing:'Kakaopulver',         key:'kakaopulver',      q:'kakaopulver ren mørk',               need:288,  buy:1  },
-  { ing:'Mørk sjokolade',      key:'sjokolade_mork',   q:'kokesjokolade mørk eldorado kiwi',   need:216,  buy:3  },
-  // ── SMAK — Tropical Freeze ──
-  { ing:'Ananas (hermetisk)',  key:'ananas',           q:'ananas biter first price 565g',      need:720,  buy:2  },
-  { ing:'Kokosmelk',           key:'kokosmelk',        q:'kokosmelk eldorado 250ml',           need:540,  buy:3  },
-  { ing:'Limesaft',            key:'limesaft',         q:'limejuice realemon 250ml',           need:72,   buy:1  },
+  { smak:'Chocolate Deluxe', ing:'Kakaopulver',     key:'kakaopulver',      q:'kakaopulver',     filter:'kakao',         need:288, buy:1  },
+  { smak:'Chocolate Deluxe', ing:'Mørk sjokolade',  key:'sjokolade_mork',   q:'kokesjokolade mørk', filter:'sjokolade', need:216, buy:3  },
+  // ── SMAK — Tropical Sunrise ──
+  { smak:'Tropical Sunrise', ing:'Smoothieblanding (ananas/melon/banan)', key:'smoothieblanding', q:'smoothieblanding ananas melon banan', filter:'smoothieblanding', need:800, buy:2 },
   // ── SMAK — Forest Berry ──
-  { ing:'Skogsbær (frosne)',   key:'skogsbaer',        q:'skogsbær frossen bær',               need:1080, buy:3  },
+  { smak:'Forest Berry', ing:'Skogsbær (frosne)',   key:'skogsbaer',        q:'skogsbær frossen', filter:'bær',          need:1080, buy:2 },
 ];
 
 let prisCache = {};
+let prisAllRows = [];
+let prisSmakFilter = 'alle';
+
+function prisSetSmak(smak, btn) {
+  prisSmakFilter = smak;
+  document.querySelectorAll('.pris-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (prisAllRows.length) prisUpdateDisplay();
+}
+
+function prisUpdateDisplay() {
+  const rows = prisSmakFilter === 'alle'
+    ? prisAllRows
+    : prisAllRows.filter(r => r.smak === 'base' || r.smak === prisSmakFilter);
+
+  const porsjoner = prisSmakFilter === 'alle' ? 36 : 6;
+  const subTekst  = prisSmakFilter === 'alle' ? '6 smaker × 6 porsjoner' : `Base + ${prisSmakFilter} · 6 porsjoner`;
+  document.getElementById('pris-kpi-total-lbl').textContent = `Total innkjøp (${porsjoner} porsjoner)`;
+  document.getElementById('pris-kpi-total-sub').textContent = subTekst;
+
+  const grid = document.getElementById('pris-grid');
+  grid.innerHTML = rows.map(r => {
+    const tag = r.smak === 'base' ? '' : `<span class="pris-smak-tag">${r.smak}</span>`;
+    if (!r.found) return `
+      <div class="pris-row">
+        <span class="pris-ing">${tag}${r.ing}</span>
+        <span class="pris-product" style="color:var(--muted);font-style:italic">${r.err ? 'API-feil' : 'Ikke funnet'}</span>
+        <span>—</span><span>—</span><span>—</span>
+      </div>`;
+    const p = r.best;
+    const fullName = (p.full_name + ' ' + (p.name_extra || '')).trim();
+    const ppkg = p.ppu < 99999 ? p.ppu.toFixed(0) + ' kr/' + (p.unitAbbr || 'kg') : '?';
+    const tilbud = r.isDiscounted;
+    return `
+      <div class="pris-row">
+        <span class="pris-ing">${tag}${r.ing}</span>
+        <span class="pris-product" title="${fullName}">${fullName.slice(0,42)}${fullName.length>42?'…':''}</span>
+        <span class="pris-kr">${parseFloat(p.gross_price).toFixed(0)} kr</span>
+        <span class="pris-per-kg">${ppkg}</span>
+        <span class="pris-tilbud ${tilbud?'ja':'nei'}">${tilbud ? '🏷 Tilbud' : '—'}</span>
+      </div>`;
+  }).join('');
+
+  const totalKost = rows.filter(r => r.found).reduce((sum, r) => {
+    const kostnad = (prisSmakFilter !== 'alle' && r.smak === 'base') ? r.kost / 6 : r.kost;
+    return sum + kostnad;
+  }, 0);
+  const per = totalKost / porsjoner;
+  const m25 = 25 - per;
+  const m30 = 30 - per;
+  document.getElementById('pris-kpi-total').textContent = totalKost.toFixed(0) + ' kr';
+  document.getElementById('pris-kpi-per').textContent   = per.toFixed(2) + ' kr';
+  const el25 = document.getElementById('pris-kpi-25');
+  const el30 = document.getElementById('pris-kpi-30');
+  el25.textContent = (m25 >= 0 ? '+' : '') + m25.toFixed(2) + ' kr';
+  el30.textContent = (m30 >= 0 ? '+' : '') + m30.toFixed(2) + ' kr';
+  el25.closest('.pris-kpi').className = 'pris-kpi ' + (m25 >= 0 ? 'profit' : 'loss');
+  el30.closest('.pris-kpi').className = 'pris-kpi ' + (m30 >= 0 ? 'profit' : 'loss');
+}
 
 async function prisHentAlt() {
   const btn = document.getElementById('pris-refresh-btn');
@@ -3442,59 +3531,44 @@ async function prisHentAlt() {
     <div class="pris-row loading">
       <span class="pris-ing">${d.ing}</span>
       <span class="pris-product">Henter...</span>
-      <span>—</span><span>—</span><span>—</span><span>—</span>
+      <span>—</span><span>—</span><span>—</span>
     </div>`).join('');
 
-  let totalKost = 0;
   const rows = [];
   let hasError = false;
-  const firebasePrices = {}; // lagres til Firebase for oppskriftsiden
+  const firebasePrices = {};
 
   for (const d of PRISDATA) {
     try {
-      const res = await fetch(`${KASSAL_URL}?search=${encodeURIComponent(d.q)}&size=15`, {
-        headers: { 'Authorization': `Bearer ${KASSAL_TOKEN}` }
-      });
+      const res = await fetch(`${ODA_URL}?q=${encodeURIComponent(d.q)}&page_size=15`);
       if (!res.ok) throw new Error(res.status);
       const json = await res.json();
 
-      const items = (json.data || []).filter(p =>
-        p.current_price > 0 &&
-        !ONLINE_STORES.has((p.store?.name || '').toLowerCase())
+      const filterKey = (d.filter || '').toLowerCase();
+      const items = (json.products || []).filter(p =>
+        parseFloat(p.gross_price) > 0 &&
+        (!filterKey || (p.full_name + ' ' + (p.name_extra || '')).toLowerCase().includes(filterKey))
       );
       if (!items.length) { rows.push({ ...d, found: false }); continue; }
 
       const best = items.map(p => {
-        const m = p.name.match(/(\d+(?:[,.]\d+)?)\s*(kg|g|ml|l)\b/i);
-        let qty = 0;
-        if (m) {
-          const v = parseFloat(m[1].replace(',', '.'));
-          const u = m[2].toLowerCase();
-          qty = ['kg','l'].includes(u) ? v*1000 : v;
-        }
-        const ppu = qty > 0 ? p.current_price / qty * 1000 : 99999;
-        return { ...p, qty, ppu };
+        const ppu = parseFloat(p.gross_unit_price) || 99999;
+        const unitAbbr = p.unit_price_quantity_abbreviation || 'kg';
+        return { ...p, ppu, unitAbbr };
       }).sort((a, b) => a.ppu - b.ppu)[0];
 
-      const hist = best.price_history || [];
-      const prev = hist.length > 1 ? hist[1].price : best.current_price;
-      const trend = best.current_price > prev ? 'up' : best.current_price < prev ? 'down' : 'same';
-      const trendTxt = trend === 'up' ? `↑ ${(best.current_price - prev).toFixed(0)} kr` :
-                       trend === 'down' ? `↓ ${(prev - best.current_price).toFixed(0)} kr` : '→';
+      const isDiscounted = best.discount?.is_discounted || false;
+      const kost = parseFloat(best.gross_price) * d.buy;
+      prisCache[d.ing] = { ...best, kost, d };
+      rows.push({ ...d, found: true, best, kost, isDiscounted });
 
-      const kost = best.current_price * d.buy;
-      totalKost += kost;
-      prisCache[d.ing] = { ...best, trend, trendTxt, kost, d };
-      rows.push({ ...d, found: true, best, trend, trendTxt, kost });
-
-      // Lagre til Firebase for oppskriftsiden (inkl. pkgP og pkgS)
       if (d.key && best.ppu < 99999) {
         firebasePrices[d.key] = {
           pris_g: Math.round(best.ppu / 1000 * 100000) / 100000,
-          pkgP: best.current_price,
-          pkgS: best.qty || 0,
-          navn: best.name.slice(0, 60),
-          butikk: (best.store || {}).name || '',
+          pkgP: parseFloat(best.gross_price),
+          pkgS: 0,
+          navn: (best.full_name + ' ' + (best.name_extra || '')).trim().slice(0, 60),
+          butikk: 'Oda',
           ts: Date.now()
         };
       }
@@ -3504,44 +3578,12 @@ async function prisHentAlt() {
     }
   }
 
-  // Lagre til Firebase
   if (Object.keys(firebasePrices).length) {
     db.ref('yogurt-config/ingredientPrices').update(firebasePrices);
   }
 
-  // Render tabell
-  grid.innerHTML = rows.map(r => {
-    if (!r.found) return `
-      <div class="pris-row">
-        <span class="pris-ing">${r.ing}</span>
-        <span class="pris-product" style="color:var(--muted);font-style:italic">${r.err ? 'API-feil' : 'Ikke funnet'}</span>
-        <span>—</span><span>—</span><span>—</span><span>—</span>
-      </div>`;
-    const p = r.best;
-    const ppkg = p.ppu < 99999 ? p.ppu.toFixed(0) + ' kr/kg' : '?';
-    const store = (p.store || {}).name || '?';
-    return `
-      <div class="pris-row">
-        <span class="pris-ing">${r.ing}</span>
-        <span class="pris-product" title="${p.name}">${p.name.slice(0,42)}${p.name.length>42?'…':''}</span>
-        <span class="pris-kr">${p.current_price.toFixed(0)} kr</span>
-        <span class="pris-per-kg">${ppkg}</span>
-        <span class="pris-butikk">${store}</span>
-        <span class="pris-trend ${r.trend}">${r.trendTxt}</span>
-      </div>`;
-  }).join('');
-
-  const per = totalKost / 36;
-  const m25 = 25 - per;
-  const m30 = 30 - per;
-  document.getElementById('pris-kpi-total').textContent = totalKost.toFixed(0) + ' kr';
-  document.getElementById('pris-kpi-per').textContent   = per.toFixed(2) + ' kr';
-  const el25 = document.getElementById('pris-kpi-25');
-  const el30 = document.getElementById('pris-kpi-30');
-  el25.textContent = (m25 >= 0 ? '+' : '') + m25.toFixed(2) + ' kr';
-  el30.textContent = (m30 >= 0 ? '+' : '') + m30.toFixed(2) + ' kr';
-  el25.closest('.pris-kpi').className = 'pris-kpi ' + (m25 >= 0 ? 'profit' : 'loss');
-  el30.closest('.pris-kpi').className = 'pris-kpi ' + (m30 >= 0 ? 'profit' : 'loss');
+  prisAllRows = rows;
+  prisUpdateDisplay();
 
   if (hasError) errEl.style.display = 'block';
   document.getElementById('pris-last-updated').textContent =
@@ -3550,9 +3592,58 @@ async function prisHentAlt() {
   btn.innerHTML = '🔄 Oppdater priser';
 }
 
+async function prisLastFraFirebase() {
+  const btn = document.getElementById('pris-refresh-btn');
+  const errEl = document.getElementById('pris-error');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="pris-spinner"></span> Laster...';
+  errEl.style.display = 'none';
+
+  document.getElementById('pris-grid').innerHTML = `
+    <div style="padding:40px;text-align:center;color:var(--muted);font-size:.82rem">
+      <span class="pris-spinner"></span> Henter priser…
+    </div>`;
+
+  try {
+    const snap = await db.ref('yogurt-config/prisdata').once('value');
+    const data = snap.val();
+    if (!data || !data.ingredienser) {
+      document.getElementById('pris-grid').innerHTML =
+        '<div style="padding:40px;text-align:center;color:var(--muted);font-size:.82rem">Ingen priser lagret ennå — kjør GitHub Action først.</div>';
+      btn.disabled = false;
+      btn.innerHTML = '🔄 Oppdater priser';
+      return;
+    }
+
+    prisAllRows = PRISDATA.map(d => {
+      const p = data.ingredienser[d.key];
+      if (!p) return { ...d, found: false };
+      return {
+        ...d, found: true, kost: p.kost, isDiscounted: p.is_discounted,
+        best: {
+          full_name: p.full_name, name_extra: p.name_extra,
+          gross_price: p.gross_price, ppu: p.ppu, unitAbbr: p.unitAbbr,
+        },
+      };
+    });
+
+    prisUpdateDisplay();
+
+    const ts = data.lastUpdate ? new Date(data.lastUpdate) : null;
+    document.getElementById('pris-last-updated').textContent = ts
+      ? 'Oppdatert ' + ts.toLocaleString('no-NO', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+      : '';
+  } catch (e) {
+    errEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔄 Oppdater priser';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('[data-panel="priser"]')?.addEventListener('click', () => {
-    if (!Object.keys(prisCache).length) setTimeout(prisHentAlt, 100);
+    if (!prisAllRows.length) setTimeout(prisLastFraFirebase, 100);
   });
 });
 </script>
@@ -3595,7 +3686,35 @@ function visQR(kode, navn) {
 function lukkQR() {
   document.getElementById('qr-modal').classList.remove('open');
 }
+function visLapp(kode,navn){
+  const url=`https://yogurt-f0fa7.web.app/klippekort.html?kode=${kode}`;
+  document.getElementById('lapp-navn').textContent=navn;
+  document.getElementById('lapp-kode').textContent=kode;
+  document.getElementById('lapp-qr').src=`https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=1a1a1a&margin=10`;
+  document.getElementById('lapp-modal').classList.add('open');
+}
+function lukkLapp(){
+  document.getElementById('lapp-modal').classList.remove('open');
+}
+function printLapp(){
+  window.print();
+}
 </script>
+
+<div id="lapp-modal">
+  <div id="lapp-content">
+    <div class="lapp-logo">🍦 YoGurt</div>
+    <div style="font-size:.6rem;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Klippekort</div>
+    <div class="lapp-navn" id="lapp-navn"></div>
+    <div class="lapp-kode" id="lapp-kode"></div>
+    <img id="lapp-qr" src="" alt="QR-kode"/>
+    <div class="lapp-hint">Scan QR-koden for å se stempelkortet ditt</div>
+  </div>
+  <div id="lapp-actions">
+    <button id="lapp-close-btn" onclick="lukkLapp()">Lukk</button>
+    <button id="lapp-print-btn" onclick="printLapp()">Skriv ut</button>
+  </div>
+</div>
 </body>
 </html>
 
