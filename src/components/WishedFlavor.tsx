@@ -287,7 +287,7 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
           Foreslå en smak
         </div>
         <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, lineHeight: 1.05, letterSpacing: '-.03em', marginBottom: 6 }}>
-          Mangler vi din <em style={{ fontStyle: 'italic', color: '#C4952A' }}>drømme-yogurt?</em>
+          Mangler vi din <em style={{ fontStyle: 'italic', color: '#C4952A' }}>drømmeis?</em>
         </h3>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, opacity: .6, marginBottom: 18 }}>
           Send oss et forslag — vi leser alle og kanskje blir det månedens spesial.

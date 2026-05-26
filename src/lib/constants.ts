@@ -44,7 +44,7 @@ export const DEFAULT_TIMES: TimeSlot[] = [
 ]
 
 export const INCOME_CATEGORIES = [
-  'Salg yogurt', 'Salg tilbehør', 'Tilskudd', 'Sponsorinntekt', 'Andre inntekter',
+  'Salg is', 'Salg tilbehør', 'Tilskudd', 'Sponsorinntekt', 'Andre inntekter',
 ]
 
 export const EXPENSE_CATEGORIES = [

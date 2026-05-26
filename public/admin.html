@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>YoGurt — Admin</title>
+  <title>KremIs — Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -702,7 +702,7 @@
         <path d="M21 49 L37 49" stroke="#C4952A" stroke-width="1" opacity="0.3"/>
       </svg>
     </div>
-    <div class="gate-title">YoGurt</div>
+    <div class="gate-title">KremIs</div>
     <div class="gate-sub">Admin — kun for administratorer</div>
     <div class="gate-label">Passord</div>
     <input class="gate-input" id="pw" type="password" placeholder="••••••••••••" autocomplete="current-password"/>
@@ -715,7 +715,7 @@
 <div id="app">
   <div id="topbar">
     <div class="tb-left">
-      <a href="/" class="tb-logo">YoGurt</a>
+      <a href="/" class="tb-logo">KremIs</a>
       <div class="tb-sep"></div>
       <div class="tb-title">Admin</div>
     </div>
@@ -1243,7 +1243,7 @@
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
           <div>
             <div class="panel-title">Stempelkort</div>
-            <div class="panel-sub">Kjøp 4 yogurter, få den 5. gratis — bygger faste kunder</div>
+            <div class="panel-sub">Kjøp 4 is, få den 5. gratis — bygger faste kunder</div>
           </div>
           <span class="live-pulse" id="loj-count-badge">0 AKTIVE KORT</span>
         </div>
@@ -1388,7 +1388,7 @@
 <!-- KASSE MODUS OVERLAY -->
 <div id="kasse-overlay">
   <div class="kasse-header">
-    <span class="kasse-logo">YoGurt</span>
+    <span class="kasse-logo">KremIs</span>
     <div style="text-align:center">
       <div class="kasse-session-sub" id="kasse-session-label">—</div>
       <div class="kasse-elapsed" id="kasse-elapsed-disp">00:00:00</div>
@@ -1628,7 +1628,7 @@ document.querySelectorAll('.side-btn[data-panel]').forEach(btn=>{
 
 // ── REGNSKAP ──
 const TX_CATS = {
-  income: ['Salg yogurt','Salg tilbehør','Tilskudd','Sponsorinntekt','Andre inntekter'],
+  income: ['Salg is','Salg tilbehør','Tilskudd','Sponsorinntekt','Andre inntekter'],
   expense:['Råvarer','Emballasje','Transport','Markedsføring','Utstyr','Lisenser/avgifter','Andre utgifter']
 };
 let transactions = {}; // id -> {date,description,category,type,amount}
@@ -1998,9 +1998,9 @@ function loadLogg(){
 // ── Display GIF — multi-device ──
 const dispDevicesRef=db.ref('yogurt-displays');
 const GIF_LABELS=[
-  {emoji:'🍦',name:'Yogurt spinning'},{emoji:'✨',name:'Sparkle'},
+  {emoji:'🍦',name:'Is spinning'},{emoji:'✨',name:'Sparkle'},
   {emoji:'🌈',name:'Rainbow'},{emoji:'❄️',name:'Frysing'},
-  {emoji:'🎉',name:'Feiring'},{emoji:'💜',name:'YoGurt logo'},
+  {emoji:'🎉',name:'Feiring'},{emoji:'💜',name:'KremIs logo'},
 ];
 let displays={}; // deviceId -> {name, current, status:{lastSeen, current}}
 
@@ -2086,14 +2086,14 @@ document.querySelectorAll('.disp-subtab').forEach(tab=>{
 
 // ── Arduino-kode generator ──
 let currentEsp=1, currentGif=0;
-const GIF_NAMES=['🍦 Yogurt spinning','✨ Sparkle','🌈 Rainbow','❄️ Frysing','🎉 Feiring','💜 YoGurt logo'];
+const GIF_NAMES=['🍦 Is spinning','✨ Sparkle','🌈 Rainbow','❄️ Frysing','🎉 Feiring','💜 KremIs logo'];
 
 function espCode(esp, gif){
   const id=`esp-${esp}`;
   const gifFile=`gif${gif}.gif`;
   const gifName=GIF_NAMES[gif];
   return `// ═══════════════════════════════════════════════════════
-//  YoGurt Display — GC9A01 rund TFT
+//  KremIs Display — GC9A01 rund TFT
 //  ESP ${esp} · ${gifName}
 //
 //  STEG 1: Kopier "${gifFile.replace('.gif','.h')}" til samme mappe som denne .ino-filen
@@ -2146,7 +2146,7 @@ void setup(){
   Serial.begin(115200);
   tft.init(); tft.setRotation(0); tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE,TFT_BLACK);
-  tft.setCursor(50,110); tft.print("YoGurt...");
+  tft.setCursor(50,110); tft.print("KremIs...");
 
   WiFi.begin(WIFI_SSID,WIFI_PASSWORD);
   tft.setCursor(40,125); tft.print("Kobler til WiFi...");
@@ -2218,7 +2218,7 @@ document.getElementById('download-h-btn')?.addEventListener('click', async ()=>{
 
     // Bygg C-header i nettleseren
     const lines = [
-      `// ${gifName}.h — YoGurt ${gifLabel}`,
+      `// ${gifName}.h — KremIs ${gifLabel}`,
       `// ${bytes.length} bytes (${Math.round(bytes.length/1024)} KB)`,
       `// Legg denne filen i samme mappe som .ino-filen`,
       `#pragma once`,
@@ -2558,7 +2558,7 @@ function kcoSelectCustomer(code){
         <div class="kco-stamp-sel-name">${c.name||code} <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(247,244,239,.4)">${code}</span></div>
         <div class="kco-stamp-sel-meta">${stampsNow}/4 stempler · ${sizeInfo}</div>
         <div style="display:flex;gap:4px;margin-top:6px">${Array.from({length:5},(_,i)=>`<div class="kspp-dot${i<stampsNow?' f':''}${i>=stampsNow&&i<stampsNow+kasseCart.length?' f':''}"></div>`).join('')}</div>
-        ${isFree?`<div style="font-size:.68rem;color:#C4952A;margin-top:6px">🎁 Gratis yogurt!</div>`:`<div style="font-size:.68rem;color:rgba(247,244,239,.4);margin-top:4px">+${kasseCart.length} stempel${kasseCart.length>1?'er':''} → ${Math.min(stampsNow+kasseCart.length,4)}/4</div>`}
+        ${isFree?`<div style="font-size:.68rem;color:#C4952A;margin-top:6px">🎁 Gratis is!</div>`:`<div style="font-size:.68rem;color:rgba(247,244,239,.4);margin-top:4px">+${kasseCart.length} stempel${kasseCart.length>1?'er':''} → ${Math.min(stampsNow+kasseCart.length,4)}/4</div>`}
       </div>
       <button class="kco-stamp-clear" onclick="kcoClearCustomer()" title="Fjern">×</button>
     </div>`;
@@ -2626,7 +2626,7 @@ function kasseBetal(){
 
   const receiptHtml=`
     <div class="receipt-header">
-      <div class="receipt-logo">🍦 YoGurt</div>
+      <div class="receipt-logo">🍦 KremIs</div>
       <div class="receipt-sub">Elevbedrift · 2026</div>
     </div>
     <hr class="receipt-divider solid"/>
@@ -2960,7 +2960,7 @@ function visKvittering(id){
 
   const html=`
     <div class="receipt-header">
-      <div class="receipt-logo">🍦 YoGurt</div>
+      <div class="receipt-logo">🍦 KremIs</div>
       <div class="receipt-sub">Elevbedrift · 2026</div>
     </div>
     <hr class="receipt-divider solid"/>
@@ -3117,8 +3117,8 @@ function lojShowCustomer(code,c){
   const stampsEl=document.getElementById('loj-cust-stamps');
   stampsEl.innerHTML=Array.from({length:5},(_,i)=>`<div class="stamp${i<c.stamps?' filled':''}${i===c.stamps-1?' last-stamped':''}">${i<c.stamps?'🍦':''}</div>`).join('');
   const bonus=document.getElementById('loj-cust-bonus');
-  if(c.stamps===4){bonus.textContent='🎁 1 stempel til, så en GRATIS yogurt!';bonus.style.display='inline-flex';}
-  else if(c.stamps===0){bonus.textContent='🎁 Gratis yogurt! Nullstilt.';bonus.style.display='inline-flex';}
+  if(c.stamps===4){bonus.textContent='🎁 1 stempel til, så en GRATIS is!';bonus.style.display='inline-flex';}
+  else if(c.stamps===0){bonus.textContent='🎁 Gratis is! Nullstilt.';bonus.style.display='inline-flex';}
   else{bonus.style.display='none';}
 }
 function lojRender(){
@@ -3703,7 +3703,7 @@ function printLapp(){
 
 <div id="lapp-modal">
   <div id="lapp-content">
-    <div class="lapp-logo">🍦 YoGurt</div>
+    <div class="lapp-logo">🍦 KremIs</div>
     <div style="font-size:.6rem;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Klippekort</div>
     <div class="lapp-navn" id="lapp-navn"></div>
     <div class="lapp-kode" id="lapp-kode"></div>

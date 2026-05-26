@@ -82,7 +82,7 @@ function ContactOverlay({ open, onClose }: { open: boolean; onClose: () => void 
     <AnimatePresence>
       {open && (
         <motion.div
-          role="dialog" aria-modal="true" aria-label="Kontakt YoGurt"
+          role="dialog" aria-modal="true" aria-label="Kontakt KremIs"
           onClick={e => { if (e.target === e.currentTarget) onClose() }}
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -297,7 +297,7 @@ export default function Home() {
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.22, ease: QUART }}
           style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 17, fontWeight: 700, letterSpacing: '.01em', cursor: 'pointer', transformOrigin: 'left center', color: '#1C1B19', textDecoration: 'none' }}
-        >YoGurt</motion.a>
+        >KremIs</motion.a>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           {[{ label: 'Smaker', target: 'smaker' }, { label: 'Tider', target: 'tider' }, { label: 'Ønsket', target: 'onsket' }].map(({ label, target }) => (
             <motion.button
@@ -349,12 +349,9 @@ export default function Home() {
           Elevbedrift · 2026
         </motion.div>
         <motion.h1 variants={heroItem} style={{ fontFamily: "'DM Serif Display', serif", fontSize: 76, lineHeight: .88, letterSpacing: '-.04em', marginBottom: 18 }}>
-          Yo<em style={{ fontStyle: 'italic', color: '#C4952A' }}>Gurt</em>
+          Krem<em style={{ fontStyle: 'italic', color: '#C4952A' }}>Is</em>
         </motion.h1>
-        <motion.div variants={heroBar} style={{ width: 44, height: 2, background: '#C4952A', marginBottom: 16 }} />
-        <motion.p variants={heroItem} style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 300, letterSpacing: '.02em', lineHeight: 1.6, opacity: .55, marginBottom: 20 }}>
-          Frys dagen, YoGurt i magen
-        </motion.p>
+        <motion.div variants={heroBar} style={{ width: 44, height: 2, background: '#C4952A', marginBottom: 20 }} />
         <motion.div
           variants={heroItem}
           whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(0,0,0,.08)' }}
@@ -464,7 +461,7 @@ export default function Home() {
         style={{ padding: '36px 28px 56px', borderTop: '1px solid #E8E3DC', marginTop: 36 }}
       >
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 13, opacity: .4 }}>
-          yogurteb5@gmail.com · © 2026 YoGurt Elevbedrift
+          yogurteb5@gmail.com · © 2026 KremIs Elevbedrift
         </p>
       </motion.footer>
 
