@@ -90,8 +90,8 @@ const FLAVOR_META: Record<string, { emoji: string }> = {
   'Classic Vanilla':  { emoji: '🍦' },
   'Mango Delight':    { emoji: '🥭' },
   'Chocolate Deluxe': { emoji: '🍫' },
-  'Greek Yogurt':     { emoji: '🫙' },
-  'Tropical Freeze':  { emoji: '🌴' },
+  'Lemon Dream':      { emoji: '🍋' },
+  'Tropical Sunrise': { emoji: '🌴' },
   'Forest Berry':     { emoji: '🫐' },
 }
 
@@ -113,10 +113,12 @@ const DEFAULT_DATA: AppData = {
       { name: 'Kokesjokolade Eldorado KIWI',qty: 6,   unit: 'g', pris: 0.099, pkgP: 10,  pkgS: 100  },
       { name: 'Ekstra sukker (Eldorado)',   qty: 3,   unit: 'g', pris: 0.024, pkgP: 24,  pkgS: 1000 },
     ],
-    'Greek Yogurt':     [
-      { name: 'Bytt yoghurt → gresk 10%',  qty: 0,   unit: 'g', pris: 0.064, pkgP: 64,  pkgS: 1000 },
+    'Lemon Dream':      [
+      { name: 'Sitronsaft (fersk)',         qty: 15,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
+      { name: 'Sitronskall (1/4 sitron)',   qty: 1,   unit: 'g',  pris: 0.010, pkgP: 3,  pkgS: 300  },
+      { name: 'Ekstra sukker (Eldorado)',   qty: 4,   unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
     ],
-    'Tropical Freeze':  [
+    'Tropical Sunrise': [
       { name: 'Ananas First Price (Meny)',  qty: 20,  unit: 'g', pris: 0.039, pkgP: 22,  pkgS: 565  },
       { name: 'Kokosmelk Eldorado (SPAR)', qty: 15,  unit: 'ml',pris: 0.036, pkgP: 9,   pkgS: 250  },
       { name: 'Limejuice Realemon (SPAR)', qty: 2,   unit: 'ml',pris: 0.140, pkgP: 35,  pkgS: 250  },
@@ -130,8 +132,8 @@ const DEFAULT_DATA: AppData = {
     'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Visp vaniljesukkeret inn i basen.\n• Tips: Et knivspiss salt løfter smaken.\n• Modne over natten gir best vaniljesmak.',
     'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Trekk fra 15g yoghurt fra basen.\n• Bland purée inn ETTER basen er nedkjølt.',
     'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt kakaopulveret i basen så det løses opp.\n• Smelt sjokoladen og rør inn.\n• Trenger ekstra sukker fordi kakao er bitter.',
-    'Greek Yogurt':     '🫙 Gresk yoghurt:\n• Bytt ut TINE-yoghurt med gresk yoghurt 10%.\n• Smaker mer naturlig — ingen ekstra smak nødvendig.\n• Råvarekost øker ~1,30 kr/porsjon.',
-    'Tropical Freeze':  '🌴 Tropisk:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter kjølenedgang.',
+    'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Riv skallet — BARE det gule, hvit del er bittert.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
+    'Tropical Sunrise': '🌴 Tropical Sunrise:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter kjølenedgang.',
     'Forest Berry':     '🫐 Skogsbær:\n• Tin bærene og purér. Sil bort frø for glatt is.\n• Trenger ekstra sukker fordi bær er syrlige.\n• Hold 5g hele bær til å røre inn på slutten.',
   },
   baseCosts: [
@@ -145,8 +147,8 @@ const DEFAULT_DATA: AppData = {
   ],
   flavorPrices: {
     'Classic Vanilla': 25, 'Mango Delight': 25,
-    'Chocolate Deluxe': 25, 'Greek Yogurt': 22,
-    'Tropical Freeze': 25, 'Forest Berry': 25,
+    'Chocolate Deluxe': 25, 'Lemon Dream': 25,
+    'Tropical Sunrise': 25, 'Forest Berry': 25,
   },
   margin: 10,
 }
