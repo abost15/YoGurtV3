@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>YoGurt — Oppskrifter & Kalkyle</title>
+<title>KremIs — Oppskrifter & Kalkyle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
@@ -20,43 +20,38 @@ input,button,select,textarea{font-family:inherit;color:inherit}
 <script type="text/babel">
 const { useState, useEffect } = React;
 
-const STORAGE_KEY = 'yogurt-recipes-v4';
+const STORAGE_KEY = 'kremis-recipes-v1';
 
 const BASE_VERSIONS = {
   ultra: {
-    label: 'Ultra-enkel (3 ingredienser)',
-    sub: 'Ingen koking · superrask',
+    label: 'Rask (2 ingredienser)',
+    sub: 'Ingen ismaskin · superrask',
     ingredients: [
-      { name:'Yoghurt naturell (TINE)', qty:110, unit:'g', pris:0.025 },
-      { name:'Kremfløte',               qty:25,  unit:'g', pris:0.080 },
-      { name:'Sukker',                  qty:18,  unit:'g', pris:0.015 },
+      { name:'Kondensert melk (Nestle)', qty:55, unit:'g', pris:0.063 },
+      { name:'Kremfløte 38%',            qty:90, unit:'g', pris:0.070 },
     ],
-    instructions: 'Ultra-enkel — ingen koking:\n1. Visp sammen alt i en bolle.\n2. Smak til — vil dere ha søtere?\n3. Modne i kjøleskap min 4 timer (over natten = best).\n4. Kjør i maskinen i 10-15 min. Server med en gang.',
+    instructions: 'No-churn rask base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk i en stor bolle.\n3. Fold kremfløten forsiktig inn — brett, ikke rør, så luften bevares.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Ingen ismaskin trengs — kondensert melk hindrer iskrystaller naturlig.',
   },
   enkel: {
-    label: 'Enkel+ (5 ingredienser) — ANBEFALT',
-    sub: 'Ingen koking · god tekstur',
+    label: 'Standard (3 ingredienser) — ANBEFALT',
+    sub: 'Ingen ismaskin · best balanse',
     ingredients: [
-      { name:'Yoghurt naturell (TINE)', qty:100, unit:'g', pris:0.025 },
-      { name:'Kremfløte',               qty:25,  unit:'g', pris:0.080 },
-      { name:'Sukker',                  qty:15,  unit:'g', pris:0.015 },
-      { name:'Lys sirup (Dansukker)',   qty:5,   unit:'g', pris:0.040 },
-      { name:'Sitronsaft',              qty:1,   unit:'g', pris:0.040 },
+      { name:'Kondensert melk (Nestle)', qty:55, unit:'g', pris:0.063 },
+      { name:'Kremfløte 38%',            qty:85, unit:'g', pris:0.070 },
+      { name:'Vaniljesukker',            qty:3,  unit:'g', pris:0.120 },
     ],
-    instructions: 'Enkel+ — anbefalt for dere:\n1. Visp sammen alle ingrediensene kaldt i en bolle til glatt.\n2. Smak til — juster sukker eller sitron.\n3. MODNE I KJØLESKAP min 4 timer — helst over natten. Kritisk for tekstur!\n4. Kjør i maskinen til ønsket konsistens (10-15 min).\n5. Server med en gang for best munnfølelse.\n\n💡 Lys sirup hindrer iskrystaller — gir bedre tekstur enn ren sukker.',
+    instructions: 'No-churn standard base — anbefalt:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk og vaniljesukker i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Vaniljesukker i basen løfter alle smaker, ikke bare vanilje.\n💡 Fold forsiktig — luften i kremfløten gir den kremige teksturen.',
   },
   balansert: {
-    label: 'Balansert (6 ingredienser)',
-    sub: 'Ingen koking · mer luftig med eggehvite',
+    label: 'Premium (4 ingredienser)',
+    sub: 'Ingen ismaskin · fyldigst smak',
     ingredients: [
-      { name:'Yoghurt naturell (TINE)',    qty:95, unit:'g', pris:0.025 },
-      { name:'Helmelk',                    qty:15, unit:'g', pris:0.018 },
-      { name:'Kremfløte',                  qty:20, unit:'g', pris:0.080 },
-      { name:'Sukker',                     qty:14, unit:'g', pris:0.015 },
-      { name:'Lys sirup (Dansukker)',      qty:4,  unit:'g', pris:0.040 },
-      { name:'Eggehvite (1 egg/6 pors.)', qty:7,  unit:'g', pris:0.030 },
+      { name:'Kondensert melk (Nestle)', qty:52, unit:'g',  pris:0.063 },
+      { name:'Kremfløte 38%',            qty:85, unit:'g',  pris:0.070 },
+      { name:'Vaniljesukker',            qty:3,  unit:'g',  pris:0.120 },
+      { name:'Sitronsaft',               qty:2,  unit:'ml', pris:0.038 },
     ],
-    instructions: 'Balansert — mer luftig med eggehvite:\n1. Visp sammen yoghurt + helmelk + kremfløte + sukker + sirup i bolle 1.\n2. I bolle 2: pisk eggehviten STIV (luftig, holder form).\n3. Fold eggehviten forsiktig inn i bolle 1 — ikke pisk, brett.\n4. MODNE I KJØLESKAP min 4 timer — over natten = best.\n5. Kjør i maskinen 10-15 min.\n\n💡 Stiv eggehvite = mer luft = mer "soft-serve"-aktig tekstur.',
+    instructions: 'No-churn premium base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk, vaniljesukker og sitronsaft i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Sitronsaft balanserer sødmen og gir en friskere smak.\n💡 Litt syre fremhever fruktsmakene (mango, bær, sitron) ekstra godt.',
   },
 };
 
@@ -64,8 +59,8 @@ const FLAVOR_META = {
   'Classic Vanilla':  { emoji:'🍦' },
   'Mango Delight':    { emoji:'🥭' },
   'Chocolate Deluxe': { emoji:'🍫' },
-  'Greek Yogurt':     { emoji:'🫙' },
-  'Tropical Freeze':  { emoji:'🌴' },
+  'Lemon Dream':      { emoji:'🍋' },
+  'Tropical Sunrise': { emoji:'🌴' },
   'Forest Berry':     { emoji:'🫐' },
 };
 
@@ -80,19 +75,21 @@ const DEFAULT_DATA = {
     'Chocolate Deluxe': [{ name:'Kakaopulver (Freia)',        qty:8,   unit:'g', pris:0.180 },
                          { name:'Mørk sjokolade (Freia)',     qty:6,   unit:'g', pris:0.140 },
                          { name:'Ekstra sukker',              qty:3,   unit:'g', pris:0.015 }],
-    'Greek Yogurt':     [{ name:'Bytt yoghurt → gresk 10%',  qty:0,   unit:'g', pris:0.040 }],
-    'Tropical Freeze':  [{ name:'Ananas (Dole, frosen)',      qty:20,  unit:'g', pris:0.055 },
-                         { name:'Kokosmelk (TCC/Aroy-D)',     qty:15,  unit:'g', pris:0.040 },
-                         { name:'Limesaft (Jif)',             qty:2,   unit:'g', pris:0.050 }],
+    'Lemon Dream':      [{ name:'Sitronsaft (fersk)',          qty:15,  unit:'ml', pris:0.038 },
+                         { name:'Sitronskall (1/4 sitron)',   qty:1,   unit:'g',  pris:0.010 },
+                         { name:'Ekstra sukker',              qty:4,   unit:'g',  pris:0.015 }],
+    'Tropical Sunrise': [{ name:'Ananas (frossen)',           qty:20,  unit:'g', pris:0.039 },
+                         { name:'Kokosmelk',                  qty:15,  unit:'ml', pris:0.036 },
+                         { name:'Limejuice',                  qty:2,   unit:'ml', pris:0.140 }],
     'Forest Berry':     [{ name:'Skogsbær (frosen, Findus)',  qty:30,  unit:'g', pris:0.050 },
                          { name:'Ekstra sukker',              qty:3,   unit:'g', pris:0.015 }],
   },
   flavorInstructions: {
     'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Visp vaniljesukkeret inn i basen.\n• Tips: Et knivspiss salt løfter smaken.\n• Modne over natten gir best vaniljesmak.',
-    'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Trekk fra 15g yoghurt fra basen.\n• Bland purée inn ETTER basen er nedkjølt.',
+    'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Fold purée inn FØR du blander kremfløten med kondensert melk.\n• Tips: Litt ekstra sitronsaft fremhever mangoen.',
     'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt kakaopulveret i basen så det løses opp.\n• Smelt sjokoladen og rør inn.\n• Trenger ekstra sukker fordi kakao er bitter.',
-    'Greek Yogurt':     '🫙 Gresk yoghurt:\n• Bytt ut TINE-yoghurt med gresk yoghurt 10%.\n• Smaker mer naturlig — ingen ekstra smak nødvendig.\n• Råvarekost øker ~1,30 kr/porsjon.',
-    'Tropical Freeze':  '🌴 Tropisk:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter kjølenedgang.',
+    'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Riv skallet — BARE det gule, hvit del er bittert.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
+    'Tropical Sunrise': '🌴 Tropical Sunrise:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter at kondensert melk og kremfløte er blandet.',
     'Forest Berry':     '🫐 Skogsbær:\n• Tin bærene og purér. Sil bort frø for glatt is.\n• Trenger ekstra sukker fordi bær er syrlige.\n• Hold 5g hele bær til å røre inn på slutten.',
   },
   baseCosts: [
@@ -104,8 +101,8 @@ const DEFAULT_DATA = {
   ],
   flavorPrices: {
     'Classic Vanilla':25,'Mango Delight':25,
-    'Chocolate Deluxe':25,'Greek Yogurt':22,
-    'Tropical Freeze':25,'Forest Berry':25,
+    'Chocolate Deluxe':25,'Lemon Dream':25,
+    'Tropical Sunrise':25,'Forest Berry':25,
   },
   margin: 50,
 };

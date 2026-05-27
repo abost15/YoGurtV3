@@ -6,14 +6,11 @@ FIREBASE_URL = "https://yogurt-f0fa7-default-rtdb.europe-west1.firebasedatabase.
 ODA_URL = "https://oda.com/api/v1/search/"
 
 PRISDATA = [
-    # BASE
-    {'smak': 'base', 'ing': 'Yoghurt naturell',   'key': 'yoghurt_naturell', 'q': 'yoghurt naturell',     'filter': 'naturell',     'buy': 4},
-    {'smak': 'base', 'ing': 'Kremfløte',           'key': 'kremfløte',        'q': 'kremfløte',            'filter': 'kremfløte',    'buy': 2},
-    {'smak': 'base', 'ing': 'Sukker',              'key': 'sukker',           'q': 'hvitt sukker',         'filter': 'sukker',       'buy': 1},
-    {'smak': 'base', 'ing': 'Lys sirup',           'key': 'lys_sirup',        'q': 'lys sirup',            'filter': 'sirup',        'buy': 1},
-    {'smak': 'base', 'ing': 'Sitronsaft',          'key': 'sitronsaft',       'q': 'sitronsaft 250ml',     'filter': 'sitronsaft',   'buy': 1},
-    {'smak': 'base', 'ing': 'Helmelk',             'key': 'helmelk',          'q': 'helmelk',              'filter': 'helmelk',      'buy': 1},
-    {'smak': 'base', 'ing': 'Egg',                 'key': 'egg',              'q': 'egg 12',               'filter': 'egg',          'buy': 1},
+    # BASE (no-churn kondensert melk-is)
+    {'smak': 'base', 'ing': 'Kondensert melk',  'key': 'kondensert_melk', 'q': 'kondensert melk søtet', 'filter': 'kondensert', 'buy': 2},
+    {'smak': 'base', 'ing': 'Kremfløte',        'key': 'kremfløte',       'q': 'kremfløte',             'filter': 'kremfløte',     'buy': 2},
+    {'smak': 'base', 'ing': 'Vaniljesukker',    'key': 'vaniljesukker',   'q': 'vaniljesukker',         'filter': 'vaniljesukker', 'buy': 1},
+    {'smak': 'base', 'ing': 'Sitronsaft',       'key': 'sitronsaft',      'q': 'sitronsaft 250ml',      'filter': 'sitronsaft',    'buy': 1},
     # Classic Vanilla
     {'smak': 'Classic Vanilla', 'ing': 'Vaniljesukker', 'key': 'vaniljesukker', 'q': 'vaniljesukker',     'filter': 'vaniljesukker','buy': 1},
     {'smak': 'Classic Vanilla', 'ing': 'Maisstivelse',  'key': 'maisenna',      'q': 'maisstivelse',      'filter': 'maisstivelse', 'buy': 1},

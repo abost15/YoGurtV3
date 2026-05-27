@@ -2,46 +2,39 @@ import { useState, useEffect, useRef } from 'react'
 import { ref, onValue } from 'firebase/database'
 import { db } from '@/lib/firebase'
 
-const STORAGE_KEY = 'yogurt-recipes-v10'
+const STORAGE_KEY = 'kremis-recipes-v1'
 
 // pkgP = pakningspris (kr), pkgS = pakkestørrelse (g/ml) — pris beregnes automatisk
-// Alle baser bruker GRESK yoghurt (10% fett) — mer fett og protein, mindre vann = kremere is
 const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: Ingredient[]; instructions: string }> = {
   ultra: {
-    label: 'Rask (4 ingredienser)',
-    sub: '~16% fett · ingen koking · 10 min',
+    label: 'Rask (2 ingredienser)',
+    sub: '~22% fett · ingen ismaskin · 5 min',
     ingredients: [
-      { name: 'Gresk yoghurt 10%',      qty: 85, unit: 'g',  pris: 0.064, pkgP: 64, pkgS: 1000 },
-      { name: 'Kremfløte 38%',          qty: 40, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
-      { name: 'Sukker',                 qty: 12, unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
-      { name: 'Lys sirup (Dansukker)', qty: 10, unit: 'g',  pris: 0.036, pkgP: 18, pkgS: 500  },
+      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 25, pkgS: 397  },
+      { name: 'Kremfløte 38%',            qty: 90, unit: 'g', pris: 0.070, pkgP: 70, pkgS: 1000 },
     ],
-    instructions: 'Rask base:\n1. Visp alt kaldt i en bolle til glatt og jevnt.\n2. Smak til — litt søtere enn ønsket (kulde demper sødme).\n3. MODNE I KJØLESKAP minimum 2 timer — over natten er best.\n4. Kjør i maskinen 10–15 min til kremet konsistens.\n5. Server med en gang for soft-serve, eller frys 30 min for fastere is.\n\n💡 Lys sirup er nøkkelen — den hindrer store iskrystaller og holder isen myk.',
+    instructions: 'No-churn rask base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk i en stor bolle.\n3. Fold kremfløten forsiktig inn — brett, ikke rør, så luften bevares.\n4. Tilsett smakstilsetning og fold forsiktig inn.\n5. Hell i beholder og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering for å mykne litt.\n\n💡 Ingen ismaskin trengs — kondensert melk hindrer iskrystaller naturlig.',
   },
   enkel: {
-    label: 'Kremet (5 ingredienser) — ANBEFALT',
-    sub: '~17% fett · ingen koking · best balanse',
+    label: 'Standard (3 ingredienser) — ANBEFALT',
+    sub: '~21% fett · ingen ismaskin · best balanse',
     ingredients: [
-      { name: 'Gresk yoghurt 10%',      qty: 80, unit: 'g',  pris: 0.064, pkgP: 64,  pkgS: 1000 },
-      { name: 'Kremfløte 38%',          qty: 45, unit: 'g',  pris: 0.070, pkgP: 70,  pkgS: 1000 },
-      { name: 'Sukker',                 qty: 13, unit: 'g',  pris: 0.024, pkgP: 24,  pkgS: 1000 },
-      { name: 'Lys sirup (Dansukker)', qty: 12, unit: 'g',  pris: 0.036, pkgP: 18,  pkgS: 500  },
-      { name: 'Sitronsaft',             qty: 1,  unit: 'ml', pris: 0.038, pkgP: 57,  pkgS: 1500 },
+      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 25,  pkgS: 397  },
+      { name: 'Kremfløte 38%',            qty: 85, unit: 'g', pris: 0.070, pkgP: 70,  pkgS: 1000 },
+      { name: 'Vaniljesukker',            qty: 3,  unit: 'g', pris: 0.120, pkgP: 21,  pkgS: 175  },
     ],
-    instructions: 'Kremet base — anbefalt:\n1. Visp alle ingrediensene kaldt i en bolle til helt glatt.\n2. Smak til — juster sukker om nødvendig.\n3. MODNE I KJØLESKAP minst 4 timer, helst over natten. Dette er det viktigste steget!\n4. Kjør i maskinen 12–15 min til tykk og kremet konsistens.\n5. Server direkte fra maskinen for soft-serve, eller sett i fryser 20–30 min for fastere is.\n\n💡 12g sirup (mot 5g før) er den viktigste endringen — sirup hindrer iskrystaller langt bedre enn sukker alene.\n💡 Gresk yoghurt har halve vanninnholdet av vanlig yoghurt = mye kremere resultat.',
+    instructions: 'No-churn standard base — anbefalt:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk og vaniljesukker i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør, så luften bevares.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Vaniljesukker i basen løfter alle smaker, ikke bare vanilje.\n💡 Fold forsiktig — luften i kremfløten gir den kremige teksturen.',
   },
   balansert: {
-    label: 'Profesjonell (6 ingredienser)',
-    sub: '~17% fett · maisenna som stabilisator · tykkest',
+    label: 'Premium (4 ingredienser)',
+    sub: '~21% fett · ingen ismaskin · fyldigst smak',
     ingredients: [
-      { name: 'Gresk yoghurt 10%',      qty: 75, unit: 'g',  pris: 0.064, pkgP: 64, pkgS: 1000 },
-      { name: 'Kremfløte 38%',          qty: 50, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
-      { name: 'Sukker',                 qty: 12, unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
-      { name: 'Lys sirup (Dansukker)', qty: 14, unit: 'g',  pris: 0.036, pkgP: 18, pkgS: 500  },
-      { name: 'Maisenna (Maizena)',     qty: 2,  unit: 'g',  pris: 0.040, pkgP: 20, pkgS: 500  },
-      { name: 'Sitronsaft',             qty: 1,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
+      { name: 'Kondensert melk (Nestle)', qty: 52, unit: 'g',  pris: 0.063, pkgP: 25, pkgS: 397  },
+      { name: 'Kremfløte 38%',            qty: 85, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
+      { name: 'Vaniljesukker',            qty: 3,  unit: 'g',  pris: 0.120, pkgP: 21, pkgS: 175  },
+      { name: 'Sitronsaft',               qty: 2,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
     ],
-    instructions: 'Profesjonell base med maisenna:\n1. Bland maisenna med 1 ss kaldt vann til klumpfri pasta i liten bolle.\n2. Varm kremfløten i gryte til den nesten koker (70–80°C). Ta av varmen.\n3. Rør maizena-pastaen inn i den varme kremfløten — visp raskt.\n4. La avkjøle til romtemperatur (ca. 20 min).\n5. Rør inn yoghurt, sukker, sirup og sitronsaft.\n6. MODNE I KJØLESKAP minst 4 timer — over natten er best.\n7. Kjør i maskinen 12–15 min.\n\n💡 Maisenna binder vannet i blandingen og hindrer iskrystaller — dette er hemmeligheten til butikk-is.\n💡 50g kremfløte per porsjon gir rikelig fett for en ekstra silkemyk tekstur.',
+    instructions: 'No-churn premium base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk, vaniljesukker og sitronsaft i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Sitronsaft balanserer sødmen fra kondensert melk og gir en friskere smak.\n💡 Litt syre fremhever fruktsmakene (mango, bær, sitron) ekstra godt.',
   },
 }
 
@@ -60,30 +53,28 @@ interface AppData {
   margin: number
 }
 
-// Kobler oppskrift-ingrediensnavn til Firebase-nøkkel fra Kassalapp
+// Kobler oppskrift-ingrediensnavn til Firebase-nøkkel
 const INGREDIENT_KEY: Record<string, string> = {
-  'Gresk yoghurt 10%':             'gresk_yoghurt',
+  'Kondensert melk (Nestle)':      'kondensert_melk',
   'Kremfløte 38%':                 'kremfløte',
-  'Yoghurt naturell (TINE)':       'yoghurt_naturell',
   'Kremfløte':                     'kremfløte',
+  'Vaniljesukker':                 'vaniljesukker',
+  'Vaniljesukker (Freia, KIWI)':   'vaniljesukker',
   'Sukker':                        'sukker',
+  'Ekstra sukker':                 'sukker',
+  'Ekstra sukker (Eldorado)':      'sukker',
   'Lys sirup (Dansukker)':         'lys_sirup',
   'Sitronsaft':                    'sitronsaft',
-  'Helmelk':                       'helmelk',
-  'Eggehvite (1 egg/6 pors.)':     'egg',
-  'Vaniljesukker (Tørresheim)':    'vaniljesukker',
-  'Mango (frosen, Findus)':        'mango',
-  'Kakaopulver (Freia)':           'kakaopulver',
-  'Mørk sjokolade (Freia)':        'sjokolade_mork',
-  'Bytt yoghurt → gresk 10%':      'gresk_yoghurt',
+  'Sitronsaft (fersk)':            'sitronsaft',
+  'Sitronskall (1/4 sitron)':      'sitronsaft',
+  'Mango frossen':                 'mango',
+  'Kakaopulver (ren, mørk)':       'kakaopulver',
+  'Kokesjokolade Eldorado KIWI':   'sjokolade_mork',
   'Maisenna (Maizena)':            'maisenna',
-  'Gresk yoghurt (juster ned)':    'gresk_yoghurt',
-  'Ananas (Dole, frosen)':         'ananas',
-  'Kokosmelk (TCC/Aroy-D)':        'kokosmelk',
-  'Limesaft (Jif)':                'limesaft',
-  'Skogsbær (frosen, Findus)':     'skogsbaer',
-  'Ekstra sukker':                 'sukker',
-  'Yoghurt (juster ned)':          'yoghurt_naturell',
+  'Ananas First Price (Meny)':     'ananas',
+  'Kokosmelk Eldorado (SPAR)':     'kokosmelk',
+  'Limejuice Realemon (SPAR)':     'limesaft',
+  'Skogsbær frossen':              'skogsbaer',
 }
 
 const FLAVOR_META: Record<string, { emoji: string }> = {
@@ -105,8 +96,7 @@ const DEFAULT_DATA: AppData = {
       { name: 'Vaniljesukker (Freia, KIWI)', qty: 4,  unit: 'g', pris: 0.120, pkgP: 21,  pkgS: 175  },
     ],
     'Mango Delight':    [
-      { name: 'Mango frossen',              qty: 35,  unit: 'g', pris: 0.070, pkgP: 35,  pkgS: 500  },
-      { name: 'Gresk yoghurt (juster ned)', qty: -15, unit: 'g', pris: 0.064, pkgP: 64,  pkgS: 1000 },
+      { name: 'Mango frossen',              qty: 40,  unit: 'g', pris: 0.070, pkgP: 35,  pkgS: 500  },
     ],
     'Chocolate Deluxe': [
       { name: 'Kakaopulver (ren, mørk)',    qty: 8,   unit: 'g', pris: 0.121, pkgP: 85,  pkgS: 700  },
@@ -130,7 +120,7 @@ const DEFAULT_DATA: AppData = {
   },
   flavorInstructions: {
     'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Visp vaniljesukkeret inn i basen.\n• Tips: Et knivspiss salt løfter smaken.\n• Modne over natten gir best vaniljesmak.',
-    'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Trekk fra 15g yoghurt fra basen.\n• Bland purée inn ETTER basen er nedkjølt.',
+    'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Fold purée inn FØR du blander kremfløten med kondensert melk.\n• Tips: Litt ekstra sitronsaft fremhever mangoen.',
     'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt kakaopulveret i basen så det løses opp.\n• Smelt sjokoladen og rør inn.\n• Trenger ekstra sukker fordi kakao er bitter.',
     'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Riv skallet — BARE det gule, hvit del er bittert.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
     'Tropical Sunrise': '🌴 Tropical Sunrise:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter kjølenedgang.',

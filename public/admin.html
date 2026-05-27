@@ -2872,7 +2872,7 @@ function stSaveToRegnskap(){
   const endTime=now.toTimeString().slice(0,5);
   const desc=`Salg ${label} · ${sales.length} porsjoner`;
   const id=Math.random().toString(36).slice(2,9);
-  db.ref(`yogurt-transactions/${id}`).set({date:dateStr,description:desc,category:'Salg yogurt',type:'income',amount:total});
+  db.ref(`yogurt-transactions/${id}`).set({date:dateStr,description:desc,category:'Salg KremIs',type:'income',amount:total});
 
   const vipps=sales.filter(x=>x.payment==='vipps').reduce((s,x)=>s+x.price,0);
   const kontant=sales.filter(x=>x.payment==='kontant').reduce((s,x)=>s+x.price,0);
@@ -3436,14 +3436,11 @@ const ODA_URL = 'https://oda.com/api/v1/search/';
 
 // key = Firebase-nøkkel, need = omtrentlig behov per batch (36 porsjoner)
 const PRISDATA = [
-  // ── BASE ──
-  { smak:'base', ing:'Yoghurt naturell',    key:'yoghurt_naturell', q:'yoghurt naturell',        filter:'naturell',    need:2880, buy:4  },
-  { smak:'base', ing:'Kremfløte',           key:'kremfløte',        q:'kremfløte',               filter:'kremfløte',   need:1620, buy:2  },
-  { smak:'base', ing:'Sukker',              key:'sukker',           q:'hvitt sukker',            filter:'sukker',      need:468,  buy:1  },
-  { smak:'base', ing:'Lys sirup',           key:'lys_sirup',        q:'lys sirup',               filter:'sirup',       need:432,  buy:1  },
-  { smak:'base', ing:'Sitronsaft',          key:'sitronsaft',       q:'sitronsaft',              filter:'sitronsaft',  need:36,   buy:1  },
-  { smak:'base', ing:'Helmelk',             key:'helmelk',          q:'helmelk',                 filter:'helmelk',     need:540,  buy:1  },
-  { smak:'base', ing:'Egg',                 key:'egg',              q:'egg 12',                  filter:'egg',         need:6,    buy:1  },
+  // ── BASE (no-churn kondensert melk-is) ──
+  { smak:'base', ing:'Kondensert melk',     key:'kondensert_melk',  q:'kondensert melk søtet',   filter:'kondensert',  need:1980, buy:2  },
+  { smak:'base', ing:'Kremfløte',           key:'kremfløte',        q:'kremfløte',               filter:'kremfløte',   need:3060, buy:2  },
+  { smak:'base', ing:'Vaniljesukker',       key:'vaniljesukker',    q:'vaniljesukker',           filter:'vaniljesukker', need:108, buy:1 },
+  { smak:'base', ing:'Sitronsaft',          key:'sitronsaft',       q:'sitronsaft',              filter:'sitronsaft',  need:72,   buy:1  },
   // ── SMAK — Classic Vanilla ──
   { smak:'Classic Vanilla', ing:'Vaniljesukker',    key:'vaniljesukker',    q:'vaniljesukker',   filter:'vaniljesukker', need:144, buy:1  },
   { smak:'Classic Vanilla', ing:'Maisstivelse',     key:'maisenna',         q:'maisstivelse',    filter:'maisstivelse',  need:72,  buy:1  },
