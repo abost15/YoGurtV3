@@ -119,7 +119,7 @@ const DEFAULT_DATA: AppData = {
     ],
   },
   flavorInstructions: {
-    'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Visp vaniljesukkeret inn i basen.\n• Tips: Et knivspiss salt løfter smaken.\n• Modne over natten gir best vaniljesmak.',
+    'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Vaniljesukker er allerede i basen — ekstramengen forsterker smaken.\n• Tips: Et knivspiss salt fremhever vaniljesmaken.\n• Over natten i frysen gir best resultat.',
     'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Fold purée inn FØR du blander kremfløten med kondensert melk.\n• Tips: Litt ekstra sitronsaft fremhever mangoen.',
     'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt kakaopulveret i basen så det løses opp.\n• Smelt sjokoladen og rør inn.\n• Trenger ekstra sukker fordi kakao er bitter.',
     'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Riv skallet — BARE det gule, hvit del er bittert.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
@@ -299,7 +299,7 @@ export default function Recipes() {
               Alle felter er redigerbare · endringer lagres automatisk
               {priceTs && (
                 <span style={{ marginLeft: 10, color: c.green, fontWeight: 600 }}>
-                  ✓ Priser fra Kassalapp ({new Date(priceTs).toLocaleDateString('no-NO', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})})
+                  ✓ Priser fra Oda ({new Date(priceTs).toLocaleDateString('no-NO', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})})
                 </span>
               )}
             </div>

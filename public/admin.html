@@ -3442,17 +3442,20 @@ const PRISDATA = [
   { smak:'base', ing:'Vaniljesukker',       key:'vaniljesukker',    q:'vaniljesukker',           filter:'vaniljesukker', need:108, buy:1 },
   { smak:'base', ing:'Sitronsaft',          key:'sitronsaft',       q:'sitronsaft',              filter:'sitronsaft',  need:72,   buy:1  },
   // ── SMAK — Classic Vanilla ──
-  { smak:'Classic Vanilla', ing:'Vaniljesukker',    key:'vaniljesukker',    q:'vaniljesukker',   filter:'vaniljesukker', need:144, buy:1  },
-  { smak:'Classic Vanilla', ing:'Maisstivelse',     key:'maisenna',         q:'maisstivelse',    filter:'maisstivelse',  need:72,  buy:1  },
+  { smak:'Classic Vanilla',  ing:'Vaniljesukker',     key:'vaniljesukker',   q:'vaniljesukker',       filter:'vaniljesukker', need:144,  buy:1 },
   // ── SMAK — Mango Delight ──
-  { smak:'Mango Delight', ing:'Mango (frossen)',    key:'mango',            q:'mango frossen',   filter:'mango',         need:1260, buy:2 },
+  { smak:'Mango Delight',    ing:'Mango (frossen)',   key:'mango',           q:'mango frossen',       filter:'mango',  exclude:'blanding', need:1440, buy:2 },
   // ── SMAK — Chocolate Deluxe ──
-  { smak:'Chocolate Deluxe', ing:'Kakaopulver',     key:'kakaopulver',      q:'kakaopulver',     filter:'kakao',         need:288, buy:1  },
-  { smak:'Chocolate Deluxe', ing:'Mørk sjokolade',  key:'sjokolade_mork',   q:'kokesjokolade mørk', filter:'sjokolade', need:216, buy:3  },
+  { smak:'Chocolate Deluxe', ing:'Kakaopulver',       key:'kakaopulver',     q:'kakaopulver',         filter:'kakao',         need:288,  buy:1 },
+  { smak:'Chocolate Deluxe', ing:'Mørk sjokolade',    key:'sjokolade_mork',  q:'kokesjokolade mørk',  filter:'sjokolade',     need:216,  buy:3 },
+  // ── SMAK — Lemon Dream ──
+  { smak:'Lemon Dream',      ing:'Sitron (fersk)',    key:'sitron',          q:'sitron',              filter:'sitron', exclude:'saft',     need:108,  buy:3 },
   // ── SMAK — Tropical Sunrise ──
-  { smak:'Tropical Sunrise', ing:'Smoothieblanding (ananas/melon/banan)', key:'smoothieblanding', q:'smoothieblanding ananas melon banan', filter:'smoothieblanding', need:800, buy:2 },
+  { smak:'Tropical Sunrise', ing:'Ananas (frossen)',  key:'ananas',          q:'ananas frossen',      filter:'ananas',        need:720,  buy:2 },
+  { smak:'Tropical Sunrise', ing:'Kokosmelk',         key:'kokosmelk',       q:'kokosmelk',           filter:'kokos',         need:540,  buy:1 },
+  { smak:'Tropical Sunrise', ing:'Limejuice',         key:'limesaft',        q:'limejuice',           filter:'lime',          need:72,   buy:1 },
   // ── SMAK — Forest Berry ──
-  { smak:'Forest Berry', ing:'Skogsbær (frosne)',   key:'skogsbaer',        q:'skogsbær frossen', filter:'bær',          need:1080, buy:2 },
+  { smak:'Forest Berry',     ing:'Skogsbær (frosne)', key:'skogsbaer',       q:'skogsbær frossen',    filter:'bær',           need:1080, buy:2 },
 ];
 
 let prisCache = {};

@@ -12,17 +12,20 @@ PRISDATA = [
     {'smak': 'base', 'ing': 'Vaniljesukker',    'key': 'vaniljesukker',   'q': 'vaniljesukker',         'filter': 'vaniljesukker', 'buy': 1},
     {'smak': 'base', 'ing': 'Sitronsaft',       'key': 'sitronsaft',      'q': 'sitronsaft 250ml',      'filter': 'sitronsaft',    'buy': 1},
     # Classic Vanilla
-    {'smak': 'Classic Vanilla', 'ing': 'Vaniljesukker', 'key': 'vaniljesukker', 'q': 'vaniljesukker',     'filter': 'vaniljesukker','buy': 1},
-    {'smak': 'Classic Vanilla', 'ing': 'Maisstivelse',  'key': 'maisenna',      'q': 'maisstivelse',      'filter': 'maisstivelse', 'buy': 1},
+    {'smak': 'Classic Vanilla', 'ing': 'Vaniljesukker',         'key': 'vaniljesukker',  'q': 'vaniljesukker',        'filter': 'vaniljesukker', 'buy': 1},
     # Mango Delight
-    {'smak': 'Mango Delight',   'ing': 'Mango (frossen)',   'key': 'mango',        'q': 'mango frossen',  'filter': 'mango',        'exclude': 'blanding', 'buy': 2},
+    {'smak': 'Mango Delight',   'ing': 'Mango (frossen)',        'key': 'mango',          'q': 'mango frossen',        'filter': 'mango',         'exclude': 'blanding', 'buy': 2},
     # Chocolate Deluxe
-    {'smak': 'Chocolate Deluxe','ing': 'Kakaopulver',       'key': 'kakaopulver',  'q': 'kakaopulver',    'filter': 'kakao',        'buy': 1},
-    {'smak': 'Chocolate Deluxe','ing': 'Mørk sjokolade',    'key': 'sjokolade_mork','q': 'kokesjokolade mørk','filter': 'sjokolade','buy': 3},
+    {'smak': 'Chocolate Deluxe','ing': 'Kakaopulver',            'key': 'kakaopulver',    'q': 'kakaopulver',          'filter': 'kakao',         'buy': 1},
+    {'smak': 'Chocolate Deluxe','ing': 'Mørk sjokolade',         'key': 'sjokolade_mork', 'q': 'kokesjokolade mørk',   'filter': 'sjokolade',     'buy': 3},
+    # Lemon Dream
+    {'smak': 'Lemon Dream',     'ing': 'Sitron (fersk)',          'key': 'sitron',         'q': 'sitron',               'filter': 'sitron',        'exclude': 'saft', 'buy': 3},
     # Tropical Sunrise
-    {'smak': 'Tropical Sunrise', 'ing': 'Smoothieblanding (ananas/melon/banan)', 'key': 'smoothieblanding', 'q': 'smoothieblanding ananas melon banan', 'filter': 'smoothieblanding', 'buy': 2},
+    {'smak': 'Tropical Sunrise','ing': 'Ananas (frossen)',        'key': 'ananas',         'q': 'ananas frossen',       'filter': 'ananas',        'buy': 2},
+    {'smak': 'Tropical Sunrise','ing': 'Kokosmelk',               'key': 'kokosmelk',      'q': 'kokosmelk',            'filter': 'kokos',         'buy': 1},
+    {'smak': 'Tropical Sunrise','ing': 'Limejuice',               'key': 'limesaft',       'q': 'limejuice',            'filter': 'lime',          'buy': 1},
     # Forest Berry
-    {'smak': 'Forest Berry',    'ing': 'Skogsbær (frosne)', 'key': 'skogsbaer',    'q': 'skogsbær frossen','filter': 'bær',         'buy': 2},
+    {'smak': 'Forest Berry',    'ing': 'Skogsbær (frosne)',       'key': 'skogsbaer',      'q': 'skogsbær frossen',     'filter': 'bær',           'buy': 2},
 ]
 
 def fetch_best(q, filter_key, exclude=None):
