@@ -1576,7 +1576,19 @@ const pwErr=document.getElementById('pw-err');
 function doLogin(){
   gate.classList.add('hidden');
   app.classList.add('visible');
-  startListeners();
+  renderAll();
+  db.ref('kremis-data').once('value',snap=>{
+    const d=snap.val();
+    if(d&&d.flavors&&d.times){
+      d.flavors.forEach((f,i)=>{
+        if(!f.tc2) f.tc2=DEFAULT.flavors[i]?.tc2||f.tc;
+        if(!f.sted) f.sted='Kantina';
+        if(f.pris===undefined) f.pris='25 kr';
+      });
+      flavors=d.flavors; times=d.times;
+      renderAll();
+    } else { saveData(DEFAULT); }
+  },()=>{});
   startKeepAlive();
 }
 
@@ -1626,24 +1638,6 @@ let txModalType = 'income';
 function uid(){ return Math.random().toString(36).slice(2,9); }
 function fmtKr(n){ return new Intl.NumberFormat('nb-NO').format(Math.round(n))+' kr'; }
 
-let _listenersStarted = false;
-function startListeners() {
-  if (_listenersStarted) return;
-  _listenersStarted = true;
-  // Load data from Firebase and render (renderAll is accessible here via hoisting)
-  renderAll();
-  db.ref('kremis-data').once('value',snap=>{
-    const d=snap.val();
-    if(d&&d.flavors&&d.times){
-      d.flavors.forEach((f,i)=>{
-        if(!f.tc2) f.tc2=DEFAULT.flavors[i]?.tc2||f.tc;
-        if(!f.sted) f.sted='Kantina';
-        if(f.pris===undefined) f.pris='25 kr';
-      });
-      flavors=d.flavors; times=d.times;
-      renderAll();
-    } else { saveData(DEFAULT); }
-  },()=>{});
 db.ref('kremis-transactions').on('value', snap => {
   transactions = snap.val() || {};
   if(document.getElementById('panel-regnskap')?.classList.contains('active')) renderTx();
@@ -3409,7 +3403,6 @@ db.ref('kremis-maskin/status').on('value', snap => {
     </div>`;
 });
 
-}
 // Hook beholdning og salgs-tracker inn i panel-navigasjonen
 document.querySelectorAll('.side-btn[data-panel="beholdning"]').forEach(btn=>{
   btn.addEventListener('click',()=>bhRender());
