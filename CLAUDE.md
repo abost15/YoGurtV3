@@ -1,4 +1,4 @@
-# YoGurt v3 — Instruksjoner for Claude
+# KremIs — Instruksjoner for Claude
 
 ## Prosjektstruktur
 
@@ -42,9 +42,9 @@ git push
 
 ## Firebase-info
 
-- **Prosjekt:** `yogurt-f0fa7`
-- **Hosting URL:** https://yogurt-f0fa7.web.app
-- **Admin URL:** https://yogurt-f0fa7.web.app/admin.html
+- **Prosjekt:** `kremis-41de5`
+- **Hosting URL:** https://kremis-41de5.web.app
+- **Admin URL:** https://kremis-41de5.web.app/admin.html
 - **Database:** europe-west1 (Realtime Database)
 - **Plan:** Spark (gratis) — ingen grense på antall deploys
 

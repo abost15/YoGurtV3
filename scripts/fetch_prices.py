@@ -2,7 +2,7 @@ import requests
 import json
 from datetime import datetime
 
-FIREBASE_URL = "https://yogurt-f0fa7-default-rtdb.europe-west1.firebasedatabase.app"
+FIREBASE_URL = "https://kremis-41de5-default-rtdb.europe-west1.firebasedatabase.app"
 ODA_URL = "https://oda.com/api/v1/search/"
 
 PRISDATA = [
@@ -83,7 +83,7 @@ payload = {
 }
 
 resp = requests.put(
-    f"{FIREBASE_URL}/yogurt-config/prisdata.json",
+    f"{FIREBASE_URL}/kremis-config/prisdata.json",
     json=payload,
     timeout=15,
 )

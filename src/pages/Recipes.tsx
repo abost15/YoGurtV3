@@ -215,7 +215,7 @@ export default function Recipes() {
   useEffect(() => {
     if (liveRef.current) return
     liveRef.current = true
-    return onValue(ref(db, 'yogurt-config/ingredientPrices'), snap => {
+    return onValue(ref(db, 'kremis-config/ingredientPrices'), snap => {
       const prices = snap.val()
       if (!prices) return
       setData(prev => {
@@ -739,7 +739,7 @@ export default function Recipes() {
                                     const v = parseFloat(e.target.value) || 0
                                     const next = { ...data.sizePrices, [key]: v }
                                     update('sizePrices', next)
-                                    import('firebase/database').then(({ ref: fbRef, set }) => set(fbRef(db, 'yogurt-config/sizePrices'), next))
+                                    import('firebase/database').then(({ ref: fbRef, set }) => set(fbRef(db, 'kremis-config/sizePrices'), next))
                                   }}
                                   style={{ width: 48, padding: '2px 6px', border: `1.5px solid ${isGood ? 'rgba(22,163,74,.4)' : c.border2}`, borderRadius: 6, fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 700, color: c.accent, textAlign: 'center', outline: 'none', background: 'rgba(255,255,255,.7)' }} />
                                 <span style={{ fontSize: 11, color: c.muted }}>kr</span>

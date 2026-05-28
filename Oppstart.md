@@ -2,8 +2,8 @@
 
 ## 1. Klon repoet
 ```powershell
-git clone https://github.com/abost15/YoGurtV3.git
-cd YoGurtV3
+git clone https://github.com/abost15/KremIs.git
+cd KremIs
 ```
 
 ## 2. Installer avhengigheter
@@ -18,7 +18,7 @@ firebase login
 ```
 
 ## 4. Åpne Claude Code
-Åpne Claude Code i `YoGurtV3`-mappen. Den leser `CLAUDE.md` automatisk og vet alt om prosjektet.
+Åpne Claude Code i `KremIs`-mappen. Den leser `CLAUDE.md` automatisk og vet alt om prosjektet.
 
 ## Deploy når du er klar
 ```powershell
@@ -30,6 +30,6 @@ git push
 ```
 
 ## Nyttige lenker
-- **App:** https://yogurt-f0fa7.web.app
-- **Admin:** https://yogurt-f0fa7.web.app/admin.html
-- **GitHub:** https://github.com/abost15/YoGurtV3
+- **App:** https://kremis-41de5.web.app
+- **Admin:** https://kremis-41de5.web.app/admin.html
+- **GitHub:** https://github.com/abost15/KremIs

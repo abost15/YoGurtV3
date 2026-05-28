@@ -60,7 +60,7 @@ export interface MachineCmd {
   ts: number
 }
 
-export interface YogurtData {
+export interface KremIsData {
   flavors: Flavor[]
   times: TimeSlot[]
 }

@@ -36,7 +36,7 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
   const weekId = nextFridayId()
 
   const [resetVersion, setResetVersion] = useState<number>(0)
-  const voteKey = `yogurt-voted-${weekId}-${resetVersion}`
+  const voteKey = `kremis-voted-${weekId}-${resetVersion}`
 
   const [picked, setPicked] = useState<string[]>([])
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -54,7 +54,7 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
   // Listen for admin resets — new version = everyone can vote again
   useEffect(() => {
     return onValue(
-      ref(db, 'yogurt-config/voteResetVersion'),
+      ref(db, 'kremis-config/voteResetVersion'),
       snap => { setResetVersion(snap.val() ?? 0) },
       () => { /* permission error: keep resetVersion at 0 */ }
     )
@@ -82,7 +82,7 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
     try {
       const updates: Record<string, ReturnType<typeof increment>> = {}
       for (const name of picked) updates[name] = increment(1)
-      await update(ref(db, `yogurt-votes/${weekId}`), updates)
+      await update(ref(db, `kremis-votes/${weekId}`), updates)
       localStorage.setItem(voteKey, JSON.stringify({ picked, ts: Date.now() }))
       setHasSubmitted(true)
     } catch (err) {
@@ -98,7 +98,7 @@ export default function WishedFlavor({ flavors }: { flavors: Flavor[] }) {
     if (!sugName.trim() || sugSending) return
     setSugSending(true)
     try {
-      await push(ref(db, 'yogurt-suggestions'), {
+      await push(ref(db, 'kremis-suggestions'), {
         emoji: sugEmoji.trim() || '🍦',
         name: sugName.trim(),
         desc: sugDesc.trim(),

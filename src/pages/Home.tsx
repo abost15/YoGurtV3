@@ -260,7 +260,7 @@ export default function Home() {
   const TODAY = new Date().getDay()
 
   useEffect(() => {
-    return onValue(ref(db, 'yogurt-data'), snap => {
+    return onValue(ref(db, 'kremis-data'), snap => {
       const d = snap.val()
       if (d?.flavors && d?.times) { setFlavors(d.flavors); setTimes(d.times) }
     })

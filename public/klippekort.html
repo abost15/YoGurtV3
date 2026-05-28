@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Mitt klippekort – YoGurt</title>
+  <title>Mitt klippekort – KremIs</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -342,7 +342,7 @@
 
   <!-- Topp-bar -->
   <div class="top-bar">
-    <a href="/" class="brand">Yo<span>Gurt</span></a>
+    <a href="/" class="brand">Krem<span>Is</span></a>
     <a href="/" class="back">← Tilbake til siden</a>
   </div>
 
@@ -376,7 +376,7 @@
     <!-- Feil -->
     <div id="error-msg">
       Fant ingen med den koden 😕
-      <small>Dobbeltsjekk koden med den som solgte deg yogurten</small>
+      <small>Dobbeltsjekk koden med den som solgte deg isen</small>
     </div>
 
     <!-- Kortet -->
@@ -409,7 +409,7 @@
         <div class="rule-icon">🍦</div>
         <div class="rule-text">
           <strong>Slik fungerer det:</strong><br>
-          Kjøp 4 yogurter og få den 5. helt gratis! Vis dette kortet til den som selger når du skal ha din gratis yogurt.
+          Kjøp 4 is-porsjoner og få den 5. helt gratis! Vis dette kortet til den som selger når du skal ha din gratis is.
         </div>
       </div>
 
@@ -423,21 +423,21 @@
     import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js'
 
     const app = initializeApp({
-      apiKey: 'AIzaSyDqh-jXM82F7-qB0Ug7PeVmazdlpmpdNXQ',
-      authDomain: 'yogurt-f0fa7.firebaseapp.com',
-      databaseURL: 'https://yogurt-f0fa7-default-rtdb.europe-west1.firebasedatabase.app',
-      projectId: 'yogurt-f0fa7',
+      apiKey: 'AIzaSyC8_lPi6pU23hwyNlLkWbmecoAapE86fnE',
+      authDomain: 'kremis-41de5.firebaseapp.com',
+      databaseURL: 'https://kremis-41de5-default-rtdb.europe-west1.firebasedatabase.app',
+      projectId: 'kremis-41de5',
     })
     const db = getDatabase(app)
 
     const TOTAL = 4
 
     const msgs = [
-      { emoji: '👋', title: 'Velkommen!',           text: 'Hvert kjøp tar deg nærmere en gratis yogurt.' },
+      { emoji: '👋', title: 'Velkommen!',           text: 'Hvert kjøp tar deg nærmere en gratis is.' },
       { emoji: '🌱', title: 'Godt begynt!',          text: 'Du er i gang — bare fortsett!' },
       { emoji: '🔥', title: 'Du er i rute!',         text: 'Halvveis! Fortsett å handle.' },
-      { emoji: '⭐', title: 'Nesten fremme!',        text: 'Bare ett kjøp til, så er neste yogurt GRATIS!' },
-      { emoji: '🎉', title: 'Gratis yogurt!',        text: 'Du har 4 stempler — vis dette til den som selger og få yogurten din gratis!' },
+      { emoji: '⭐', title: 'Nesten fremme!',        text: 'Bare ett kjøp til, så er neste is GRATIS!' },
+      { emoji: '🎉', title: 'Gratis is!',            text: 'Du har 4 stempler — vis dette til den som selger og få isen din gratis!' },
     ]
 
     window.sjekkKort = async function () {
@@ -447,7 +447,7 @@
       document.getElementById('error-msg').style.display = 'none'
       document.getElementById('card-section').style.display = 'none'
 
-      const snap = await get(ref(db, `yogurt-loyalty/${kode}`))
+      const snap = await get(ref(db, `kremis-loyalty/${kode}`))
       if (!snap.exists()) {
         document.getElementById('error-msg').style.display = 'block'
         return
@@ -479,7 +479,7 @@
       // Fremgangstekst
       const progEl = document.getElementById('kk-progress')
       if (stamps >= TOTAL) {
-        progEl.textContent = 'Fullt kort — klar for gratis yogurt!'
+        progEl.textContent = 'Fullt kort — klar for gratis is!'
       } else {
         const left = TOTAL - stamps
         progEl.textContent = `${stamps} av ${TOTAL} stempler · ${left} igjen til gratis`
@@ -488,7 +488,7 @@
       // Gratis-pill
       const pill = document.getElementById('kk-free-pill')
       if (stamps >= TOTAL) {
-        pill.textContent = '🎁 Din neste yogurt er GRATIS!'
+        pill.textContent = '🎁 Din neste is er GRATIS!'
         pill.style.display = 'inline-flex'
       } else {
         pill.style.display = 'none'

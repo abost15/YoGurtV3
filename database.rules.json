@@ -1,38 +1,42 @@
 {
   "rules": {
-    "yogurt-data": {
+    "kremis-data": {
       ".read": true,
       ".write": true
     },
-    "yogurt-votes": {
+    "kremis-votes": {
       ".read": true,
       ".write": true
     },
-    "yogurt-suggestions": {
+    "kremis-suggestions": {
       ".read": true,
       ".write": true
     },
-    "yogurt-config": {
+    "kremis-config": {
       ".read": true,
       ".write": true
     },
-    "yogurt-loyalty": {
+    "kremis-loyalty": {
       ".read": true,
       ".write": true
     },
-    "yogurt-displays": {
+    "kremis-displays": {
       ".read": true,
       ".write": true
     },
-    "yogurt-maskin": {
+    "kremis-maskin": {
       ".read": true,
       ".write": true
     },
-    "yogurt-transactions": {
+    "kremis-transactions": {
       ".read": true,
       ".write": true
     },
-    "yogurt-receipts": {
+    "kremis-receipts": {
+      ".read": true,
+      ".write": true
+    },
+    "kremis-log": {
       ".read": true,
       ".write": true
     }

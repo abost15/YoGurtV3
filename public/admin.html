@@ -1336,7 +1336,7 @@
           <div class="icon">💡</div>
           <div>
             <div class="h">Slik henger det sammen</div>
-            <div class="p">Elevene stemmer på forsiden (maks 3 valg, en gang per uke). Stemmer lagres i <strong>yogurt-votes/{dato}</strong>. Smaksforslag lagres i <strong>yogurt-suggestions/</strong>. Resultater vises ikke til elevene — kun her.</div>
+            <div class="p">Elevene stemmer på forsiden (maks 3 valg, en gang per uke). Stemmer lagres i <strong>kremis-votes/{dato}</strong>. Smaksforslag lagres i <strong>kremis-suggestions/</strong>. Resultater vises ikke til elevene — kun her.</div>
           </div>
         </div>
       </div>
@@ -1543,7 +1543,7 @@ const DEFAULT = {
   ]
 };
 
-function saveData(d){ db.ref('yogurt-data').set(d); }
+function saveData(d){ db.ref('kremis-data').set(d); }
 
 let flavors=DEFAULT.flavors, times=DEFAULT.times, dirty=false, previewIdx=0;
 
@@ -1552,7 +1552,7 @@ let flavors=DEFAULT.flavors, times=DEFAULT.times, dirty=false, previewIdx=0;
 // On return: if last heartbeat < 5 min ago → auto-login, no password.
 // Leaving resets to current heartbeat; returning starts another 5 min.
 const GRACE_MS = 5 * 60 * 1000;
-const SESSION_KEY = 'yogurt-admin-ts';
+const SESSION_KEY = 'kremis-admin-ts';
 let keepAliveTimer = null;
 
 function saveSession(){ localStorage.setItem(SESSION_KEY, String(Date.now())); }
@@ -1578,7 +1578,7 @@ function doLogin(){
   app.classList.add('visible');
   startListeners();
   renderAll();
-  db.ref('yogurt-data').once('value',snap=>{
+  db.ref('kremis-data').once('value',snap=>{
     const d=snap.val();
     if(d&&d.flavors&&d.times){
       d.flavors.forEach((f,i)=>{
@@ -1643,7 +1643,7 @@ let _listenersStarted = false;
 function startListeners() {
   if (_listenersStarted) return;
   _listenersStarted = true;
-db.ref('yogurt-transactions').on('value', snap => {
+db.ref('kremis-transactions').on('value', snap => {
   transactions = snap.val() || {};
   if(document.getElementById('panel-regnskap')?.classList.contains('active')) renderTx();
   if(document.getElementById('panel-statistikk')?.classList.contains('active')) renderStatistikk();
@@ -1685,7 +1685,7 @@ function renderTx(){
       <button class="tx-del" data-del="${t.id}">✕</button>
     </div>`).join('');
   el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-    if(confirm('Slett denne transaksjonen?')) db.ref(`yogurt-transactions/${b.dataset.del}`).remove();
+    if(confirm('Slett denne transaksjonen?')) db.ref(`kremis-transactions/${b.dataset.del}`).remove();
   }));
 }
 
@@ -1723,7 +1723,7 @@ document.getElementById('tx-save').addEventListener('click',()=>{
   const amount=parseFloat(document.getElementById('tx-amt').value)||0;
   if(!date || !description || amount<=0){ alert('Fyll ut dato, beskrivelse og beløp (større enn 0)'); return; }
   const id=txEditingId||uid();
-  db.ref(`yogurt-transactions/${id}`).set({date,description,category,type:txModalType,amount});
+  db.ref(`kremis-transactions/${id}`).set({date,description,category,type:txModalType,amount});
   pushLogg(`${txModalType==='income'?'📈':'📉'} ${description} — ${fmtKr(amount)}`);
   document.getElementById('tx-modal').classList.remove('open');
 });
@@ -1981,11 +1981,11 @@ document.getElementById('save-btn').addEventListener('click',doSave);
 document.getElementById('save-btn-top').addEventListener('click',doSave);
 
 // ── Logg ──
-function pushLogg(msg){ db.ref('yogurt-log').push({ts:Date.now(),msg}); }
+function pushLogg(msg){ db.ref('kremis-log').push({ts:Date.now(),msg}); }
 function loadLogg(){
   const el=document.getElementById('logg-list');
   el.innerHTML='<div style="padding:16px;color:var(--muted);font-size:.78rem">Laster…</div>';
-  db.ref('yogurt-log').limitToLast(20).once('value',snap=>{
+  db.ref('kremis-log').limitToLast(20).once('value',snap=>{
     el.innerHTML='';
     const entries=[];
     snap.forEach(c=>entries.unshift(c.val()));
@@ -2001,7 +2001,7 @@ function loadLogg(){
 }
 
 // ── Display GIF — multi-device ──
-const dispDevicesRef=db.ref('yogurt-displays');
+const dispDevicesRef=db.ref('kremis-displays');
 const GIF_LABELS=[
   {emoji:'🍦',name:'Is spinning'},{emoji:'✨',name:'Sparkle'},
   {emoji:'🌈',name:'Rainbow'},{emoji:'❄️',name:'Frysing'},
@@ -2011,9 +2011,9 @@ let displays={}; // deviceId -> {name, current, status:{lastSeen, current}}
 
 dispDevicesRef.on('value', snap => {
   displays = snap.val() || {};
-  // backwards-compat: migrate old single-device 'yogurt-display' into displays.main
+  // backwards-compat: migrate old single-device 'kremis-display' into displays.main
   if (Object.keys(displays).length === 0) {
-    db.ref('yogurt-display').once('value', s2 => {
+    db.ref('kremis-display').once('value', s2 => {
       const legacy = s2.val();
       if (legacy) {
         displays.main = { name:'Hoveddisplay', current: legacy.current?.file || null, status: legacy.status || {} };
@@ -2062,15 +2062,15 @@ function renderDisplays(){
   // wire up
   el.querySelectorAll('[data-pick]').forEach(c=>c.addEventListener('click',e=>{
     const [id,i]=c.dataset.pick.split('|');
-    db.ref(`yogurt-displays/${id}/current`).set('gif'+i+'.gif');
-    db.ref(`yogurt-displays/${id}/cmd`).set({file:'gif'+i+'.gif',ts:Date.now()});
+    db.ref(`kremis-displays/${id}/current`).set('gif'+i+'.gif');
+    db.ref(`kremis-displays/${id}/cmd`).set({file:'gif'+i+'.gif',ts:Date.now()});
   }));
   el.querySelectorAll('[data-rename]').forEach(inp=>inp.addEventListener('change',e=>{
-    db.ref(`yogurt-displays/${inp.dataset.rename}/name`).set(inp.value);
+    db.ref(`kremis-displays/${inp.dataset.rename}/name`).set(inp.value);
   }));
   el.querySelectorAll('[data-del-disp]').forEach(b=>b.addEventListener('click',()=>{
     if(confirm(`Slett enhet "${displays[b.dataset.delDisp]?.name||b.dataset.delDisp}"?`)){
-      db.ref(`yogurt-displays/${b.dataset.delDisp}`).remove();
+      db.ref(`kremis-displays/${b.dataset.delDisp}`).remove();
     }
   }));
 }
@@ -2124,8 +2124,8 @@ const char* WIFI_PASSWORD = "DITT_PASSORD";
 
 // ── Enhet — ikke endre ──
 #define DEVICE_ID  "${id}"
-#define FB_URL     "https://yogurt-f0fa7-default-rtdb.europe-west1.firebasedatabase.app"
-#define FB_STATUS  "/yogurt-displays/${id}/status"
+#define FB_URL     "https://kremis-41de5-default-rtdb.europe-west1.firebasedatabase.app"
+#define FB_STATUS  "/kremis-displays/${id}/status"
 
 // ── Objekter ──
 TFT_eSPI    tft;
@@ -2258,12 +2258,12 @@ document.getElementById('disp-add-btn')?.addEventListener('click',()=>{
   const id = prompt('ESP32 device-ID (f.eks. "display-1", må matche sketchen):');
   if(!id) return;
   const name = prompt('Visningsnavn:','Display '+ (Object.keys(displays).length+1)) || id;
-  db.ref(`yogurt-displays/${id}`).set({name, current:null, status:{}});
+  db.ref(`kremis-displays/${id}`).set({name, current:null, status:{}});
 });
 
 // ── Motor ──
-const cmdRef=db.ref('yogurt-maskin/cmd');
-const statusRef=db.ref('yogurt-maskin/status');
+const cmdRef=db.ref('kremis-maskin/cmd');
+const statusRef=db.ref('kremis-maskin/status');
 let motorRunning=false, motorDir='left';
 statusRef.on('value',snap=>{
   const s=snap.val(); if(!s) return;
@@ -2321,7 +2321,7 @@ function motorMove(){
 // STØRRELSESPRISER — leses fra Firebase (settes i Oppskrifter → Priskalkyle)
 // ══════════════════════════════════════════════════
 let kasseSzPris = { S: 20, M: 25, L: 30 };
-db.ref('yogurt-config/sizePrices').on('value', snap => {
+db.ref('kremis-config/sizePrices').on('value', snap => {
   const v = snap.val();
   if (v) {
     kasseSzPris = { S: v.S || 20, M: v.M || 25, L: v.L || 30 };
@@ -2603,7 +2603,7 @@ function kasseBetal(){
     // Track sizes
     const sizes=c.stampSizes||{S:0,M:0,L:0};
     kasseCart.forEach(s=>{sizes[s.size]=(sizes[s.size]||0)+1;});
-    db.ref(`yogurt-loyalty/${kasseStampCode}`).update({
+    db.ref(`kremis-loyalty/${kasseStampCode}`).update({
       stamps:finalStamps,freeGiven:newFree,lastSeen:ts,stampSizes:sizes
     });
     lojShowCustomer(kasseStampCode,{...c,stamps:finalStamps});
@@ -2658,13 +2658,13 @@ function kasseBetal(){
   const id=Math.random().toString(36).slice(2,9);
   const dateStr=now.toISOString().slice(0,10);
   const label=now.toLocaleDateString('no-NO',{weekday:'long',day:'numeric',month:'long'});
-  db.ref('yogurt-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
+  db.ref('kremis-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
     if(!committed)return;
     const num=snap.val();
     const kvNum=String(num).padStart(4,'0');
     const numEl=document.getElementById('kv-inline-num');
     if(numEl)numEl.textContent='Kvittering #'+kvNum;
-    db.ref(`yogurt-receipts/${id}`).set({
+    db.ref(`kremis-receipts/${id}`).set({
       kvNum,ts:now.getTime(),date:dateStr,label,endTime:timeStr,
       items:sales,total,vipps:kassePayment==='vipps'?total:0,
       kontant:kassePayment==='kontant'?total:0,gratis:0,count:kasseCart.length
@@ -2732,7 +2732,7 @@ function ksppSelectCustomer(code){
   const isFree=newStamps>4;
   const finalStamps=isFree?0:newStamps;
   const newFree=(c.freeGiven||0)+(isFree?1:0);
-  db.ref(`yogurt-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
+  db.ref(`kremis-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
   ksppRegisterSale(code);
   lojShowCustomer(code,{...c,stamps:finalStamps});
 }
@@ -2877,18 +2877,18 @@ function stSaveToRegnskap(){
   const endTime=now.toTimeString().slice(0,5);
   const desc=`Salg ${label} · ${sales.length} porsjoner`;
   const id=Math.random().toString(36).slice(2,9);
-  db.ref(`yogurt-transactions/${id}`).set({date:dateStr,description:desc,category:'Salg KremIs',type:'income',amount:total});
+  db.ref(`kremis-transactions/${id}`).set({date:dateStr,description:desc,category:'Salg KremIs',type:'income',amount:total});
 
   const vipps=sales.filter(x=>x.payment==='vipps').reduce((s,x)=>s+x.price,0);
   const kontant=sales.filter(x=>x.payment==='kontant').reduce((s,x)=>s+x.price,0);
   const gratis=sales.filter(x=>x.payment==='stempel').length;
 
   // Sequential receipt number
-  db.ref('yogurt-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
+  db.ref('kremis-config/receiptCounter').transaction(cur=>(cur||0)+1,(err,committed,snap)=>{
     if(!committed)return;
     const num=snap.val();
     const kvNum=String(num).padStart(4,'0');
-    db.ref(`yogurt-receipts/${id}`).set({
+    db.ref(`kremis-receipts/${id}`).set({
       kvNum, ts:now.getTime(), date:dateStr, label, endTime,
       items:sales, total, vipps, kontant, gratis, count:sales.length
     });
@@ -2900,7 +2900,7 @@ function stSaveToRegnskap(){
 // KVITTERINGER
 // ══════════════════════════════════════════════════
 let kvReceipts={};
-db.ref('yogurt-receipts').on('value',snap=>{
+db.ref('kremis-receipts').on('value',snap=>{
   kvReceipts=snap.val()||{};
   if(document.getElementById('reg-panel-kv')?.style.display!=='none') renderKvitteringer();
 });
@@ -3008,12 +3008,12 @@ function visKvitteringWrapper(id){
 }
 function slettKvittering(id){
   if(!confirm('Slett kvittering '+( kvReceipts[id]?.kvNum||id)+'?')) return;
-  db.ref(`yogurt-receipts/${id}`).remove();
+  db.ref(`kremis-receipts/${id}`).remove();
 }
 function slettKvitteringFraModal(){
   if(!activeReceiptId) return;
   if(!confirm('Slett denne kvitteringen?')) return;
-  db.ref(`yogurt-receipts/${activeReceiptId}`).remove();
+  db.ref(`kremis-receipts/${activeReceiptId}`).remove();
   lukkKvittering();
   activeReceiptId=null;
 }
@@ -3069,7 +3069,7 @@ function bhPåfyllAlle(){
 // STEMPELKORT
 // ══════════════════════════════════════════════════
 let lojCustomers={}, lojFilterVal='alle', lojSearch='';
-db.ref('yogurt-loyalty').on('value',snap=>{
+db.ref('kremis-loyalty').on('value',snap=>{
   lojCustomers=snap.val()||{};
   lojRender();
   const activeCount=Object.values(lojCustomers).length;
@@ -3097,7 +3097,7 @@ function qaAddCustomer(){
   const code=(document.getElementById('qa-code')?.value||'').toUpperCase().slice(0,4);
   if(!name||!code){alert('Fyll inn navn og kode');return;}
   if(lojCustomers[code]){alert('Kode '+code+' er allerede i bruk');return;}
-  db.ref(`yogurt-loyalty/${code}`).set({name,class:cls,stamps:0,freeGiven:0,created:Date.now()});
+  db.ref(`kremis-loyalty/${code}`).set({name,class:cls,stamps:0,freeGiven:0,created:Date.now()});
   document.getElementById('qa-name').value='';
   document.getElementById('qa-code').value='';
   visLapp(code,name);
@@ -3111,7 +3111,7 @@ function qaStamp(){
   const newStamps=(cust.stamps||0)+1;
   const newFree=(cust.freeGiven||0)+(newStamps>4?1:0);
   const finalStamps=newStamps>4?0:newStamps;
-  db.ref(`yogurt-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
+  db.ref(`kremis-loyalty/${code}`).update({stamps:finalStamps,freeGiven:newFree,lastSeen:Date.now()});
   lojShowCustomer(code,{...cust,stamps:finalStamps});
 }
 function lojShowCustomer(code,c){
@@ -3153,7 +3153,7 @@ function lojRender(){
 function lojFilter(q){ lojSearch=q.toLowerCase(); lojRender(); }
 function slettKunde(code,navn){
   if(!confirm(`Slett ${navn} (${code})? Dette kan ikke angres.`))return;
-  db.ref(`yogurt-loyalty/${code}`).remove();
+  db.ref(`kremis-loyalty/${code}`).remove();
 }
 function lojSetFilter(val, btn){
   lojFilterVal=val;
@@ -3176,7 +3176,7 @@ const osWeekId=osNextFridayId();
 const weekLbl=document.getElementById('vote-week-label');
 if(weekLbl) weekLbl.textContent='Uke: '+osWeekId;
 
-db.ref(`yogurt-votes/${osWeekId}`).on('value',snap=>{
+db.ref(`kremis-votes/${osWeekId}`).on('value',snap=>{
   const data=snap.val()||{};
   const total=Object.values(data).reduce((s,v)=>s+(+v||0),0);
   const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
@@ -3196,7 +3196,7 @@ db.ref(`yogurt-votes/${osWeekId}`).on('value',snap=>{
   }).join('');
 });
 
-db.ref('yogurt-suggestions').orderByChild('ts').limitToLast(30).on('value',snap=>{
+db.ref('kremis-suggestions').orderByChild('ts').limitToLast(30).on('value',snap=>{
   const data=snap.val()||{};
   const entries=Object.entries(data).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
   const lbl=document.getElementById('sug-count-label');
@@ -3219,7 +3219,7 @@ db.ref('yogurt-suggestions').orderByChild('ts').limitToLast(30).on('value',snap=
     </div>`).join('');
 });
 
-function osSugDelete(id){ if(confirm('Slette dette forslaget?')) db.ref(`yogurt-suggestions/${id}`).remove(); }
+function osSugDelete(id){ if(confirm('Slette dette forslaget?')) db.ref(`kremis-suggestions/${id}`).remove(); }
 function osSugPromote(id, name){ alert(`Forslaget "${name}" kan legges til som smak under Smaker-panelet.`); }
 
 function osShowReset(){
@@ -3241,8 +3241,8 @@ function osDoReset(){
     document.getElementById('os-reset-pw').focus();
     return;
   }
-  db.ref(`yogurt-votes/${osWeekId}`).remove()
-    .then(() => db.ref('yogurt-config/voteResetVersion').set(Date.now()))
+  db.ref(`kremis-votes/${osWeekId}`).remove()
+    .then(() => db.ref('kremis-config/voteResetVersion').set(Date.now()))
     .then(() => { setSaveStatus('Stemmer nullstilt — alle kan stemme igjen ✓'); })
     .catch(err => { console.error(err); alert('Feil ved nullstilling: ' + err.message); });
   osHideReset();
@@ -3252,14 +3252,14 @@ function osDoReset(){
 // FIREBASE STATUS
 // ══════════════════════════════════════════════════
 const FB_NODES = [
-  { key: 'yogurt-data',         label: 'Smaker & tider',   icon: '🍦' },
-  { key: 'yogurt-votes',        label: 'Stemmer',          icon: '🗳️' },
-  { key: 'yogurt-suggestions',  label: 'Forslag',          icon: '💡' },
-  { key: 'yogurt-config',       label: 'Konfigurasjon',    icon: '⚙️' },
-  { key: 'yogurt-loyalty',      label: 'Stempelkort',      icon: '🎫' },
-  { key: 'yogurt-transactions', label: 'Transaksjoner',    icon: '💰' },
-  { key: 'yogurt-displays',     label: 'Displays',         icon: '🖥️' },
-  { key: 'yogurt-maskin',       label: 'Motor',            icon: '🔧' },
+  { key: 'kremis-data',         label: 'Smaker & tider',   icon: '🍦' },
+  { key: 'kremis-votes',        label: 'Stemmer',          icon: '🗳️' },
+  { key: 'kremis-suggestions',  label: 'Forslag',          icon: '💡' },
+  { key: 'kremis-config',       label: 'Konfigurasjon',    icon: '⚙️' },
+  { key: 'kremis-loyalty',      label: 'Stempelkort',      icon: '🎫' },
+  { key: 'kremis-transactions', label: 'Transaksjoner',    icon: '💰' },
+  { key: 'kremis-displays',     label: 'Displays',         icon: '🖥️' },
+  { key: 'kremis-maskin',       label: 'Motor',            icon: '🔧' },
 ];
 const fbNodeState = {};
 
@@ -3328,7 +3328,7 @@ setInterval(() => {
 }, 5000);
 
 // Vote details
-db.ref(`yogurt-votes/${osWeekId}`).on('value', snap => {
+db.ref(`kremis-votes/${osWeekId}`).on('value', snap => {
   const data = snap.val() || {};
   const list = document.getElementById('fb-votes-detail'); if(!list) return;
   const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
@@ -3352,7 +3352,7 @@ db.ref(`yogurt-votes/${osWeekId}`).on('value', snap => {
 });
 
 // Suggestion details
-db.ref('yogurt-suggestions').limitToLast(5).on('value', snap => {
+db.ref('kremis-suggestions').limitToLast(5).on('value', snap => {
   const data = snap.val() || {};
   const list = document.getElementById('fb-sug-detail'); if(!list) return;
   const entries = Object.values(data).sort((a,b)=>(b.ts||0)-(a.ts||0));
@@ -3370,7 +3370,7 @@ db.ref('yogurt-suggestions').limitToLast(5).on('value', snap => {
 });
 
 // Loyalty details
-db.ref('yogurt-loyalty').on('value', snap => {
+db.ref('kremis-loyalty').on('value', snap => {
   const data = snap.val() || {};
   const list = document.getElementById('fb-loyalty-detail'); if(!list) return;
   const entries = Object.entries(data);
@@ -3388,7 +3388,7 @@ db.ref('yogurt-loyalty').on('value', snap => {
 });
 
 // Motor details
-db.ref('yogurt-maskin/status').on('value', snap => {
+db.ref('kremis-maskin/status').on('value', snap => {
   const s = snap.val() || {};
   const list = document.getElementById('fb-motor-detail'); if(!list) return;
   const age = s.lastSeen ? Math.round((Date.now()-s.lastSeen)/1000) : null;
@@ -3585,7 +3585,7 @@ async function prisHentAlt() {
   }
 
   if (Object.keys(firebasePrices).length) {
-    db.ref('yogurt-config/ingredientPrices').update(firebasePrices);
+    db.ref('kremis-config/ingredientPrices').update(firebasePrices);
   }
 
   prisAllRows = rows;
@@ -3611,7 +3611,7 @@ async function prisLastFraFirebase() {
     </div>`;
 
   try {
-    const snap = await db.ref('yogurt-config/prisdata').once('value');
+    const snap = await db.ref('kremis-config/prisdata').once('value');
     const data = snap.val();
     if (!data || !data.ingredienser) {
       document.getElementById('pris-grid').innerHTML =
