@@ -330,10 +330,9 @@ export default function Home() {
       >
         <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', opacity: .5 }}>📍 Kantina</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <motion.div
-            animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor }}
+          <div
+            className="pulse-dot"
+            style={{ width: 6, height: 6, background: dotColor }}
             aria-hidden="true"
           />
           <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 600, color: txtColor }} aria-live="polite">{statusTxt}</span>
@@ -388,7 +387,7 @@ export default function Home() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }} aria-hidden="true">
                 <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 600, color: f.available ? '#16a34a' : '#dc2626' }}>{f.available ? 'Tilgj.' : 'Utsolgt'}</span>
-                <motion.span animate={{ x: [0, 3, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }} style={{ fontSize: 14, opacity: .3 }}>›</motion.span>
+                <span className="nudge-arrow">›</span>
               </div>
             </motion.button>
           ))}
@@ -451,7 +450,7 @@ export default function Home() {
               <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '.12em', textTransform: 'uppercase', color: 'oklch(42% 0.13 65)', marginTop: 1 }}>Kjøp 4 – få den 5. gratis</div>
             </div>
           </div>
-          <motion.span animate={{ x: [0, 3, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }} style={{ fontSize: 14, opacity: .3 }}>›</motion.span>
+          <span className="nudge-arrow">›</span>
         </motion.a>
       </motion.div>
 
@@ -478,11 +477,12 @@ export default function Home() {
       </AnimatePresence>
 
       <style>{`
+        @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
+        @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
+        .nudge-arrow { display:inline-block; animation:nudge 1.8s ease-in-out infinite; opacity:.3; font-size:14px; }
+        .pulse-dot { border-radius:50%; animation:pulse-dot 2s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            transition-duration: 0.01ms !important;
-          }
+          *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
         }
       `}</style>
     </div>

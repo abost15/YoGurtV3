@@ -1576,6 +1576,7 @@ const pwErr=document.getElementById('pw-err');
 function doLogin(){
   gate.classList.add('hidden');
   app.classList.add('visible');
+  startListeners();
   renderAll();
   db.ref('yogurt-data').once('value',snap=>{
     const d=snap.val();
@@ -1638,6 +1639,10 @@ let txModalType = 'income';
 function uid(){ return Math.random().toString(36).slice(2,9); }
 function fmtKr(n){ return new Intl.NumberFormat('nb-NO').format(Math.round(n))+' kr'; }
 
+let _listenersStarted = false;
+function startListeners() {
+  if (_listenersStarted) return;
+  _listenersStarted = true;
 db.ref('yogurt-transactions').on('value', snap => {
   transactions = snap.val() || {};
   if(document.getElementById('panel-regnskap')?.classList.contains('active')) renderTx();
@@ -3403,6 +3408,7 @@ db.ref('yogurt-maskin/status').on('value', snap => {
     </div>`;
 });
 
+}
 // Hook beholdning og salgs-tracker inn i panel-navigasjonen
 document.querySelectorAll('.side-btn[data-panel="beholdning"]').forEach(btn=>{
   btn.addEventListener('click',()=>bhRender());
