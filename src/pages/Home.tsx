@@ -153,6 +153,8 @@ function FlavorDetail({ flavor, times, onClose }: {
   times: TimeSlot[]
   onClose: () => void
 }) {
+  const [imgLoaded, setImgLoaded] = useState(false)
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', handler)
@@ -198,9 +200,10 @@ function FlavorDetail({ flavor, times, onClose }: {
           src={imgSrc}
           alt={flavor.name}
           initial={{ scale: 0.6, opacity: 0, y: 10 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: EXPO, delay: 0.06 }}
+          animate={imgLoaded ? { scale: 1, opacity: 1, y: 0 } : { scale: 0.6, opacity: 0, y: 10 }}
+          transition={{ duration: 0.55, ease: EXPO }}
           style={{ height: 220, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 12px 28px rgba(0,0,0,.22))' }}
+          onLoad={() => setImgLoaded(true)}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
         <motion.div
