@@ -18,5 +18,5 @@ jobs:
       - name: Installer avhengigheter
         run: pip install requests
 
-      - name: Hent priser fra Oda og lagre i Firebase
+      - name: Hent priser fra Kassalapp og lagre i Firebase
         run: python scripts/fetch_prices.py

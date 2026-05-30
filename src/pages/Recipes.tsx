@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { ref, onValue } from 'firebase/database'
 import { db } from '@/lib/firebase'
 
-const STORAGE_KEY = 'kremis-recipes-v1'
+const STORAGE_KEY = 'kremis-recipes-v2'
 
 // pkgP = pakningspris (kr), pkgS = pakkestørrelse (g/ml) — pris beregnes automatisk
 const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: Ingredient[]; instructions: string }> = {
@@ -10,8 +10,8 @@ const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: I
     label: 'Rask (2 ingredienser)',
     sub: '~22% fett · ingen ismaskin · 5 min',
     ingredients: [
-      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 25, pkgS: 397  },
-      { name: 'Kremfløte 38%',            qty: 90, unit: 'g', pris: 0.070, pkgP: 70, pkgS: 1000 },
+      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 0, pkgS: 0 },
+      { name: 'Kremfløte',               qty: 90, unit: 'g', pris: 0.070, pkgP: 0, pkgS: 0 },
     ],
     instructions: 'No-churn rask base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk i en stor bolle.\n3. Fold kremfløten forsiktig inn — brett, ikke rør, så luften bevares.\n4. Tilsett smakstilsetning og fold forsiktig inn.\n5. Hell i beholder og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering for å mykne litt.\n\n💡 Ingen ismaskin trengs — kondensert melk hindrer iskrystaller naturlig.',
   },
@@ -19,9 +19,9 @@ const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: I
     label: 'Standard (3 ingredienser) — ANBEFALT',
     sub: '~21% fett · ingen ismaskin · best balanse',
     ingredients: [
-      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 25,  pkgS: 397  },
-      { name: 'Kremfløte 38%',            qty: 85, unit: 'g', pris: 0.070, pkgP: 70,  pkgS: 1000 },
-      { name: 'Vaniljesukker',            qty: 3,  unit: 'g', pris: 0.120, pkgP: 21,  pkgS: 175  },
+      { name: 'Kondensert melk (Nestle)', qty: 55, unit: 'g', pris: 0.063, pkgP: 0, pkgS: 0 },
+      { name: 'Kremfløte',               qty: 85, unit: 'g', pris: 0.070, pkgP: 0, pkgS: 0 },
+      { name: 'Vaniljesukker',           qty: 3,  unit: 'g', pris: 0.120, pkgP: 0, pkgS: 0 },
     ],
     instructions: 'No-churn standard base — anbefalt:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk og vaniljesukker i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør, så luften bevares.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Vaniljesukker i basen løfter alle smaker, ikke bare vanilje.\n💡 Fold forsiktig — luften i kremfløten gir den kremige teksturen.',
   },
@@ -29,10 +29,10 @@ const BASE_VERSIONS: Record<string, { label: string; sub: string; ingredients: I
     label: 'Premium (4 ingredienser)',
     sub: '~21% fett · ingen ismaskin · fyldigst smak',
     ingredients: [
-      { name: 'Kondensert melk (Nestle)', qty: 52, unit: 'g',  pris: 0.063, pkgP: 25, pkgS: 397  },
-      { name: 'Kremfløte 38%',            qty: 85, unit: 'g',  pris: 0.070, pkgP: 70, pkgS: 1000 },
-      { name: 'Vaniljesukker',            qty: 3,  unit: 'g',  pris: 0.120, pkgP: 21, pkgS: 175  },
-      { name: 'Sitronsaft',               qty: 2,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
+      { name: 'Kondensert melk (Nestle)', qty: 52, unit: 'g',  pris: 0.063, pkgP: 0, pkgS: 0 },
+      { name: 'Kremfløte',               qty: 85, unit: 'g',  pris: 0.070, pkgP: 0, pkgS: 0 },
+      { name: 'Vaniljesukker',           qty: 3,  unit: 'g',  pris: 0.120, pkgP: 0, pkgS: 0 },
+      { name: 'Sitronsaft',              qty: 2,  unit: 'ml', pris: 0.038, pkgP: 0, pkgS: 0 },
     ],
     instructions: 'No-churn premium base:\n1. Pisk kremfløten STIV med elektrisk mikser til den holder topper — ca. 3 min.\n2. Hell kondensert melk, vaniljesukker og sitronsaft i en stor bolle. Rør forsiktig.\n3. Fold kremfløten forsiktig inn — brett, ikke rør.\n4. Tilsett smakstilsetning og fold inn.\n5. Hell i beholder, jevn ut og dekk til med plastfolie.\n6. FRYS minimum 6 timer — over natten er best.\n7. Ta ut 5 min før servering.\n\n💡 Sitronsaft balanserer sødmen fra kondensert melk og gir en friskere smak.\n💡 Litt syre fremhever fruktsmakene (mango, bær, sitron) ekstra godt.',
   },
@@ -55,26 +55,26 @@ interface AppData {
 
 // Kobler oppskrift-ingrediensnavn til Firebase-nøkkel
 const INGREDIENT_KEY: Record<string, string> = {
-  'Kondensert melk (Nestle)':      'kondensert_melk',
-  'Kremfløte 38%':                 'kremfløte',
-  'Kremfløte':                     'kremfløte',
-  'Vaniljesukker':                 'vaniljesukker',
-  'Vaniljesukker (Freia, KIWI)':   'vaniljesukker',
-  'Sukker':                        'sukker',
-  'Ekstra sukker':                 'sukker',
-  'Ekstra sukker (Eldorado)':      'sukker',
-  'Lys sirup (Dansukker)':         'lys_sirup',
-  'Sitronsaft':                    'sitronsaft',
-  'Sitronsaft (fersk)':            'sitronsaft',
-  'Sitronskall (1/4 sitron)':      'sitronsaft',
-  'Mango frossen':                 'mango',
-  'Kakaopulver (ren, mørk)':       'kakaopulver',
-  'Kokesjokolade Eldorado KIWI':   'sjokolade_mork',
-  'Maisenna (Maizena)':            'maisenna',
-  'Ananas First Price (Meny)':     'ananas',
-  'Kokosmelk Eldorado (SPAR)':     'kokosmelk',
-  'Limejuice Realemon (SPAR)':     'limesaft',
-  'Skogsbær frossen':              'skogsbaer',
+  'Kondensert melk (Nestle)':               'kondensert_melk',
+  'Kremfløte 38%':                          'kremfløte',
+  'Kremfløte':                              'kremfløte',
+  'Vaniljesukker':                          'vaniljesukker',
+  'Vaniljesukker (Freia, KIWI)':            'vaniljesukker',
+  'Sitronsaft':                             'sitronsaft',
+  'Sitronsaft (fersk)':                     'sitronsaft',
+  'Sitronskall (1/4 sitron)':               'sitron',
+  'Sitron (fersk)':                         'sitron',
+  'Fryst mango':                            'mango',
+  'Mango frossen':                          'mango',
+  'Kakaopulver (ren, mørk)':                'kakaopulver',
+  'Bakekakao':                              'kakaopulver',
+  'Smoothieblanding ananas/melon/banan':    'ananas',
+  'Ananas/melon/banan (frossen)':           'ananas',
+  'Ananas First Price (Meny)':              'ananas',
+  'Kokosmelk Eldorado (SPAR)':              'kokosmelk',
+  'Kokosmelk':                              'kokosmelk',
+  'Skogsbær frossen':                       'skogsbaer',
+  'Bærblanding':                            'skogsbaer',
 }
 
 const FLAVOR_META: Record<string, { emoji: string }> = {
@@ -96,35 +96,29 @@ const DEFAULT_DATA: AppData = {
       { name: 'Vaniljesukker (Freia, KIWI)', qty: 4,  unit: 'g', pris: 0.120, pkgP: 21,  pkgS: 175  },
     ],
     'Mango Delight':    [
-      { name: 'Mango frossen',              qty: 40,  unit: 'g', pris: 0.070, pkgP: 35,  pkgS: 500  },
+      { name: 'Fryst mango',                       qty: 40,  unit: 'g',  pris: 0.099, pkgP: 29.60, pkgS: 300 },
     ],
     'Chocolate Deluxe': [
-      { name: 'Kakaopulver (ren, mørk)',    qty: 8,   unit: 'g', pris: 0.121, pkgP: 85,  pkgS: 700  },
-      { name: 'Kokesjokolade Eldorado KIWI',qty: 6,   unit: 'g', pris: 0.099, pkgP: 10,  pkgS: 100  },
-      { name: 'Ekstra sukker (Eldorado)',   qty: 3,   unit: 'g', pris: 0.024, pkgP: 24,  pkgS: 1000 },
+      { name: 'Bakekakao',                         qty: 14,  unit: 'g',  pris: 0.250, pkgP: 62.40, pkgS: 250 },
     ],
     'Lemon Dream':      [
-      { name: 'Sitronsaft (fersk)',         qty: 15,  unit: 'ml', pris: 0.038, pkgP: 57, pkgS: 1500 },
-      { name: 'Sitronskall (1/4 sitron)',   qty: 1,   unit: 'g',  pris: 0.010, pkgP: 3,  pkgS: 300  },
-      { name: 'Ekstra sukker (Eldorado)',   qty: 4,   unit: 'g',  pris: 0.024, pkgP: 24, pkgS: 1000 },
+      { name: 'Sitron (fersk)',                    qty: 15,  unit: 'ml', pris: 0.038, pkgP: 0,    pkgS: 0   },
     ],
     'Tropical Sunrise': [
-      { name: 'Ananas First Price (Meny)',  qty: 20,  unit: 'g', pris: 0.039, pkgP: 22,  pkgS: 565  },
-      { name: 'Kokosmelk Eldorado (SPAR)', qty: 15,  unit: 'ml',pris: 0.036, pkgP: 9,   pkgS: 250  },
-      { name: 'Limejuice Realemon (SPAR)', qty: 2,   unit: 'ml',pris: 0.140, pkgP: 35,  pkgS: 250  },
+      { name: 'Smoothieblanding ananas/melon/banan', qty: 20, unit: 'g', pris: 0.057, pkgP: 22.60, pkgS: 400 },
+      { name: 'Kokosmelk',                         qty: 15,  unit: 'ml', pris: 0.036, pkgP: 0,    pkgS: 0   },
     ],
     'Forest Berry':     [
-      { name: 'Skogsbær frossen',          qty: 30,  unit: 'g', pris: 0.120, pkgP: 60,  pkgS: 500  },
-      { name: 'Ekstra sukker (Eldorado)',  qty: 3,   unit: 'g', pris: 0.024, pkgP: 24,  pkgS: 1000 },
+      { name: 'Bærblanding',                       qty: 30,  unit: 'g',  pris: 0.137, pkgP: 54.70, pkgS: 400 },
     ],
   },
   flavorInstructions: {
     'Classic Vanilla':  '🍦 Klassisk vanilje:\n• Vaniljesukker er allerede i basen — ekstramengen forsterker smaken.\n• Tips: Et knivspiss salt fremhever vaniljesmaken.\n• Over natten i frysen gir best resultat.',
     'Mango Delight':    '🥭 Mango:\n• Tin frosen mango og purér med stavmikser.\n• Fold purée inn FØR du blander kremfløten med kondensert melk.\n• Tips: Litt ekstra sitronsaft fremhever mangoen.',
-    'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt kakaopulveret i basen så det løses opp.\n• Smelt sjokoladen og rør inn.\n• Trenger ekstra sukker fordi kakao er bitter.',
-    'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Riv skallet — BARE det gule, hvit del er bittert.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
-    'Tropical Sunrise': '🌴 Tropical Sunrise:\n• Tin ananas og purér med stavmikser.\n• Rist på kokosmelken før måling.\n• Bland inn etter kjølenedgang.',
-    'Forest Berry':     '🫐 Skogsbær:\n• Tin bærene og purér. Sil bort frø for glatt is.\n• Trenger ekstra sukker fordi bær er syrlige.\n• Hold 5g hele bær til å røre inn på slutten.',
+    'Chocolate Deluxe': '🍫 Sjokolade:\n• Sikt bakekakao i basen og rør godt til det løses opp — ingen klumper.\n• Kakao er naturlig bitter, smak til om du vil ha litt ekstra sukker.\n• Tips: Litt vaniljeekstrakt fremhever sjokoladesmaken.',
+    'Lemon Dream':      '🍋 Lemon Dream:\n• Press fersk sitron og sil saften.\n• Bland sitronsaften inn i kondensert melk før du folder inn kremfløten.\n• Trenger litt ekstra sukker for å balansere syrligheten.',
+    'Tropical Sunrise': '🌴 Tropical Sunrise:\n• Tin smoothieblandingen og purér med stavmikser.\n• Rist på kokosmelken godt før måling.\n• Fold inn etter at base er blandet.',
+    'Forest Berry':     '🫐 Skogsbær:\n• Tin bærblandingen og purér med stavmikser. Sil bort frø for glatt is.\n• Bær er naturlig syrlige — smak til med litt ekstra sukker om ønskelig.\n• Hold gjerne 5g hele bær til å røre inn på slutten for tekstur.',
   },
   baseCosts: [
     { name: 'S-kopp 138ml (Hafjellfest)', per: 'stk',     cost: 2.60 },
@@ -299,7 +293,7 @@ export default function Recipes() {
               Alle felter er redigerbare · endringer lagres automatisk
               {priceTs && (
                 <span style={{ marginLeft: 10, color: c.green, fontWeight: 600 }}>
-                  ✓ Priser fra Oda ({new Date(priceTs).toLocaleDateString('no-NO', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})})
+                  ✓ Priser fra Kassalapp ({new Date(priceTs).toLocaleDateString('no-NO', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})})
                 </span>
               )}
             </div>
@@ -414,13 +408,28 @@ export default function Recipes() {
                   <Btn onClick={() => setData(p => ({ ...p, recipes: { ...p.recipes, [flavor]: [...(p.recipes[flavor] || []), { name: 'Ny ingrediens', qty: 0, unit: 'g', pris: 0 }] } }))}>+ Legg til for {flavor}</Btn>
                 </div>
 
-                {/* Sum-rad */}
-                <div style={{ padding: '14px 18px', background: c.text, color: c.bg, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .6 }}>Råvarekost per porsjon</div>
-                    <div style={{ fontFamily: 'DM Serif Display, serif', fontStyle: 'italic', fontSize: 14, marginTop: 2 }}>{flavor}</div>
+                {/* Per liter + kopp */}
+                <div style={{ padding: '14px 18px', background: c.text, color: c.bg }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', opacity: .6, marginBottom: 12 }}>
+                    {FLAVOR_META[flavor]?.emoji} {flavor} — råvarekost
                   </div>
-                  <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: '#E8C470' }}>{recipeCost(flavor).toFixed(2)} kr</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+                    {[
+                      { lbl: 'Per liter',  ml: 1000 },
+                      { lbl: 'S — 138ml',  ml: 138  },
+                      { lbl: 'M — 195ml',  ml: 195  },
+                      { lbl: 'L — 303ml',  ml: 303  },
+                    ].map(({ lbl, ml }) => {
+                      const costPerMl = baseWeight > 0 ? recipeCost(flavor) / baseWeight : 0
+                      const cost = costPerMl * ml
+                      return (
+                        <div key={lbl} style={{ background: 'rgba(255,255,255,.07)', borderRadius: 8, padding: '10px 12px', textAlign: 'center' }}>
+                          <div style={{ fontSize: 10, opacity: .55, marginBottom: 4 }}>{lbl}</div>
+                          <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#E8C470' }}>{cost.toFixed(2)} kr</div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
 

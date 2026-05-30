@@ -3,75 +3,86 @@ import json
 from datetime import datetime
 
 FIREBASE_URL = "https://kremis-41de5-default-rtdb.europe-west1.firebasedatabase.app"
-ODA_URL = "https://oda.com/api/v1/search/"
+KASSAL_TOKEN = "bGad2m2a3ZkQAxOqO6vFEnkQSx3THHpmJ5HNINXL"
+KASSAL_URL   = "https://kassal.app/api/v1/products"
+ONLINE_STORES = {'oda','holdbart','engrosnett','slowly','kolonial','fudi','amazon'}
 
 PRISDATA = [
     # BASE (no-churn kondensert melk-is)
-    {'smak': 'base', 'ing': 'Kondensert melk',  'key': 'kondensert_melk', 'q': 'kondensert melk søtet', 'filter': 'kondensert', 'buy': 2},
-    {'smak': 'base', 'ing': 'Kremfløte',        'key': 'kremfløte',       'q': 'kremfløte',             'filter': 'kremfløte',     'buy': 2},
-    {'smak': 'base', 'ing': 'Vaniljesukker',    'key': 'vaniljesukker',   'q': 'vaniljesukker',         'filter': 'vaniljesukker', 'buy': 1},
-    {'smak': 'base', 'ing': 'Sitronsaft',       'key': 'sitronsaft',      'q': 'sitronsaft 250ml',      'filter': 'sitronsaft',    'buy': 1},
+    {'smak': 'base', 'ing': 'Kondensert melk',  'key': 'kondensert_melk', 'q': 'kondensert melk søtet',  'buy': 2},
+    {'smak': 'base', 'ing': 'Kremfløte',        'key': 'kremfløte',       'q': 'kremfløte tine 1l',      'buy': 2},
+    {'smak': 'base', 'ing': 'Vaniljesukker',    'key': 'vaniljesukker',   'q': 'vaniljesukker freia',    'buy': 1},
+    {'smak': 'base', 'ing': 'Sitronsaft',       'key': 'sitronsaft',      'q': 'sitronsaft 250ml',       'buy': 1},
     # Classic Vanilla
-    {'smak': 'Classic Vanilla', 'ing': 'Vaniljesukker',         'key': 'vaniljesukker',  'q': 'vaniljesukker',        'filter': 'vaniljesukker', 'buy': 1},
+    {'smak': 'Classic Vanilla',  'ing': 'Vaniljesukker',    'key': 'vaniljesukker',  'q': 'vaniljesukker freia',    'buy': 1},
     # Mango Delight
-    {'smak': 'Mango Delight',   'ing': 'Mango (frossen)',        'key': 'mango',          'q': 'mango frossen',        'filter': 'mango',         'exclude': 'blanding', 'buy': 2},
-    # Chocolate Deluxe
-    {'smak': 'Chocolate Deluxe','ing': 'Kakaopulver',            'key': 'kakaopulver',    'q': 'kakaopulver',          'filter': 'kakao',         'buy': 1},
-    {'smak': 'Chocolate Deluxe','ing': 'Mørk sjokolade',         'key': 'sjokolade_mork', 'q': 'kokesjokolade mørk',   'filter': 'sjokolade',     'buy': 3},
+    {'smak': 'Mango Delight',    'ing': 'Mango (frossen)',  'key': 'mango',          'q': 'mango frossen',          'buy': 2},
+    # Chocolate Deluxe — kun kakaopulver, ingen sjokoladebarer
+    {'smak': 'Chocolate Deluxe', 'ing': 'Kakaopulver',     'key': 'kakaopulver',    'q': 'kakaopulver ren mørk',   'buy': 2},
     # Lemon Dream
-    {'smak': 'Lemon Dream',     'ing': 'Sitron (fersk)',          'key': 'sitron',         'q': 'sitron',               'filter': 'sitron',        'exclude': 'saft', 'buy': 3},
-    # Tropical Sunrise
-    {'smak': 'Tropical Sunrise','ing': 'Ananas (frossen)',        'key': 'ananas',         'q': 'ananas frossen',       'filter': 'ananas',        'buy': 2},
-    {'smak': 'Tropical Sunrise','ing': 'Kokosmelk',               'key': 'kokosmelk',      'q': 'kokosmelk',            'filter': 'kokos',         'buy': 1},
-    {'smak': 'Tropical Sunrise','ing': 'Limejuice',               'key': 'limesaft',       'q': 'limejuice',            'filter': 'lime',          'buy': 1},
+    {'smak': 'Lemon Dream',      'ing': 'Sitron (fersk)',  'key': 'sitron',         'q': 'sitron',                 'buy': 3},
+    # Tropical Sunrise — limejuice fjernet, bruker sitronsaft fra base
+    {'smak': 'Tropical Sunrise', 'ing': 'Ananas (frossen)','key': 'ananas',         'q': 'ananas frossen',         'buy': 2},
+    {'smak': 'Tropical Sunrise', 'ing': 'Kokosmelk',       'key': 'kokosmelk',      'q': 'kokosmelk eldorado',     'buy': 1},
     # Forest Berry
-    {'smak': 'Forest Berry',    'ing': 'Skogsbær (frosne)',       'key': 'skogsbaer',      'q': 'skogsbær frossen',     'filter': 'bær',           'buy': 2},
+    {'smak': 'Forest Berry',     'ing': 'Skogsbær (frosne)','key': 'skogsbaer',     'q': 'skogsbær frossen',       'buy': 2},
 ]
 
-def fetch_best(q, filter_key, exclude=None):
-    resp = requests.get(ODA_URL, params={'q': q, 'page_size': 15}, timeout=15)
+def parse_qty(name):
+    import re
+    m = re.search(r'(\d+(?:[,.]\d+)?)\s*(kg|g|ml|l)\b', name, re.IGNORECASE)
+    if not m:
+        return 0
+    v = float(m.group(1).replace(',', '.'))
+    u = m.group(2).lower()
+    return v * 1000 if u in ('kg', 'l') else v
+
+def fetch_best(q):
+    resp = requests.get(
+        KASSAL_URL,
+        params={'search': q, 'size': 15},
+        headers={'Authorization': f'Bearer {KASSAL_TOKEN}'},
+        timeout=15
+    )
     resp.raise_for_status()
-    products = resp.json().get('products', [])
+    products = resp.json().get('data', [])
 
-    if filter_key:
-        products = [
-            p for p in products
-            if filter_key.lower() in (p.get('full_name', '') + ' ' + p.get('name_extra', '')).lower()
-        ]
+    products = [p for p in products
+                if p.get('current_price', 0) > 0
+                and (p.get('store') or {}).get('name', '').lower() not in ONLINE_STORES]
 
-    if exclude:
-        products = [
-            p for p in products
-            if exclude.lower() not in (p.get('full_name', '') + ' ' + p.get('name_extra', '')).lower()
-        ]
-
-    products = [p for p in products if float(p.get('gross_price') or 0) > 0]
     if not products:
         return None
 
-    return min(products, key=lambda p: float(p.get('gross_unit_price') or 99999))
+    candidates = []
+    for p in products:
+        qty = parse_qty(p.get('name', ''))
+        ppu = p['current_price'] / qty * 1000 if qty > 0 else 99999
+        candidates.append({**p, 'qty': qty, 'ppu': ppu})
+
+    return min(candidates, key=lambda p: p['ppu'])
 
 results = {}
 for d in PRISDATA:
     print(f"Henter {d['ing']}...", end=' ')
     try:
-        best = fetch_best(d['q'], d['filter'], d.get('exclude'))
+        best = fetch_best(d['q'])
         if best:
-            disc = best.get('discount') or {}
             results[d['key']] = {
-                'ing':          d['ing'],
-                'smak':         d['smak'],
-                'full_name':    best.get('full_name', ''),
-                'name_extra':   best.get('name_extra', ''),
-                'gross_price':  float(best.get('gross_price', 0)),
-                'ppu':          float(best.get('gross_unit_price') or 0),
-                'unitAbbr':     best.get('unit_price_quantity_abbreviation', 'kg'),
-                'is_discounted': bool(disc.get('is_discounted', False)),
-                'kost':         float(best.get('gross_price', 0)) * d['buy'],
-                'buy':          d['buy'],
-                'ts':           int(datetime.now().timestamp() * 1000),
+                'ing':    d['ing'],
+                'smak':   d['smak'],
+                'navn':   best.get('name', '')[:60],
+                'butikk': (best.get('store') or {}).get('name', 'Kassalapp'),
+                'pkgP':   best['current_price'],
+                'pkgS':   best.get('qty', 0),
+                'ppu':    round(best['ppu'], 2),
+                'pris_g': round(best['ppu'] / 1000, 5),
+                'kost':   round(best['current_price'] * d['buy'], 2),
+                'buy':    d['buy'],
+                'ts':     int(datetime.now().timestamp() * 1000),
             }
-            print(f"✓ {best['full_name']} {best.get('name_extra','')} — {best['gross_price']} kr")
+            store = (best.get('store') or {}).get('name', '')
+            print(f"✓ {best['name']} @ {store} — {best['current_price']} kr")
         else:
             print("✗ Ikke funnet")
     except Exception as e:

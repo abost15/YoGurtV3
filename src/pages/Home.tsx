@@ -270,6 +270,14 @@ export default function Home() {
     return () => window.removeEventListener('keydown', h)
   }, [])
 
+  useEffect(() => {
+    if (window.location.hash === '#onsket') {
+      setTimeout(() => {
+        document.getElementById('onsket')?.scrollIntoView({ behavior: 'smooth' })
+      }, 400)
+    }
+  }, [])
+
   // Status
   const t = todaySlot(times)
   let dotColor = '#dc2626', txtColor = '#b91c1c', statusTxt = 'Stengt i dag'
@@ -370,7 +378,7 @@ export default function Home() {
             <motion.button
               key={f.name}
               role="listitem"
-              onClick={() => setDetailIdx(i)}
+              onClick={() => { setDetailIdx(i); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
               aria-label={`${f.name}, ${f.badge}. ${f.available ? 'Tilgjengelig' : 'Utsolgt'}. Trykk for detaljer.`}
               variants={listItem}
               whileHover={{ x: 5, backgroundColor: 'rgba(0,0,0,.02)' }}

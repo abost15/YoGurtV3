@@ -58,14 +58,12 @@ Per porsjon (~145g):
 | Smak | Ingrediens | Mengde | Butikk |
 |---|---|---|---|
 | Classic Vanilla | Vaniljesukker Freia | 4 g | KIWI — 21 kr/175g |
-| Mango Delight | Mango frossen | 35 g | Coop/REMA |
-| Chocolate Deluxe | Kakaopulver (rent) | 8 g | Meny — Nesquik 85 kr/700g |
-| Chocolate Deluxe | Kokesjokolade Eldorado | 6 g | KIWI — 10 kr/100g |
+| Mango Delight | Fryst mango | 35 g | ~29,60 kr/300g |
+| Chocolate Deluxe | Bakekakao (rent) | 14 g | ~62,40 kr/250g |
 | Lemon Dream | Sitron (fersk) | ½ stk | KIWI/Coop |
-| Tropical Sunrise | Ananas First Price | 20 g | Meny/SPAR — 22 kr/565g |
+| Tropical Sunrise | Smoothieblanding ananas/melon/banan | 20 g | ~22,60 kr/400g |
 | Tropical Sunrise | Kokosmelk Eldorado | 15 ml | SPAR — 9 kr/250ml |
-| Tropical Sunrise | Limejuice Realemon | 2 ml | SPAR — 35 kr/250ml |
-| Forest Berry | Skogsbær frossen | 30 g | Coop/REMA |
+| Forest Berry | Bærblanding (frossen) | 30 g | ~54,70 kr/400g |
 
 ---
 
@@ -101,7 +99,7 @@ Billigere i bulk (1000 stk) fra Tingstad.com: ~0,96 kr/stk
 | `kremis-transactions` | Regnskapstransaksjoner |
 | `kremis-receipts` | Kvitteringer (sekvensiell nummerering) |
 | `kremis-config/sizePrices` | S/M/L salgspriser (synces til kassen) |
-| `kremis-config/ingredientPrices` | Oda-priser (synces til oppskrifter) |
+| `kremis-config/ingredientPrices` | Kassalapp-priser (synces til oppskrifter) |
 | `kremis-config/receiptCounter` | Kvitteringsteller (0001, 0002...) |
 
 ---
@@ -129,12 +127,13 @@ firebase deploy
 | Stempelkort | Klippekort-kunder + QR-koder |
 | Regnskap | Transaksjoner + kvitteringer |
 | Oppskrifter | Oppskrifter med batch-kalkulator |
-| Innkjøpspriser | Live priser fra Oda (daglig via GitHub Actions) |
+| Innkjøpspriser | Live priser fra Kassalapp (daglig via GitHub Actions) |
 | Priskalkyle | S/M/L lønnsomhet per batch |
 
 ---
 
-## Oda API
-Brukes til å hente live priser via GitHub Actions (kjører daglig).
-- Henter priser fra Oda.com for alle ingredienser
-- Priser synces automatisk til oppskriftskalkulatoren via Firebase
+## Kassalapp API
+Brukes til å hente live priser via GitHub Actions (kjører daglig kl. 05:00).
+- Henter priser fra Kassalapp for alle ingredienser (filtrerer bort nettbutikker)
+- Priser synces automatisk til oppskriftskalkulatoren via Firebase (`kremis-config/ingredientPrices`)
+- Ingredienser uten Kassalapp-treff bruker manuelle fallback-priser
