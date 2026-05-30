@@ -194,15 +194,15 @@ function FlavorDetail({ flavor, times, onClose }: {
           <defs><pattern id="sh-d" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="12" fill={flavor.tc}/></pattern></defs>
           <rect width="100%" height="100%" fill="url(#sh-d)"/>
         </svg>
-        <motion.div
+        <motion.img
+          src={imgSrc}
+          alt={flavor.name}
           initial={{ scale: 0.6, opacity: 0, y: 10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: EXPO, delay: 0.06 }}
-          style={{ fontSize: 84, lineHeight: 1, filter: 'drop-shadow(0 12px 28px rgba(0,0,0,.18))' }}
-          aria-hidden="true"
-        >
-          {flavor.emoji}
-        </motion.div>
+          style={{ height: 220, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 12px 28px rgba(0,0,0,.22))' }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -223,11 +223,6 @@ function FlavorDetail({ flavor, times, onClose }: {
         <path d="M0 28 Q97 6 195 20 Q293 34 390 14 L390 28 Z" fill={flavor.g1} opacity="0.25"/>
       </svg>
 
-      <div id={`img-wrap-${flavor.name}`} style={{ display: 'flex', justifyContent: 'center', margin: '0 0 20px', background: '#F0EDE6', borderBottom: '1px solid #E8E3DC' }}>
-        <img src={imgSrc} alt={flavor.name} style={{ height: 220, width: 'auto', objectFit: 'contain' }}
-          onError={() => { const w = document.getElementById(`img-wrap-${flavor.name}`); if (w) w.style.display = 'none' }}
-        />
-      </div>
 
       <motion.div
         style={{ padding: '4px 28px 40px' }}
